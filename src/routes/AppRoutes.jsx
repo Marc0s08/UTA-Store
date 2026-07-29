@@ -21,6 +21,11 @@ import Register from "../pages/Register/Register";
 import Profile from "../pages/Profile/Profile";
 import EditProfile from "../pages/Profile/EditProfile";
 
+import MelhorEnvioCallback 
+from "../pages/MelhorEnvioCallback/MelhorEnvioCallback";
+
+import Settings from "../pages/Admin/Settings";
+
 import Product from "../pages/Product/Product";
 import Cart from "../pages/Cart/Cart";
 import MyOrders from "../pages/MyOrders/MyOrders";
@@ -34,7 +39,15 @@ export default function AppRoutes(){
         <Routes>
 
             <Route element={<Layout/>}>
+                <Route
 
+path="/oauth/callback"
+
+element={
+    <MelhorEnvioCallback/>
+}
+
+/>
                 <Route
                     path="/"
                     element={<Home/>}
@@ -119,6 +132,22 @@ export default function AppRoutes(){
     />
 
 </Route>
+
+<Route
+
+path="/admin/configuracoes"
+
+element={
+
+<AdminRoute>
+
+<Settings/>
+
+</AdminRoute>
+
+}
+
+/>
 
         </Routes>
 

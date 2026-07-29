@@ -1,0 +1,59 @@
+.settings-page{
+
+    padding:30px;
+
+}
+
+
+
+.settings-card{
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:15px;
+
+    max-width:500px;
+
+    box-shadow:0 5px 20px rgba(0,0,0,.1);
+
+}
+
+
+
+.settings-card h2{
+
+    margin-bottom:15px;
+
+}
+
+
+
+.connect-button{
+
+
+    margin-top:20px;
+
+    padding:12px 20px;
+
+    border:none;
+
+    border-radius:8px;
+
+    background:#111827;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+}
+
+
+.connect-button:hover{
+
+    opacity:.8;
+
+}
