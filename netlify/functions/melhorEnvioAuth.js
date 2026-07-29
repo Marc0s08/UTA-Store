@@ -4,9 +4,15 @@ export async function handler(event){
     try{
 
 
-        const {
-            code
-        } = JSON.parse(event.body);
+        const body =
+        JSON.parse(event.body);
+
+
+
+        console.log(
+            "Recebido:",
+            body
+        );
 
 
 
@@ -16,14 +22,18 @@ export async function handler(event){
 
             {
 
+
                 method:"POST",
+
 
                 headers:{
 
-                    "Content-Type":
-                    "application/json",
 
                     "Accept":
+                    "application/json",
+
+
+                    "Content-Type":
                     "application/json"
 
                 },
@@ -31,7 +41,10 @@ export async function handler(event){
 
                 body:JSON.stringify({
 
-                    grant_type:"authorization_code",
+
+                    grant_type:
+                    "authorization_code",
+
 
                     client_id:
                     process.env.MELHOR_ENVIO_CLIENT_ID,
@@ -46,12 +59,15 @@ export async function handler(event){
                     "https://uta-store.netlify.app/oauth/callback",
 
 
-                    code
+                    code:
+                    body.code
+
 
                 })
 
 
             }
+
 
         );
 
@@ -66,10 +82,19 @@ export async function handler(event){
 
 
 
+        console.log(
+            "Resposta Melhor Envio:",
+            data
+        );
+
+
+
+
+
         return {
 
 
-            statusCode:200,
+            statusCode:response.status,
 
 
             body:JSON.stringify(data)
