@@ -7,34 +7,79 @@ export default function MelhorEnvioCallback(){
     useEffect(()=>{
 
 
-        const params =
-        new URLSearchParams(
-            window.location.search
-        );
+        async function conectar(){
 
 
-        const code =
-        params.get("code");
-
-
-
-        if(code){
-
-
-            console.log(
-                "Código Melhor Envio:",
-                code
+            const params =
+            new URLSearchParams(
+                window.location.search
             );
 
 
-            /*
-            Depois vamos enviar
-            esse código para Firebase Function
-            */
+            const code =
+            params.get("code");
+
+
+
+            if(!code)
+                return;
+
+
+
+            const response =
+            await fetch(
+
+                "/.netlify/functions/melhorEnvioAuth",
+
+                {
+
+
+                    method:"POST",
+
+
+                    headers:{
+
+
+                        "Content-Type":
+                        "application/json"
+
+
+                    },
+
+
+                    body:JSON.stringify({
+
+                        code
+
+                    })
+
+
+                }
+
+
+            );
+
+
+
+
+            const data =
+            await response.json();
+
+
+
+
+            console.log(
+                "TOKEN MELHOR ENVIO:",
+                data
+            );
+
 
 
         }
 
+
+
+        conectar();
 
 
     },[]);
@@ -43,15 +88,13 @@ export default function MelhorEnvioCallback(){
 
     return(
 
-        <main>
+        <h1>
 
-            <h1>
-                Conectando Melhor Envio...
-            </h1>
+            Conectando Melhor Envio...
 
-        </main>
+        </h1>
 
-    );
+    )
 
 
 }
