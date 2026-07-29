@@ -1,50 +1,25 @@
-export async function handler(event) {
+export async function handler(event){
 
 
-    try {
-
-
-        if(event.httpMethod !== "POST"){
-
-
-            return {
-
-
-                statusCode:405,
-
-
-                headers:{
-                    "Content-Type":"application/json"
-                },
-
-
-                body:JSON.stringify({
-
-                    erro:"Método não permitido"
-
-                })
-
-
-            };
-
-
-        }
-
-
-
+    try{
 
 
         const body = JSON.parse(event.body);
 
 
 
+        console.log(
+            "Body recebido:",
+            body
+        );
+
+
+
         const {
 
-            cepDestino,
+            pacote,
 
-            peso,
-
-            pacote
+            token
 
 
         } = body;
@@ -53,32 +28,23 @@ export async function handler(event) {
 
 
 
-        if(!cepDestino || !peso || !pacote){
+        if(!token){
 
 
             return {
 
-
-                statusCode:400,
-
-
-                headers:{
-                    "Content-Type":"application/json"
-                },
-
+                statusCode:401,
 
                 body:JSON.stringify({
 
-                    erro:"Dados incompletos para cálculo"
+                    erro:"TOKEN AUSENTE"
 
                 })
-
 
             };
 
 
         }
-
 
 
 
@@ -88,11 +54,10 @@ export async function handler(event) {
         const response = await fetch(
 
 
-            "https://www.melhorenvio.com.br/api/v2/me/shipment/calculate",
+            "https://melhorenvio.com.br/api/v2/me/shipment/calculate",
 
 
             {
-
 
                 method:"POST",
 
@@ -100,9 +65,9 @@ export async function handler(event) {
                 headers:{
 
 
-                    "Authorization":
+                    Authorization:
 
-                    `Bearer ${process.env.MELHOR_ENVIO_TOKEN}`,
+                    `Bearer ${token}`,
 
 
                     "Content-Type":
@@ -110,75 +75,22 @@ export async function handler(event) {
                     "application/json",
 
 
-                    "Accept":
+                    Accept:
 
                     "application/json",
 
 
                     "User-Agent":
 
-                    "UTA Store (contato@utastore.com.br)"
+                    "UTA Store"
 
 
                 },
 
 
+                body:
 
-                body:JSON.stringify({
-
-
-                    from:{
-
-
-                        postal_code:
-
-                        String(pacote.cepOrigem)
-
-
-                    },
-
-
-                    to:{
-
-
-                        postal_code:
-
-                        String(cepDestino)
-
-
-                    },
-
-
-                    package:{
-
-
-                        height:
-
-                        Number(pacote.altura),
-
-
-
-                        width:
-
-                        Number(pacote.largura),
-
-
-
-                        length:
-
-                        Number(pacote.comprimento),
-
-
-
-                        weight:
-
-                        Number(peso)
-
-
-                    }
-
-
-                })
+                JSON.stringify(pacote)
 
 
             }
@@ -190,12 +102,17 @@ export async function handler(event) {
 
 
 
+        const texto = await response.text();
 
 
 
-        const data = await response.json();
+        console.log(
 
+            "Status Melhor Envio:",
 
+            response.status
+
+        );
 
 
 
@@ -203,46 +120,9 @@ export async function handler(event) {
 
             "Resposta Melhor Envio:",
 
-            data
+            texto
 
         );
-
-
-
-
-
-
-
-        if(!response.ok){
-
-
-            return {
-
-
-                statusCode:response.status,
-
-
-                headers:{
-                    "Content-Type":"application/json"
-                },
-
-
-                body:JSON.stringify({
-
-                    erro:"Erro Melhor Envio",
-
-                    detalhes:data
-
-                })
-
-
-            };
-
-
-        }
-
-
-
 
 
 
@@ -251,17 +131,14 @@ export async function handler(event) {
         return {
 
 
-            statusCode:200,
+            statusCode:
+
+            response.status,
 
 
-            headers:{
+            body:
 
-                "Content-Type":"application/json"
-
-            },
-
-
-            body:JSON.stringify(data)
+            texto
 
 
         };
@@ -270,18 +147,10 @@ export async function handler(event) {
 
 
 
-
     }catch(error){
 
 
-
-        console.log(
-
-            "Erro Function Frete:",
-
-            error
-
-        );
+        console.log(error);
 
 
 
@@ -289,13 +158,6 @@ export async function handler(event) {
 
 
             statusCode:500,
-
-
-            headers:{
-
-                "Content-Type":"application/json"
-
-            },
 
 
             body:JSON.stringify({
