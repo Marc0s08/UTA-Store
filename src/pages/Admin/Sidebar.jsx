@@ -1,5 +1,6 @@
 import "./Sidebar.css";
 
+
 import {
     Dashboard,
     Inventory,
@@ -12,77 +13,148 @@ import {
 } from "@mui/icons-material";
 
 
+import {
+    Link
+} from "react-router-dom";
+
+
+
 export default function Sidebar(){
+
 
     return (
 
+
         <aside className="admin-sidebar">
+
 
             <div className="admin-logo">
 
+
                 UTA STORE
 
-                <span>ADMIN</span>
+
+                <span>
+
+                    ADMIN
+
+                </span>
+
 
             </div>
+
+
+
 
 
             <nav>
 
 
-                <a href="/admin">
+
+                <Link to="/admin">
+
                     <Dashboard/>
+
                     Dashboard
-                </a>
+
+                </Link>
 
 
-                <a href="/admin/produtos">
+
+
+
+                <Link to="/admin/produtos">
+
                     <Inventory/>
+
                     Produtos
-                </a>
+
+                </Link>
 
 
-                <a href="/admin/categorias">
+
+
+
+                <Link to="/admin/categorias">
+
                     <Category/>
+
                     Categorias
-                </a>
+
+                </Link>
 
 
-                <a href="/admin/pedidos">
+
+
+
+                <Link to="/admin/pedidos">
+
                     <ShoppingCart/>
+
                     Pedidos
-                </a>
+
+                </Link>
 
 
-                <a href="/admin/clientes">
+
+
+
+                <Link to="/admin/clientes">
+
                     <People/>
+
                     Clientes
-                </a>
+
+                </Link>
 
 
-                <a href="/admin/cupons">
+
+
+
+                <Link to="/admin/cupons">
+
                     <LocalOffer/>
+
                     Cupons
-                </a>
+
+                </Link>
 
 
-                <a href="/admin/banners">
+
+
+
+                <Link to="/admin/banners">
+
                     <Image/>
+
                     Banners
-                </a>
+
+                </Link>
 
 
-                <a href="/admin/configuracoes">
+
+
+
+                <Link to="/admin/configuracoes">
+
                     <Settings/>
+
                     Configurações
-                </a>
+
+                </Link>
+
+
+
 
 
             </nav>
 
 
+
         </aside>
 
-    )
+
+    );
+
 
 }
