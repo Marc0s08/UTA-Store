@@ -1,0 +1,281 @@
+.navbar{
+
+    width:100%;
+
+    background:#111;
+
+    color:white;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:1000;
+
+}
+
+
+/* PARTE SUPERIOR */
+
+.navbar-top{
+
+    max-width:1400px;
+
+    margin:auto;
+
+    padding:15px 30px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:30px;
+
+}
+
+
+/* LOGO */
+
+.logo img{
+
+    width:150px;
+
+    height:auto;
+
+}
+
+
+/* PESQUISA */
+
+.search-bar{
+
+    flex:1;
+
+    max-width:600px;
+
+    display:flex;
+
+    background:#222;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+}
+
+
+.search-bar input{
+
+    flex:1;
+
+    border:none;
+
+    outline:none;
+
+    padding:14px 18px;
+
+    background:transparent;
+
+    color:white;
+
+    font-size:15px;
+
+}
+
+
+.search-bar input::placeholder{
+
+    color:#999;
+
+}
+
+
+.search-bar button{
+
+    width:55px;
+
+    border:none;
+
+    background:#556B2F;
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+.search-bar button:hover{
+
+    background:#6B8E23;
+
+}
+
+
+/* AÇÕES */
+
+.navbar-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+
+.nav-icon{
+
+    background:none;
+
+    border:none;
+
+    color:white;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:5px;
+
+    position:relative;
+
+    font-size:12px;
+
+}
+
+
+.nav-icon svg{
+
+    font-size:26px;
+
+}
+
+
+.nav-icon:hover{
+
+    color:#8BC34A;
+
+}
+
+
+
+/* CARRINHO */
+
+.cart-badge{
+
+    position:absolute;
+
+    top:-5px;
+
+    right:0;
+
+    background:#8BC34A;
+
+    color:#111;
+
+    width:18px;
+
+    height:18px;
+
+    border-radius:50%;
+
+    font-size:11px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:bold;
+
+}
+
+
+/* MENU */
+
+.nav-menu{
+
+    background:#1a1a1a;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:35px;
+
+    padding:14px;
+
+}
+
+
+.nav-menu a{
+
+    color:#ddd;
+
+    font-size:15px;
+
+    transition:.3s;
+
+}
+
+
+.nav-menu a:hover{
+
+    color:#8BC34A;
+
+}
+
+
+/* RESPONSIVO */
+
+@media(max-width:900px){
+
+
+    .navbar-top{
+
+        flex-wrap:wrap;
+
+        padding:15px;
+
+    }
+
+
+    .search-bar{
+
+        order:3;
+
+        width:100%;
+
+        max-width:none;
+
+    }
+
+
+    .navbar-actions span{
+
+        display:none;
+
+    }
+
+
+    .nav-menu{
+
+        overflow-x:auto;
+
+        justify-content:flex-start;
+
+    }
+
+
+}

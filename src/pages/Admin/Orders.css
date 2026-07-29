@@ -1,0 +1,119 @@
+.orders-admin{
+
+    padding:40px;
+
+}
+
+.orders-admin h1{
+
+    color:#8BC34A;
+
+    margin-bottom:30px;
+
+}
+
+.orders-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+
+    gap:25px;
+
+}
+
+.order-card{
+
+    background:#1b1b1b;
+
+    border-radius:20px;
+
+    padding:25px;
+
+    color:white;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.25);
+
+}
+
+.order-card h2{
+
+    color:#8BC34A;
+
+}
+
+.order-card h3{
+
+    font-size:30px;
+
+    color:#8BC34A;
+
+}
+
+.status{
+
+    width:max-content;
+
+    padding:8px 18px;
+
+    border-radius:20px;
+
+    font-weight:bold;
+
+}
+
+.status.pendente{
+
+    background:#f39c12;
+
+}
+
+.status.separando{
+
+    background:#3498db;
+
+}
+
+.status.enviado{
+
+    background:#9b59b6;
+
+}
+
+.status.entregue{
+
+    background:#2ecc71;
+
+}
+
+.status.cancelado{
+
+    background:#e74c3c;
+
+}
+
+.order-card button{
+
+    margin-top:15px;
+
+    background:#8BC34A;
+
+    color:white;
+
+    border:none;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+}

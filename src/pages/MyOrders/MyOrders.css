@@ -1,0 +1,251 @@
+.orders-page{
+
+    max-width:1100px;
+
+    margin:auto;
+
+    padding:40px 20px;
+
+    color:white;
+
+}
+
+.orders-page h1{
+
+    color:#8BC34A;
+
+    margin-bottom:35px;
+
+}
+
+.empty-orders{
+
+    background:#1b1b1b;
+
+    padding:40px;
+
+    border-radius:20px;
+
+    text-align:center;
+
+}
+
+.order-card{
+
+    background:#181818;
+
+    border-radius:20px;
+
+    margin-bottom:30px;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.35);
+
+}
+
+.order-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:25px 30px;
+
+    border-bottom:1px solid #333;
+
+}
+
+.order-header h2{
+
+    margin:0;
+
+}
+
+.order-header small{
+
+    color:#888;
+
+}
+
+.status{
+
+    padding:10px 18px;
+
+    border-radius:30px;
+
+    font-weight:bold;
+
+    color:white;
+
+}
+
+.pending{
+
+    background:#f39c12;
+
+}
+
+.preparing{
+
+    background:#3498db;
+
+}
+
+.shipping{
+
+    background:#9b59b6;
+
+}
+
+.delivered{
+
+    background:#2ecc71;
+
+}
+
+.cancelled{
+
+    background:#e74c3c;
+
+}
+
+.order-products{
+
+    padding:25px;
+
+}
+
+.order-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    background:#202020;
+
+    border-radius:15px;
+
+    padding:15px;
+
+    margin-bottom:15px;
+
+}
+
+.order-item img{
+
+    width:90px;
+
+    height:90px;
+
+    border-radius:15px;
+
+    object-fit:cover;
+
+    background:#111;
+
+}
+
+.item-info{
+
+    flex:1;
+
+}
+
+.item-info h3{
+
+    margin:0 0 8px;
+
+}
+
+.item-info p{
+
+    color:#aaa;
+
+}
+
+.item-price{
+
+    font-size:22px;
+
+    color:#8BC34A;
+
+    font-weight:bold;
+
+}
+
+.order-footer{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:20px 30px;
+
+    border-top:1px solid #333;
+
+    background:#202020;
+
+}
+
+.total-price{
+
+    font-size:28px;
+
+    color:#8BC34A;
+
+    font-weight:bold;
+
+}
+
+@media(max-width:768px){
+
+.order-header{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:15px;
+
+}
+
+.order-item{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+}
+
+.order-item img{
+
+    width:100%;
+
+    height:220px;
+
+}
+
+.item-price{
+
+    width:100%;
+
+    text-align:right;
+
+}
+
+.order-footer{
+
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
+}

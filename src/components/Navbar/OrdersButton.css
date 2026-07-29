@@ -1,0 +1,71 @@
+.orders-button-nav{
+
+
+    background:none;
+
+
+    border:none;
+
+
+    color:white;
+
+
+    cursor:pointer;
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    gap:3px;
+
+
+    font-size:13px;
+
+
+    padding:5px 10px;
+
+
+}
+
+
+
+.orders-button-nav svg{
+
+
+    font-size:28px;
+
+
+}
+
+
+
+
+
+.orders-button-nav:hover{
+
+
+    color:#8BC34A;
+
+
+}
+
+
+
+
+
+.orders-button-nav span{
+
+
+    line-height:1;
+
+
+}

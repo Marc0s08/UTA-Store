@@ -1,0 +1,493 @@
+.products-admin{
+
+    width:50%;
+
+    padding:30px;
+
+    color:white;
+
+}
+
+
+
+.products-admin h1{
+
+    color:#8BC34A;
+
+    margin-bottom:35px;
+
+    font-size:32px;
+
+}
+
+
+
+.products-list-section{
+
+    margin-top:50px;
+
+}
+
+
+
+.products-list-section h2{
+
+    margin-bottom:25px;
+
+}
+
+
+
+
+
+.product-list{
+
+    display:grid;
+
+    grid-template-columns:
+
+    repeat(auto-fill,minmax(280px,1fr));
+
+    gap:25px;
+
+}
+
+
+
+
+
+
+.product-card{
+
+
+    background:#181818;
+
+
+    border:1px solid #2d2d2d;
+
+
+    border-radius:20px;
+
+
+    padding:20px;
+
+
+    position:relative;
+
+
+    overflow:hidden;
+
+
+    transition:.3s;
+
+
+}
+
+
+
+
+
+.product-card:hover{
+
+
+    transform:translateY(-5px);
+
+
+    border-color:#8BC34A;
+
+
+}
+
+
+
+
+
+
+/* Imagem */
+
+.product-thumbnail{
+
+
+    width:100%;
+
+
+    height:200px;
+
+
+    object-fit:cover;
+
+
+    border-radius:15px;
+
+
+    background:#101010;
+
+
+    margin-bottom:20px;
+
+
+}
+
+
+
+
+
+
+
+/* Badge desconto */
+
+
+.discount-badge{
+
+
+    position:absolute;
+
+
+    top:15px;
+
+
+    left:15px;
+
+
+    background:#e53935;
+
+
+    color:white;
+
+
+    padding:8px 14px;
+
+
+    border-radius:20px;
+
+
+    font-weight:bold;
+
+
+    font-size:14px;
+
+
+    z-index:2;
+
+
+}
+
+
+
+
+
+
+
+.product-card h3{
+
+
+    font-size:20px;
+
+
+    margin-bottom:15px;
+
+
+    color:white;
+
+
+}
+
+
+
+
+
+
+.product-card p{
+
+
+    margin:8px 0;
+
+
+    color:#ccc;
+
+
+}
+
+
+
+
+
+
+
+/* Preços */
+
+
+.price-area{
+
+
+    margin:20px 0;
+
+
+}
+
+
+
+.old-price{
+
+
+    color:#777 !important;
+
+
+    text-decoration:line-through;
+
+
+    font-size:14px;
+
+
+}
+
+
+
+
+
+.new-price{
+
+
+    color:#8BC34A !important;
+
+
+    font-size:24px;
+
+
+    font-weight:bold;
+
+
+}
+
+
+
+
+
+
+
+/* Status */
+
+
+.status{
+
+
+    display:inline-block;
+
+
+    padding:7px 15px;
+
+
+    border-radius:20px;
+
+
+    margin-top:15px;
+
+
+    font-size:14px;
+
+
+    font-weight:bold;
+
+
+}
+
+
+
+
+
+.status.active{
+
+
+    background:rgba(139,195,74,.15);
+
+
+    color:#8BC34A;
+
+
+}
+
+
+
+.status.inactive{
+
+
+    background:rgba(229,57,53,.15);
+
+
+    color:#e53935;
+
+
+}
+
+
+
+
+
+
+
+/* Botões */
+
+
+.product-actions{
+
+
+    display:flex;
+
+
+    gap:12px;
+
+
+    margin-top:25px;
+
+
+}
+
+
+
+
+
+
+.product-actions button{
+
+
+    flex:1;
+
+
+    padding:12px;
+
+
+    border:none;
+
+
+    border-radius:12px;
+
+
+    cursor:pointer;
+
+
+    font-weight:bold;
+
+
+    transition:.3s;
+
+
+}
+
+
+
+
+
+
+
+.edit-button{
+
+
+    background:#1976d2;
+
+
+    color:white;
+
+
+}
+
+
+
+
+
+.edit-button:hover{
+
+
+    background:#2196f3;
+
+
+}
+
+
+
+
+
+
+
+.delete-button{
+
+
+    background:#e53935;
+
+
+    color:white;
+
+
+}
+
+
+
+
+
+.delete-button:hover{
+
+
+    background:#ef5350;
+
+
+}
+
+
+
+
+
+
+
+
+
+/* Mobile */
+
+
+@media(max-width:768px){
+
+
+
+    .products-admin{
+
+
+        padding:15px;
+
+
+    }
+
+
+
+
+
+    .products-admin h1{
+
+
+        font-size:25px;
+
+
+    }
+
+
+
+
+
+    .product-list{
+
+
+        grid-template-columns:1fr;
+
+
+    }
+
+
+
+
+    .product-actions{
+
+
+        flex-direction:column;
+
+
+    }
+
+
+}

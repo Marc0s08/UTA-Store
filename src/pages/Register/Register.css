@@ -1,0 +1,248 @@
+.register-page{
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#121212;
+
+    padding:30px 15px;
+
+}
+
+
+
+.register-page form{
+
+    width:100%;
+
+    max-width:550px;
+
+    background:#1c1c1c;
+
+    padding:40px;
+
+    border-radius:15px;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.4);
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+
+}
+
+
+
+.register-page h1{
+
+    text-align:center;
+
+    color:white;
+
+    margin-bottom:15px;
+
+    font-size:30px;
+
+}
+
+
+
+.register-page h3{
+
+    color:#8BC34A;
+
+    font-size:16px;
+
+    margin-top:15px;
+
+    margin-bottom:5px;
+
+    border-bottom:1px solid #333;
+
+    padding-bottom:8px;
+
+}
+
+
+
+.register-page input{
+
+    width:100%;
+
+    padding:14px;
+
+    background:#111;
+
+    color:white;
+
+    border:1px solid #333;
+
+    border-radius:8px;
+
+    font-size:15px;
+
+    outline:none;
+
+}
+
+
+
+.register-page input::placeholder{
+
+    color:#777;
+
+}
+
+
+
+.register-page input:focus{
+
+    border-color:#8BC34A;
+
+}
+
+
+
+/* Campos lado a lado */
+
+.address-row{
+
+    display:flex;
+
+    gap:15px;
+
+}
+
+
+
+.address-row input{
+
+    flex:1;
+
+}
+
+
+
+/* Botão */
+
+.register-page button{
+
+    margin-top:20px;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:8px;
+
+    background:#556B2F;
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+
+
+.register-page button:hover{
+
+    background:#8BC34A;
+
+    color:#111;
+
+}
+
+
+
+.register-page button:disabled{
+
+    opacity:.6;
+
+    cursor:not-allowed;
+
+}
+
+
+
+/* Link Login */
+
+.login-link{
+
+    text-align:center;
+
+    color:#aaa;
+
+    margin-top:10px;
+
+}
+
+
+
+.login-link a{
+
+    color:#8BC34A;
+
+    margin-left:5px;
+
+    font-weight:bold;
+
+    text-decoration:none;
+
+}
+
+
+
+.login-link a:hover{
+
+    text-decoration:underline;
+
+}
+
+
+
+/* Responsivo */
+
+@media(max-width:600px){
+
+
+    .register-page form{
+
+        padding:25px 20px;
+
+    }
+
+
+
+    .register-page h1{
+
+        font-size:24px;
+
+    }
+
+
+
+    .address-row{
+
+        flex-direction:column;
+
+        gap:15px;
+
+    }
+
+
+}
