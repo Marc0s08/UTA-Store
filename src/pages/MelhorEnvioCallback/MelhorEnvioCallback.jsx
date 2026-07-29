@@ -10,10 +10,24 @@ export default function MelhorEnvioCallback(){
         async function conectar(){
 
 
+            console.log(
+                "Callback Melhor Envio iniciado"
+            );
+
+
+
+            console.log(
+                "URL atual:",
+                window.location.href
+            );
+
+
+
             const params =
             new URLSearchParams(
                 window.location.search
             );
+
 
 
             const code =
@@ -21,58 +35,101 @@ export default function MelhorEnvioCallback(){
 
 
 
-            if(!code)
+            console.log(
+                "Código recebido:",
+                code
+            );
+
+
+
+            if(!code){
+
+
+                console.log(
+                    "Nenhum código encontrado"
+                );
+
+
                 return;
 
-
-
-            const response =
-            await fetch(
-
-                "/.netlify/functions/melhorEnvioAuth",
-
-                {
-
-
-                    method:"POST",
-
-
-                    headers:{
-
-
-                        "Content-Type":
-                        "application/json"
-
-
-                    },
-
-
-                    body:JSON.stringify({
-
-                        code
-
-                    })
-
-
-                }
-
-
-            );
+            }
 
 
 
 
-            const data =
-            await response.json();
+            try{
+
+
+                const response =
+                await fetch(
+
+                    "/.netlify/functions/melhorEnvioAuth",
+
+                    {
+
+
+                        method:"POST",
+
+
+                        headers:{
+
+
+                            "Content-Type":
+                            "application/json"
+
+
+                        },
+
+
+                        body:JSON.stringify({
+
+                            code
+
+                        })
+
+
+                    }
+
+
+                );
 
 
 
 
-            console.log(
-                "TOKEN MELHOR ENVIO:",
-                data
-            );
 
+                console.log(
+                    "Status Function:",
+                    response.status
+                );
+
+
+
+
+
+                const data =
+                await response.json();
+
+
+
+
+
+                console.log(
+                    "Resposta Melhor Envio:",
+                    data
+                );
+
+
+
+            }catch(error){
+
+
+                console.log(
+                    "Erro callback:",
+                    error
+                );
+
+
+            }
 
 
         }
@@ -82,19 +139,25 @@ export default function MelhorEnvioCallback(){
         conectar();
 
 
+
     },[]);
+
 
 
 
     return(
 
-        <h1>
+        <main>
 
-            Conectando Melhor Envio...
+            <h1>
 
-        </h1>
+                Conectando Melhor Envio...
 
-    )
+            </h1>
+
+        </main>
+
+    );
 
 
 }
