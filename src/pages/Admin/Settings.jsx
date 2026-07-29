@@ -35,13 +35,13 @@ export default function Settings(){
 
 
 
+
         const redirectUri = encodeURIComponent(
 
-            window.location.origin +
-
-            "/oauth/callback"
+            "https://uta-store.netlify.app/oauth/callback"
 
         );
+
 
 
 
@@ -56,9 +56,7 @@ export default function Settings(){
 
         `&redirect_uri=${redirectUri}` +
 
-        "&response_type=code" +
-
-        "&scope=shipping-calculate";
+        "&response_type=code";
 
 
 
@@ -95,6 +93,7 @@ export default function Settings(){
 
 
 
+
     return(
 
 
@@ -109,6 +108,7 @@ export default function Settings(){
                 ⚙ Configurações
 
             </h1>
+
 
 
 
