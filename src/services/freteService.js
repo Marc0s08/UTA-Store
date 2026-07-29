@@ -1,12 +1,20 @@
 import {
+
     doc,
+
     getDoc
+
 } from "firebase/firestore";
 
 
 import {
+
     db
+
 } from "../firebase/firebaseConfig";
+
+
+
 
 
 
@@ -44,10 +52,20 @@ export async function getFreteConfig(){
 
 
 }
+
+
+
+
+
+
+
+
+
 export async function calcularMelhorEnvio({
 
 
     cepDestino,
+
 
     peso
 
@@ -59,96 +77,145 @@ export async function calcularMelhorEnvio({
 
 
 
+
     if(!config){
 
+
         throw new Error(
+
             "Configuração de frete não encontrada"
+
         );
+
 
     }
 
 
 
 
-    const pacote = {
+
+    const response = await fetch(
 
 
-        from:{
-
-            postal_code:
-            config.cepOrigem
-
-        },
+        "/.netlify/functions/calcularFrete",
 
 
-        to:{
-
-            postal_code:
-            cepDestino
-
-        },
+        {
 
 
-
-        package:{
-
-
-            height:
-            config.altura,
+            method:"POST",
 
 
-            width:
-            config.largura,
+            headers:{
 
 
-            length:
-            config.comprimento,
+                "Content-Type":
+
+                "application/json"
 
 
-            weight:
+            },
 
-            Number(peso) +
 
-            Number(config.pesoBase)
+            body:JSON.stringify({
+
+
+                cepDestino,
+
+
+                peso,
+
+
+                pacote:{
+
+
+                    cepOrigem:
+
+                    config.cepOrigem,
+
+
+                    altura:
+
+                    config.altura,
+
+
+                    largura:
+
+                    config.largura,
+
+
+                    comprimento:
+
+                    config.comprimento
+
+
+                }
+
+
+            })
 
 
         }
 
 
-    };
-
-
-
-
-
-    /*
-    
-    AQUI ENTRA O TOKEN DO MELHOR ENVIO
-    
-    */
-
-
-    console.log(
-
-        "Pacote enviado:",
-
-        pacote
-
     );
 
 
 
-    return {
 
 
-        servico:"PAC",
 
-        valor:25.90,
-
-        prazo:"7 dias úteis"
+    const data = await response.json();
 
 
-    };
+
+
+
+    if(!Array.isArray(data)){
+
+
+        throw new Error(
+
+            "Erro ao consultar Melhor Envio"
+
+        );
+
+
+    }
+
+
+
+
+
+
+    return data.map(item=>(
+
+
+        {
+
+
+            servico:
+
+            item.name,
+
+
+
+            valor:
+
+            Number(item.price),
+
+
+
+            prazo:
+
+            item.delivery_time
+
+
+        }
+
+
+    ));
+
 
 
 }

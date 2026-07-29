@@ -2,7 +2,8 @@ import "./Cart.css";
 
 
 import {
-    useState
+    useState,
+    useEffect
 } from "react";
 
 
@@ -24,6 +25,11 @@ import {
 import {
     getUserProfile
 } from "../../services/userService";
+
+
+import {
+    calcularMelhorEnvio
+} from "../../services/freteService";
 
 
 import {
@@ -82,6 +88,46 @@ export default function Cart(){
 
     const [calculando,setCalculando] = useState(false);
 
+    const [perfil,setPerfil] = useState(null);
+
+    const [usarEnderecoCadastro,setUsarEnderecoCadastro] = useState(true);
+
+
+
+
+
+
+
+    useEffect(()=>{
+
+
+        async function carregarPerfil(){
+
+
+            if(user){
+
+
+                const data = await getUserProfile(
+                    user.uid
+                );
+
+
+                setPerfil(data);
+
+
+
+            }
+
+
+        }
+
+
+        carregarPerfil();
+
+
+    },[user]);
+
+
 
 
 
@@ -122,6 +168,8 @@ export default function Cart(){
 
 
 
+
+
     async function calcularFrete(){
 
 
@@ -132,25 +180,48 @@ export default function Cart(){
 
 
 
-            const cepLimpo = cep.replace(/\D/g,"");
+            let cepDestino = cep;
 
 
 
-            if(cepLimpo.length !== 8){
+            if(usarEnderecoCadastro){
 
-                alert(
-                    "Digite um CEP válido"
-                );
 
-                return;
+                cepDestino = perfil?.endereco?.cep;
+
 
             }
 
 
 
+            const cepLimpo = cepDestino?.replace(/\D/g,"");
+
+
+
+
+            if(!cepLimpo || cepLimpo.length !== 8){
+
+
+                alert(
+                    "Digite um CEP válido"
+                );
+
+
+                return;
+
+
+            }
+
+
+
+
+
+
             const response = await fetch(
 
+
                 `https://viacep.com.br/ws/${cepLimpo}/json/`
+
 
             );
 
@@ -160,13 +231,18 @@ export default function Cart(){
 
 
 
+
+
             if(data.erro){
+
 
                 alert(
                     "CEP não encontrado"
                 );
 
+
                 return;
+
 
             }
 
@@ -178,31 +254,40 @@ export default function Cart(){
 
 
 
-            // FRETE TEMPORÁRIO
-            // depois substituímos pelo Melhor Envio
+
 
             const resultado = await calcularMelhorEnvio({
 
-cepDestino:cep,
 
-peso:pesoTotal
-
-});
+                cepDestino:cepLimpo,
 
 
-setFrete(resultado);
+                peso:pesoTotal
+
+
+            });
+
+
+
+
+            setFrete(resultado);
+
+
 
 
 
         }catch(error){
 
 
+
             console.log(error);
+
 
 
             alert(
                 "Erro ao calcular frete"
             );
+
 
 
         }finally{
@@ -241,7 +326,9 @@ setFrete(resultado);
 
             return;
 
+
         }
+
 
 
 
@@ -262,9 +349,8 @@ setFrete(resultado);
 
 
 
-
-
             const valorFrete = frete?.valor || 0;
+
 
 
 
@@ -287,6 +373,7 @@ setFrete(resultado);
 
                     nome:
 
+
                     profile?.nome ||
 
                     user.displayName ||
@@ -306,8 +393,28 @@ setFrete(resultado);
 
 
 
-                enderecoEntrega:endereco,
 
+                enderecoEntrega:{
+
+
+                    ...endereco,
+
+
+                    cep:
+
+
+                    usarEnderecoCadastro
+
+                    ?
+
+                    profile?.endereco?.cep
+
+                    :
+
+                    cep
+
+
+                },
 
 
 
@@ -319,7 +426,9 @@ setFrete(resultado);
                 produtos:
 
 
+
                 cart.map(item=>(
+
 
 
                     {
@@ -352,6 +461,7 @@ setFrete(resultado);
 
                     Number(
 
+
                         item.precoPromocional > 0
 
                         ?
@@ -362,10 +472,12 @@ setFrete(resultado);
 
                         item.preco
 
+
                     )
 
 
                     }
+
 
 
                 )),
@@ -385,6 +497,9 @@ setFrete(resultado);
 
 
 
+
+
+
                 frete:{
 
 
@@ -393,7 +508,13 @@ setFrete(resultado);
 
                     servico:
 
-                    frete?.servico || ""
+                    frete?.servico || "",
+
+
+                    prazo:
+
+                    frete?.prazo || ""
+
 
                 },
 
@@ -401,9 +522,13 @@ setFrete(resultado);
 
 
 
+
+
                 valorTotal:
 
+
                 total + valorFrete
+
 
 
 
@@ -414,9 +539,7 @@ setFrete(resultado);
 
 
 
-
             await createOrder(order);
-
 
 
 
@@ -486,7 +609,6 @@ setFrete(resultado);
     if(cart.length === 0){
 
 
-
         return(
 
 
@@ -500,13 +622,11 @@ setFrete(resultado);
                 </h1>
 
 
-
                 <p>
 
                     Adicione produtos para continuar.
 
                 </p>
-
 
 
             </main>
@@ -526,6 +646,7 @@ setFrete(resultado);
 
 
     return(
+
 
 
         <main className="cart-page">
@@ -553,15 +674,15 @@ setFrete(resultado);
 
 
 
+
                 <div className="cart-products">
 
 
 
                 {
 
+
                 cart.map(product=>(
-
-
 
 
 
@@ -596,6 +717,8 @@ setFrete(resultado);
 
 
 
+
+
                         <div className="cart-info">
 
 
@@ -610,11 +733,13 @@ setFrete(resultado);
 
 
 
+
                             <p>
 
                             R$
 
                             {
+
 
                             Number(
 
@@ -644,7 +769,9 @@ setFrete(resultado);
 
                             }
 
+
                             </p>
+
 
 
 
@@ -698,6 +825,8 @@ setFrete(resultado);
 
 
 
+
+
                         <button
 
                         className="remove-button"
@@ -707,6 +836,7 @@ setFrete(resultado);
                         >
 
                             Remover
+
 
                         </button>
 
@@ -740,6 +870,8 @@ setFrete(resultado);
 
 
 
+
+
                     <h2>
 
                         Entrega
@@ -747,6 +879,129 @@ setFrete(resultado);
                     </h2>
 
 
+
+
+
+
+                    <label>
+
+
+                    <input
+
+                    type="radio"
+
+                    checked={usarEnderecoCadastro}
+
+                    onChange={()=>setUsarEnderecoCadastro(true)}
+
+                    />
+
+
+                    Usar endereço cadastrado
+
+
+                    </label>
+
+
+
+
+
+
+
+                    <label>
+
+
+                    <input
+
+                    type="radio"
+
+                    checked={!usarEnderecoCadastro}
+
+                    onChange={()=>setUsarEnderecoCadastro(false)}
+
+                    />
+
+
+                    Digitar outro CEP
+
+
+                    </label>
+
+
+
+
+
+
+
+
+                    {
+
+
+                    usarEnderecoCadastro && perfil?.endereco && (
+
+
+                    <div className="address-box">
+
+
+                        <p>
+
+                        {perfil.endereco.rua},
+
+                        {" "}
+
+                        {perfil.endereco.numero}
+
+                        </p>
+
+
+                        <p>
+
+                        {perfil.endereco.bairro}
+
+                        </p>
+
+
+                        <p>
+
+                        {perfil.endereco.cidade}
+
+                        -
+
+                        {perfil.endereco.estado}
+
+                        </p>
+
+
+                        <p>
+
+                        CEP:
+
+                        {" "}
+
+                        {perfil.endereco.cep}
+
+                        </p>
+
+
+                    </div>
+
+
+                    )
+
+
+                    }
+
+
+
+
+
+
+
+
+                    {
+
+
+                    !usarEnderecoCadastro && (
 
 
                     <input
@@ -766,6 +1021,15 @@ setFrete(resultado);
                     />
 
 
+                    )
+
+
+                    }
+
+
+
+
+
 
 
 
@@ -777,7 +1041,9 @@ setFrete(resultado);
 
                     >
 
+
                     {
+
 
                     calculando
 
@@ -788,6 +1054,7 @@ setFrete(resultado);
                     :
 
                     "Calcular frete"
+
 
                     }
 
@@ -800,9 +1067,11 @@ setFrete(resultado);
 
 
 
+
                     {
 
-                    endereco &&
+
+                    endereco && (
 
 
                     <div>
@@ -836,7 +1105,11 @@ setFrete(resultado);
                     </div>
 
 
+                    )
+
+
                     }
+
 
 
 
@@ -846,12 +1119,12 @@ setFrete(resultado);
 
                     {
 
-                    frete &&
 
+                    frete && (
 
-                    <>
 
                     <p>
+
 
                     {frete.servico}
 
@@ -859,10 +1132,11 @@ setFrete(resultado);
 
                     {frete.prazo}
 
+
                     </p>
 
 
-                    </>
+                    )
 
 
                     }
@@ -939,7 +1213,6 @@ setFrete(resultado);
 
 
 
-
                     <h3>
 
                         Frete:
@@ -965,7 +1238,6 @@ setFrete(resultado);
                         </span>
 
                     </h3>
-
 
 
 
@@ -1007,6 +1279,7 @@ setFrete(resultado);
 
 
 
+
                     <button
 
                     className="checkout-button"
@@ -1019,7 +1292,6 @@ setFrete(resultado);
 
 
                     </button>
-
 
 
 
