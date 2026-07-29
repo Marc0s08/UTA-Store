@@ -1,54 +1,43 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import {
+    doc,
+    setDoc
+} from "firebase/firestore";
+
+import {
+    db
+} from "../../firebase/firebaseConfig";
 
 
 export default function MelhorEnvioCallback(){
 
 
+    const navigate = useNavigate();
+
+
+
     useEffect(()=>{
 
 
-        async function conectar(){
+        async function salvarToken(){
 
 
-            console.log(
-                "Callback Melhor Envio iniciado"
-            );
-
-
-
-            console.log(
-                "URL atual:",
-                window.location.href
-            );
-
-
-
-            const params =
-            new URLSearchParams(
+            const params = new URLSearchParams(
                 window.location.search
             );
 
 
-
-            const code =
-            params.get("code");
-
-
-
-            console.log(
-                "Código recebido:",
-                code
-            );
+            const code = params.get("code");
 
 
 
             if(!code){
 
-
                 console.log(
-                    "Nenhum código encontrado"
+                    "Código não encontrado"
                 );
-
 
                 return;
 
@@ -60,62 +49,92 @@ export default function MelhorEnvioCallback(){
             try{
 
 
-                const response =
-                await fetch(
+
+                const response = await fetch(
 
                     "/.netlify/functions/melhorEnvioAuth",
 
                     {
 
+                    method:"POST",
 
-                        method:"POST",
+                    headers:{
+
+                        "Content-Type":
+                        "application/json"
+
+                    },
+
+                    body:JSON.stringify({
+
+                        code
+
+                    })
+
+                    }
+
+                );
 
 
-                        headers:{
 
 
-                            "Content-Type":
-                            "application/json"
+
+                const data = await response.json();
 
 
-                        },
+
+                console.log(
+                    "Token recebido:",
+                    data
+                );
 
 
-                        body:JSON.stringify({
 
-                            code
 
-                        })
+
+
+                await setDoc(
+
+                    doc(
+
+                        db,
+
+                        "configuracoes",
+
+                        "melhorEnvio"
+
+                    ),
+
+                    {
+
+
+                    access_token:
+                    data.access_token,
+
+
+                    refresh_token:
+                    data.refresh_token,
+
+
+                    atualizadoEm:
+                    new Date()
 
 
                     }
 
-
                 );
 
 
 
 
-
-                console.log(
-                    "Status Function:",
-                    response.status
+                alert(
+                    "Melhor Envio conectado com sucesso!"
                 );
 
 
 
-
-
-                const data =
-                await response.json();
-
-
-
-
-
-                console.log(
-                    "Resposta Melhor Envio:",
-                    data
+                navigate(
+                    "/admin/configuracoes"
                 );
 
 
@@ -124,19 +143,25 @@ export default function MelhorEnvioCallback(){
 
 
                 console.log(
-                    "Erro callback:",
                     error
+                );
+
+
+                alert(
+                    "Erro ao salvar Melhor Envio"
                 );
 
 
             }
 
 
+
         }
 
 
 
-        conectar();
+
+        salvarToken();
 
 
 
@@ -145,9 +170,13 @@ export default function MelhorEnvioCallback(){
 
 
 
+
+
     return(
 
+
         <main>
+
 
             <h1>
 
@@ -155,9 +184,11 @@ export default function MelhorEnvioCallback(){
 
             </h1>
 
+
         </main>
 
-    );
+
+    )
 
 
 }

@@ -188,33 +188,16 @@ export async function calcularMelhorEnvio({
 
 
 
-    return data.map(item=>(
+    const tokenDoc = await getDoc(
+    doc(
+        db,
+        "configuracoes",
+        "melhorEnvio"
+    )
+);
 
 
-        {
-
-
-            servico:
-
-            item.name,
-
-
-
-            valor:
-
-            Number(item.price),
-
-
-
-            prazo:
-
-            item.delivery_time
-
-
-        }
-
-
-    ));
+const tokenData = tokenDoc.data();
 
 
 
