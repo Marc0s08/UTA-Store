@@ -7,6 +7,8 @@ import CartButton from "./CartButton";
 import UserMenu from "./UserMenu";
 import NavMenu from "./NavMenu";
 import OrdersButton from "./OrdersButton";
+import AdminButton from "./AdminButton";
+
 
 export default function Navbar() {
 
@@ -24,6 +26,7 @@ export default function Navbar() {
 
           <FavoriteButton />
             <OrdersButton/>
+            <AdminButton/>
           <CartButton />
 
           <UserMenu />

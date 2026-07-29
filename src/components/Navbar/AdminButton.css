@@ -1,0 +1,26 @@
+.admin-button{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-decoration:none;
+
+    color:inherit;
+
+    font-size:12px;
+
+    cursor:pointer;
+
+}
+
+
+.admin-button svg{
+
+    font-size:28px;
+
+}
