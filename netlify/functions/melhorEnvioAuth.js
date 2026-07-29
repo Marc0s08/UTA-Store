@@ -4,21 +4,62 @@ export async function handler(event){
     try{
 
 
-        const body =
-        JSON.parse(event.body);
+        const { code } = JSON.parse(event.body);
 
 
 
-        console.log(
-            "Recebido:",
-            body
+        if(!code){
+
+
+            return {
+
+                statusCode:400,
+
+                body:JSON.stringify({
+
+                    erro:"Código não recebido"
+
+                })
+
+            };
+
+
+        }
+
+
+
+
+
+
+        const clientId = process.env.MELHOR_ENVIO_CLIENT_ID;
+
+        const clientSecret = process.env.MELHOR_ENVIO_CLIENT_SECRET;
+
+
+
+
+
+        console.log("CLIENT ID EXISTE:",
+            !!clientId
         );
+
+
+        console.log("SECRET EXISTE:",
+            !!clientSecret
+        );
+
+
+
+
+
 
 
 
         const response = await fetch(
 
+
             "https://melhorenvio.com.br/oauth/token",
+
 
             {
 
@@ -30,11 +71,14 @@ export async function handler(event){
 
 
                     "Accept":
+
                     "application/json",
 
 
                     "Content-Type":
+
                     "application/json"
+
 
                 },
 
@@ -43,15 +87,21 @@ export async function handler(event){
 
 
                     grant_type:
+
                     "authorization_code",
 
 
+
                     client_id:
-                    process.env.MELHOR_ENVIO_CLIENT_ID,
+
+                    clientId,
+
 
 
                     client_secret:
-                    process.env.MELHOR_ENVIO_CLIENT_SECRET,
+
+                    clientSecret,
+
 
 
                     redirect_uri:
@@ -59,8 +109,8 @@ export async function handler(event){
                     "https://uta-store.netlify.app/oauth/callback",
 
 
-                    code:
-                    body.code
+
+                    code:code
 
 
                 })
@@ -75,17 +125,23 @@ export async function handler(event){
 
 
 
-        const data =
-        await response.json();
+
+
+        const data = await response.json();
+
 
 
 
 
 
         console.log(
+
             "Resposta Melhor Envio:",
+
             data
+
         );
+
 
 
 
@@ -104,7 +160,15 @@ export async function handler(event){
 
 
 
+
+
+
     }catch(error){
+
+
+
+        console.log(error);
+
 
 
         return {
