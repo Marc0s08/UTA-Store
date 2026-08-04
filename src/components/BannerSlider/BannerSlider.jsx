@@ -55,50 +55,60 @@ export default function BannerSlider() {
 
   if (banners.length === 0) return null;
 
-  const banner = banners[atual];
-
   return (
     <section className="banner-slider">
-      {/* Imagem do Banner */}
-      <img
-        className="banner-image"
-        src={banner.imagem}
-        alt={banner.titulo || "Banner promocional"}
-      />
-
-      {/* Camada de Overlay / Escurecimento */}
-      {banner.overlay?.ativo && (
-        <div
-          className="banner-overlay"
-          style={{
-            background: `rgba(0,0,0,${banner.overlay.intensidade || 0.4})`,
-          }}
-        />
-      )}
-
-      {/* Bloco do Conteúdo (Texto e Botão) */}
+      {/* Trilho de slides com transição fluida */}
       <div
-        className={
-          banner.texto?.sombra
-            ? "banner-content sombra"
-            : "banner-content"
-        }
+        className="banner-track"
         style={{
-          "--custom-x": `${banner.texto?.x ?? 50}%`,
-          "--custom-y": `${banner.texto?.y ?? 50}%`,
-          "--custom-size": `${banner.texto?.tamanho ?? 42}px`,
-          color: banner.texto?.cor || "#ffffff",
+          transform: `translateX(-${atual * 100}%)`,
         }}
       >
-        {banner.titulo && <h2>{banner.titulo}</h2>}
+        {banners.map((banner, index) => (
+          <div className="banner-slide" key={banner.id || index}>
+            {/* Imagem do Banner */}
+            <img
+              className="banner-image"
+              src={banner.imagem}
+              alt={banner.titulo || "Banner promocional"}
+            />
 
-        {banner.descricao && <p>{banner.descricao}</p>}
+            {/* Camada de Overlay / Escurecimento */}
+            {banner.overlay?.ativo && (
+              <div
+                className="banner-overlay"
+                style={{
+                  background: `rgba(0,0,0,${banner.overlay.intensidade || 0.4})`,
+                }}
+              />
+            )}
 
-        {banner.botao?.texto && (
-          <a href={banner.botao.link || "#"}>
-            <button>{banner.botao.texto}</button>
-          </a>
-        )}
+            {/* Bloco do Conteúdo (Texto e Botão) */}
+            <div
+              className={
+                banner.texto?.sombra
+                  ? "banner-content sombra"
+                  : "banner-content"
+              }
+              style={{
+                "--custom-x": `${banner.texto?.x ?? 50}%`,
+                "--custom-y": `${banner.texto?.y ?? 50}%`,
+                "--custom-size": `${banner.texto?.tamanho ?? 42}px`,
+                color: banner.texto?.cor || "#ffffff",
+              }}
+            >
+              {banner.titulo && <h2>{banner.titulo}</h2>}
+
+              {banner.descricao && <p>{banner.descricao}</p>}
+
+              {banner.botao?.texto && (
+                <a href={banner.botao.link || "#"}>
+                  <button>{banner.botao.texto}</button>
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Navegação por Setas e Pontos (Apenas se houver mais de 1 banner) */}
