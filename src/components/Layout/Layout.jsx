@@ -6,15 +6,15 @@ import { Outlet, useLocation } from "react-router-dom";
 export default function Layout() {
   const location = useLocation();
 
-  // Verifica se a rota atual começa com "/admin"
+  // Identifica se a URL atual pertence ao Admin
   const isAdminRoute = location.pathname.startsWith("/admin");
 
   return (
     <>
-      {/* Esconde a Navbar principal se estiver no Admin */}
-      {!isAdminRoute && <Navbar />}
+      {/* Passa a propriedade isAdmin para controlar a exibição do menu lateral mobile */}
+      <Navbar isAdmin={isAdminRoute} />
 
-      {/* Esconde a mensagem do carrinho se estiver no Admin */}
+      {/* Oculta mensagens promocionais/carrinho enquanto navega no painel Admin */}
       {!isAdminRoute && <CartMessage />}
 
       <main className="layout-content">
