@@ -982,7 +982,6 @@ export default function Cart(){
 
 
     }
-    id="r3cart"
     return(
 
 <main className="cart-page">
