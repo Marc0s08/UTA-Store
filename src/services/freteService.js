@@ -135,51 +135,103 @@ export async function calcularMelhorEnvio({
 
 
 
-    if(!Array.isArray(fretes)){
-
-
-        throw new Error(
-
-            fretes.message ||
-
-            "Erro retornando fretes"
-
-        );
-
-
-    }
+    let lista = [];
 
 
 
+// Caso venha lista
+if(Array.isArray(fretes)){
+
+
+    lista = fretes;
+
+
+}
+
+
+
+// Caso venha apenas um frete
+else if(fretes.id){
+
+
+    lista = [fretes];
+
+
+}
+
+
+
+else{
+
+
+    console.log(
+        "Resposta inválida:",
+        fretes
+    );
+
+
+    throw new Error(
+        "Erro retornando fretes"
+    );
+
+
+}
 
 
 
 
-    return fretes.map(item=>({
 
 
-        id:
-        item.id,
+return lista.map(item=>({
 
 
-        empresa:
-        item.company?.name,
+    id:
+
+    item.id,
 
 
-        servico:
-        item.name,
+
+    empresa:
+
+    item.company?.name || "",
 
 
-        valor:
-        Number(item.price),
+
+    logo:
+
+    item.company?.picture || "",
 
 
-        prazo:
 
-        `${item.delivery_time} dias úteis`
+    servico:
+
+    item.name || "Frete",
 
 
-    }));
 
+    valor:
+
+    Number(
+        item.price || 0
+    ),
+
+
+
+    prazo:
+
+
+    item.delivery_time
+
+    ?
+
+    `${item.delivery_time} dias úteis`
+
+    :
+
+    "Prazo não informado"
+
+
+
+}));
 
 }
