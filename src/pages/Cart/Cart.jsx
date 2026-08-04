@@ -1,41 +1,33 @@
 import "./Cart.css";
 
-
 import {
     useState,
     useEffect
 } from "react";
 
-
 import {
     useCart
 } from "../../context/CartContext";
-
 
 import {
     useAuth
 } from "../../context/AuthContext";
 
-
 import {
     createOrder
 } from "../../services/orderService";
-
 
 import {
     getUserProfile
 } from "../../services/userService";
 
-
 import {
     calcularMelhorEnvio
 } from "../../services/freteService";
 
-
 import {
     useNavigate
 } from "react-router-dom";
-
 
 
 
@@ -63,14 +55,11 @@ export default function Cart(){
 
 
 
-
     const {
 
         user
 
     } = useAuth();
-
-
 
 
 
@@ -84,11 +73,19 @@ export default function Cart(){
 
     const [endereco,setEndereco] = useState(null);
 
-    const [frete,setFrete] = useState(null);
+
+    // ALTERADO
+    const [fretes,setFretes] = useState([]);
+
+    const [freteSelecionado,setFreteSelecionado] = useState(null);
+
+
 
     const [calculando,setCalculando] = useState(false);
 
+
     const [perfil,setPerfil] = useState(null);
+
 
     const [usarEnderecoCadastro,setUsarEnderecoCadastro] = useState(true);
 
@@ -115,18 +112,18 @@ export default function Cart(){
                 setPerfil(data);
 
 
-
             }
 
 
         }
 
 
+
         carregarPerfil();
 
 
-    },[user]);
 
+    },[user]);
 
 
 
@@ -170,6 +167,7 @@ export default function Cart(){
 
 
 
+
     async function calcularFrete(){
 
 
@@ -180,7 +178,9 @@ export default function Cart(){
 
 
 
+
             let cepDestino = cep;
+
 
 
 
@@ -194,7 +194,12 @@ export default function Cart(){
 
 
 
+
+
+
             const cepLimpo = cepDestino?.replace(/\D/g,"");
+
+
 
 
 
@@ -217,13 +222,15 @@ export default function Cart(){
 
 
 
-            const response = await fetch(
 
+
+            const response = await fetch(
 
                 `https://viacep.com.br/ws/${cepLimpo}/json/`
 
-
             );
+
+
 
 
 
@@ -256,6 +263,9 @@ export default function Cart(){
 
 
 
+
+
+
             const resultado = await calcularMelhorEnvio({
 
 
@@ -270,7 +280,50 @@ export default function Cart(){
 
 
 
-            setFrete(resultado);
+
+
+            console.log(
+
+                "Frete retorno:",
+
+                resultado
+
+            );
+
+
+
+
+
+
+            const lista = Array.isArray(resultado)
+
+            ?
+
+            resultado
+
+            :
+
+            [resultado];
+
+
+
+
+
+
+
+            setFretes(lista);
+
+
+
+
+
+
+            setFreteSelecionado(
+
+                lista[0]
+
+            );
+
 
 
 
@@ -285,7 +338,9 @@ export default function Cart(){
 
 
             alert(
+
                 "Erro ao calcular frete"
+
             );
 
 
@@ -309,6 +364,9 @@ export default function Cart(){
 
 
 
+
+
+
     async function handleCheckout(){
 
 
@@ -317,7 +375,9 @@ export default function Cart(){
 
 
             alert(
+
                 "Faça login para finalizar a compra"
+
             );
 
 
@@ -349,7 +409,11 @@ export default function Cart(){
 
 
 
-            const valorFrete = frete?.valor || 0;
+            const valorFrete =
+
+            freteSelecionado?.valor || 0;
+
+
 
 
 
@@ -358,6 +422,7 @@ export default function Cart(){
 
 
             const order = {
+
 
 
 
@@ -370,9 +435,7 @@ export default function Cart(){
                 cliente:{
 
 
-
                     nome:
-
 
                     profile?.nome ||
 
@@ -381,13 +444,10 @@ export default function Cart(){
                     user.email.split("@")[0],
 
 
-
                     email:user.email
 
 
                 },
-
-
 
 
 
@@ -430,59 +490,53 @@ export default function Cart(){
                 cart.map(item=>(
 
 
-
                     {
 
 
-                    id:item.id,
+                        id:item.id,
 
 
-                    nome:item.nome,
+                        nome:item.nome,
 
 
-                    imagem:
+                        imagem:
 
-                    item.imagens?.[0] || "",
-
-
-
-                    quantidade:item.quantidade,
+                        item.imagens?.[0] || "",
 
 
 
-                    peso:
-
-                    Number(item.peso || 0),
+                        quantidade:item.quantidade,
 
 
 
-                    preco:
+                        peso:
+
+                        Number(item.peso || 0),
 
 
-                    Number(
+
+                        preco:
 
 
-                        item.precoPromocional > 0
+                        Number(
 
-                        ?
+                            item.precoPromocional > 0
 
-                        item.precoPromocional
+                            ?
 
-                        :
+                            item.precoPromocional
 
-                        item.preco
+                            :
 
+                            item.preco
 
-                    )
+                        )
 
 
                     }
 
 
-
                 )),
-
-
 
 
 
@@ -499,7 +553,6 @@ export default function Cart(){
 
 
 
-
                 frete:{
 
 
@@ -508,17 +561,16 @@ export default function Cart(){
 
                     servico:
 
-                    frete?.servico || "",
+                    freteSelecionado?.servico || "",
+
 
 
                     prazo:
 
-                    frete?.prazo || ""
+                    freteSelecionado?.prazo || ""
 
 
                 },
-
-
 
 
 
@@ -531,8 +583,8 @@ export default function Cart(){
 
 
 
-
             };
+
 
 
 
@@ -570,7 +622,6 @@ export default function Cart(){
 
 
 
-
         }catch(error){
 
 
@@ -595,17 +646,7 @@ export default function Cart(){
         }
 
 
-
     }
-
-
-
-
-
-
-
-
-
     if(cart.length === 0){
 
 
@@ -648,7 +689,6 @@ export default function Cart(){
     return(
 
 
-
         <main className="cart-page">
 
 
@@ -664,10 +704,7 @@ export default function Cart(){
 
 
 
-
-
             <section className="cart-container">
-
 
 
 
@@ -718,7 +755,6 @@ export default function Cart(){
 
 
 
-
                         <div className="cart-info">
 
 
@@ -728,7 +764,6 @@ export default function Cart(){
                                 {product.nome}
 
                             </h2>
-
 
 
 
@@ -777,6 +812,7 @@ export default function Cart(){
 
 
 
+
                             <div className="quantity">
 
 
@@ -790,6 +826,7 @@ export default function Cart(){
                                     -
 
                                 </button>
+
 
 
 
@@ -835,6 +872,7 @@ export default function Cart(){
 
                         >
 
+
                             Remover
 
 
@@ -866,7 +904,12 @@ export default function Cart(){
 
 
 
+
+
+
+
                 <aside className="cart-summary">
+
 
 
 
@@ -877,6 +920,9 @@ export default function Cart(){
                         Entrega
 
                     </h2>
+
+
+
 
 
 
@@ -901,6 +947,7 @@ export default function Cart(){
 
 
                     </label>
+
 
 
 
@@ -934,6 +981,7 @@ export default function Cart(){
 
 
 
+
                     {
 
 
@@ -941,6 +989,7 @@ export default function Cart(){
 
 
                     <div className="address-box">
+
 
 
                         <p>
@@ -954,11 +1003,13 @@ export default function Cart(){
                         </p>
 
 
+
                         <p>
 
                         {perfil.endereco.bairro}
 
                         </p>
+
 
 
                         <p>
@@ -972,6 +1023,7 @@ export default function Cart(){
                         </p>
 
 
+
                         <p>
 
                         CEP:
@@ -983,13 +1035,14 @@ export default function Cart(){
                         </p>
 
 
+
                     </div>
 
 
                     )
 
-
                     }
+
 
 
 
@@ -1004,19 +1057,27 @@ export default function Cart(){
                     !usarEnderecoCadastro && (
 
 
+
                     <input
+
 
                     type="text"
 
+
                     placeholder="Digite seu CEP"
+
 
                     value={cep}
 
+
                     onChange={(e)=>
+
 
                         setCep(e.target.value)
 
+
                     }
+
 
                     />
 
@@ -1025,6 +1086,7 @@ export default function Cart(){
 
 
                     }
+
 
 
 
@@ -1068,13 +1130,16 @@ export default function Cart(){
 
 
 
+
                     {
 
 
                     endereco && (
 
 
-                    <div>
+
+                    <div className="cep-result">
+
 
 
                         <p>
@@ -1084,11 +1149,13 @@ export default function Cart(){
                         </p>
 
 
+
                         <p>
 
                         {endereco.bairro}
 
                         </p>
+
 
 
                         <p>
@@ -1102,13 +1169,17 @@ export default function Cart(){
                         </p>
 
 
+
                     </div>
 
 
                     )
 
-
                     }
+
+
+
+
 
 
 
@@ -1120,26 +1191,164 @@ export default function Cart(){
                     {
 
 
-                    frete && (
+                    fretes.length > 0 && (
 
 
-                    <p>
+
+                    <div className="fretes-box">
 
 
-                    {frete.servico}
 
-                    -
+                    <h3>
 
-                    {frete.prazo}
+                        Opções de entrega
+
+                    </h3>
 
 
-                    </p>
+
+
+
+
+
+                    {
+
+
+                    fretes.map((item,index)=>(
+
+
+
+                    <label
+
+                    key={item.id || index}
+
+                    className="frete-item"
+
+                    >
+
+
+
+
+                        <input
+
+
+                        type="radio"
+
+
+                        name="frete"
+
+
+                        checked={
+
+                        freteSelecionado?.id === item.id
+
+                        }
+
+
+                        onChange={()=>{
+
+
+                            setFreteSelecionado(item);
+
+
+                        }}
+
+
+                        />
+
+
+
+
+
+
+
+                        <div>
+
+
+
+                            <strong>
+
+                            {item.servico}
+
+                            </strong>
+
+
+
+                            <br/>
+
+
+
+                            <span>
+
+
+                            R$
+
+                            {
+
+
+                            Number(item.valor)
+
+                            .toLocaleString(
+
+                                "pt-BR",
+
+                                {
+
+                                minimumFractionDigits:2
+
+                                }
+
+                            )
+
+
+                            }
+
+
+                            </span>
+
+
+
+
+
+                            <br/>
+
+
+
+
+                            <small>
+
+                            {item.prazo}
+
+                            </small>
+
+
+
+                        </div>
+
+
+
+
+                    </label>
+
+
+
+                    ))
+
+                    }
+
+
+
+
+                    </div>
+
 
 
                     )
 
-
                     }
+
+
+
 
 
 
@@ -1161,9 +1370,12 @@ export default function Cart(){
 
 
 
+
+
                     <p>
 
                         Peso:
+
 
                         <strong>
 
@@ -1175,6 +1387,7 @@ export default function Cart(){
 
                         </strong>
 
+
                     </p>
 
 
@@ -1183,27 +1396,40 @@ export default function Cart(){
 
 
 
+
+
                     <h3>
+
 
                         Produtos:
 
+
                         <span>
 
+
                         R$
+
 
                         {total.toLocaleString(
 
+
                             "pt-BR",
+
 
                             {
 
+
                             minimumFractionDigits:2
+
 
                             }
 
+
                         )}
 
+
                         </span>
+
 
                     </h3>
 
@@ -1213,15 +1439,21 @@ export default function Cart(){
 
 
 
+
+
                     <h3>
+
 
                         Frete:
 
+
                         <span>
+
 
                         R$
 
-                        {(frete?.valor || 0)
+
+                        {(freteSelecionado?.valor || 0)
 
                         .toLocaleString(
 
@@ -1235,9 +1467,12 @@ export default function Cart(){
 
                         )}
 
+
                         </span>
 
+
                     </h3>
+
 
 
 
@@ -1248,13 +1483,24 @@ export default function Cart(){
 
                     <h3>
 
+
                         Total:
+
 
                         <span>
 
+
                         R$
 
-                        {(total + (frete?.valor || 0))
+
+                        {(
+
+                        total +
+
+                        (freteSelecionado?.valor || 0)
+
+                        )
+
 
                         .toLocaleString(
 
@@ -1268,10 +1514,13 @@ export default function Cart(){
 
                         )}
 
+
+
                         </span>
 
 
                     </h3>
+
 
 
 
@@ -1288,10 +1537,15 @@ export default function Cart(){
 
                     >
 
+
                         Finalizar compra
 
 
+
                     </button>
+
+
+
 
 
 
@@ -1306,7 +1560,9 @@ export default function Cart(){
 
 
 
+
             </section>
+
 
 
 
