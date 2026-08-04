@@ -8,10 +8,7 @@ export default function Settings(){
 
 
         const clientId =
-
         import.meta.env.VITE_MELHOR_ENVIO_CLIENT_ID;
-
-
 
 
 
@@ -19,14 +16,10 @@ export default function Settings(){
 
 
             alert(
-
                 "Client ID do Melhor Envio não configurado no Netlify"
-
             );
 
-
             return;
-
 
         }
 
@@ -48,6 +41,19 @@ export default function Settings(){
 
 
 
+        const scope = encodeURIComponent(
+
+            "shipping-calculate"
+
+        );
+
+
+
+
+
+
+
+
         const url =
 
         "https://melhorenvio.com.br/oauth/authorize" +
@@ -56,7 +62,9 @@ export default function Settings(){
 
         `&redirect_uri=${redirectUri}` +
 
-        "&response_type=code";
+        "&response_type=code" +
+
+        `&scope=${scope}`;
 
 
 
@@ -101,8 +109,6 @@ export default function Settings(){
 
 
 
-
-
             <h1>
 
                 ⚙ Configurações
@@ -115,10 +121,7 @@ export default function Settings(){
 
 
 
-
             <section className="settings-card">
-
-
 
 
 
@@ -127,7 +130,6 @@ export default function Settings(){
                     Melhor Envio
 
                 </h2>
-
 
 
 
@@ -144,7 +146,6 @@ export default function Settings(){
                     dentro da loja.
 
                 </p>
-
 
 
 
@@ -183,6 +184,5 @@ export default function Settings(){
 
 
     );
-
 
 }
