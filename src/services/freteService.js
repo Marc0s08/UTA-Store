@@ -1,21 +1,142 @@
+import {
+    doc,
+    getDoc
+} from "firebase/firestore";
+
+import {
+    db
+} from "../firebase/firebaseConfig";
+
+
+
+
+// Buscar configuração do pacote
+async function getFreteConfig(){
+
+
+    const ref = doc(
+        db,
+        "configuracoes",
+        "frete"
+    );
+
+
+    const snap = await getDoc(ref);
+
+
+
+    if(!snap.exists()){
+
+        throw new Error(
+            "Configuração de frete não encontrada"
+        );
+
+    }
+
+
+    return snap.data();
+
+
+}
+
+
+
+
+
+
+
 export async function calcularMelhorEnvio({
 
     cepDestino,
 
     peso
 
+
 }){
 
 
-    const response = await fetch(
+    const config =
+    await getFreteConfig();
+
+
+
+
+
+    const pacote = {
+
+
+        cepOrigem:
+
+        String(
+            config.cepOrigem
+        ),
+
+
+
+        altura:
+
+        Number(
+            config.altura
+        ),
+
+
+
+        largura:
+
+        Number(
+            config.largura
+        ),
+
+
+
+        comprimento:
+
+        Number(
+            config.comprimento
+        ),
+
+
+
+        peso:
+
+        Number(
+            peso
+        ),
+
+
+
+        valor:
+
+        1
+
+    };
+
+
+
+
+
+    console.log(
+        "PACOTE GERADO:",
+        pacote
+    );
+
+
+
+
+
+    const response =
+    await fetch(
 
         "/.netlify/functions/calcularFrete",
 
         {
 
+
             method:"POST",
 
+
             headers:{
+
 
                 "Content-Type":
                 "application/json"
@@ -25,26 +146,33 @@ export async function calcularMelhorEnvio({
 
             body:JSON.stringify({
 
+
                 cepDestino,
 
-                peso
+                pacote
+
 
             })
 
+
         }
+
 
     );
 
 
 
 
-    const data = await response.json();
+
+    const data =
+    await response.json();
+
 
 
 
 
     console.log(
-        "Retorno fretes:",
+        "RETORNO MELHOR ENVIO:",
         data
     );
 
@@ -54,11 +182,15 @@ export async function calcularMelhorEnvio({
 
     if(!response.ok){
 
+
         throw new Error(
-            data.message ||
+
             data.erro ||
+
             "Erro no Melhor Envio"
+
         );
+
 
     }
 
@@ -66,9 +198,15 @@ export async function calcularMelhorEnvio({
 
 
 
+
+    // Melhor Envio pode devolver objeto único
+    // ou lista
+
     const lista = Array.isArray(data)
 
-    ? data
+    ?
+
+    data
 
     :
 
@@ -79,56 +217,53 @@ export async function calcularMelhorEnvio({
 
 
 
-
-    return lista.map(item=>({
-
-
-        id:item.id,
+    return lista.map(item=>(
 
 
-        servico:
-
-        item.name || 
-        item.company?.name ||
-        "Frete",
+        {
 
 
+            id:item.id,
 
-        valor:
 
-        Number(
+            servico:
 
-            item.price ||
-            item.custom_price ||
-            0
-
-        ),
+            item.name || "Frete",
 
 
 
+            transportadora:
 
-        prazo:
-
-        item.delivery_time
-
-        ?
-
-        `${item.delivery_time} dias úteis`
-
-        :
-
-        "Prazo não informado",
+            item.company?.name || "",
 
 
 
+            valor:
 
-        transportadora:
+            Number(
+                item.price
+            ),
 
-        item.company?.name || ""
 
 
+            prazo:
 
-    }));
+            item.delivery_time
+
+            ?
+
+            `${item.delivery_time} dias úteis`
+
+            :
+
+            "Prazo não informado"
+
+
+        }
+
+
+    ));
+
 
 
 }
