@@ -1,64 +1,110 @@
 import "./Home.css";
 
 
+import BannerSlider from "../../components/BannerSlider/BannerSlider";
+
+
+
+
+
 export default function Home(){
 
 
     return(
 
 
-        <main className="home-page">
+        <main className="home">
 
 
-            <section className="banner-container">
 
 
-                <div className="banner-placeholder">
+
+            {/* CARROSSEL PRINCIPAL */}
 
 
-                    <h1>
-
-                        UTA Store
-
-                    </h1>
+            <section className="home-banner">
 
 
-                    <p>
+                <BannerSlider/>
 
-                        Equipamentos e acessórios personalizados
 
-                    </p>
+            </section>
+
+
+
+
+
+
+
+
+
+            {/* INTRODUÇÃO */}
+
+
+            <section className="home-intro">
+
+
+                <h1>
+
+
+                    Bem-vindo à UTA Store
+
+
+                </h1>
+
+
+
+
+
+                <p>
+
+
+                    Equipamentos, acessórios e produtos personalizados para operadores.
+
+
+                </p>
+
+
+
+            </section>
+
+
+
+
+
+
+
+
+
+            {/* FUTURO: PRODUTOS DESTAQUE */}
+
+
+            <section className="home-products">
+
+
+                <h2>
+
+
+                    Produtos em destaque
+
+
+                </h2>
+
+
+
+                <div className="products-placeholder">
+
+
+                    Em breve...
 
 
                 </div>
 
 
-            </section>
-
-
-
-
-
-            <section className="home-content">
-
-
-                <h2>
-
-                    Bem-vindo à UTA Store
-
-                </h2>
-
-
-                <p>
-
-                    Encontre produtos personalizados,
-
-                    equipamentos e acessórios.
-
-                </p>
-
 
             </section>
+
+
 
 
 

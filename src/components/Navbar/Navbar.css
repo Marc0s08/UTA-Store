@@ -1,406 +1,268 @@
-.navbar{
-
-    width:100%;
-
-    background:#111;
-
-    color:white;
-
-    position:sticky;
-
-    top:0;
-
-    z-index:1000;
-
+/* ===============================================
+   ESTILOS GERAIS & ESTRUTURA
+================================================ */
+.navbar {
+  width: 100%;
+  background: #111111;
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
-
-
-.navbar-top{
-
-    max-width:1400px;
-
-    margin:auto;
-
-    padding:15px 30px;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:25px;
-
+.navbar-top {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
 
-
-
-
-
-.logo img{
-
-    width:150px;
-
-    height:auto;
-
+.navbar-brand {
+  display: flex;
+  align-items: center;
 }
 
-
-
-
-
-.search-bar{
-
-    flex:1;
-
-    max-width:600px;
-
-    display:flex;
-
-    background:#222;
-
-    border-radius:10px;
-
-    overflow:hidden;
-
+.navbar-brand img,
+.logo img {
+  width: 140px;
+  height: auto;
+  display: block;
+  object-fit: contain;
 }
 
-
-
-
-
-.search-bar input{
-
-    flex:1;
-
-    padding:14px;
-
-    border:0;
-
-    outline:none;
-
-    background:none;
-
-    color:white;
-
+/* ===============================================
+   BARRA DE PESQUISA
+================================================ */
+.search-bar-wrapper {
+  flex: 1;
+  max-width: 600px;
 }
 
-
-
-.search-bar button{
-
-    width:55px;
-
-    border:0;
-
-    background:#556B2F;
-
-    color:white;
-
+.search-bar {
+  width: 100%;
+  display: flex;
+  background: #222225;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color 0.2s ease;
 }
 
-
-
-
-
-
-
-.navbar-actions{
-
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
-
+.search-bar:focus-within {
+  border-color: #8bc34a;
 }
 
-
-
-.nav-icon{
-
-
-    background:none;
-
-    border:0;
-
-    color:white;
-
+.search-bar input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 0.9rem;
 }
 
-
-
-.nav-icon svg{
-
-    font-size:25px;
-
+.search-bar button {
+  width: 48px;
+  border: 0;
+  background: #8bc34a;
+  color: #09090b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
 }
 
-
-
-
-
-.nav-menu{
-
-
-    background:#1a1a1a;
-
-    display:flex;
-
-    justify-content:center;
-
-    gap:35px;
-
-    padding:14px;
-
-
+.search-bar button:hover {
+  background: #9ccc65;
 }
 
-
-
-.nav-menu a{
-
-
-    color:#ddd;
-
-    text-decoration:none;
-
+/* ===============================================
+   AÇÕES & ÍCONES DO TOPO
+================================================ */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-
-
-
-
-.nav-menu a:hover{
-
-    color:#8BC34A;
-
+.nav-icon {
+  background: transparent;
+  border: none;
+  color: #f4f4f5;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-
-
-
-
-
-
-.menu-mobile{
-
-
-    display:none;
-
-    background:none;
-
-    border:0;
-
-    color:white;
-
-    font-size:28px;
-
-
+.nav-icon:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #8bc34a;
 }
 
-
-
-
-
-.nav-mobile{
-
-    display:none;
-
+.nav-icon svg {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
 }
 
-
-
-
-
-
-/* TABLET */
-
-
-@media(max-width:900px){
-
-
-
-    .navbar-top{
-
-
-        padding:15px;
-
-        flex-wrap:wrap;
-
-
-    }
-
-
-
-
-
-
-    .menu-mobile{
-
-        display:block;
-
-    }
-
-
-
-
-
-
-
-    .search-bar{
-
-
-        order:5;
-
-        width:100%;
-
-        max-width:none;
-
-
-    }
-
-
-
-
-
-
-
-    .nav-desktop{
-
-
-        display:none;
-
-
-    }
-
-
-
-
-
-
-
-    .nav-mobile.active{
-
-
-        display:block;
-
-
-    }
-
-
-
-
-
-
-
-    .nav-mobile .nav-menu{
-
-
-        flex-direction:column;
-
-        align-items:center;
-
-        gap:20px;
-
-
-    }
-
-
-
-
-
-
-
-    .navbar-actions{
-
-
-        margin-left:auto;
-
-        gap:8px;
-
-
-    }
-
-
-
-
+/* Rótulos dos botões (escondidos em telas pequenas) */
+.nav-action-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 6px;
 }
 
+/* ===============================================
+   MENUS DE NAVEGAÇÃO DESKTOP & MOBILE
+================================================ */
+.nav-desktop {
+  background: #18181b;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
 
+.nav-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  padding: 12px 24px;
+  margin: 0;
+  list-style: none;
+}
 
+.nav-menu a {
+  color: #a1a1aa;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
 
+.nav-menu a:hover {
+  color: #8bc34a;
+}
 
+/* Botão do Hamburguer */
+.menu-mobile {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  line-height: 1;
+}
 
+.nav-mobile {
+  display: none;
+}
 
-/* CELULAR */
+/* ===============================================
+   RESPONSIVIDADE (TABLET - até 900px)
+================================================ */
+@media (max-width: 900px) {
+  .navbar-top {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
 
+  .menu-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    order: 1;
+  }
 
-@media(max-width:500px){
+  .navbar-brand {
+    order: 2;
+  }
 
+  .navbar-actions {
+    order: 3;
+    margin-left: auto;
+    gap: 2px;
+  }
 
+  .search-bar-wrapper {
+    order: 4;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 4px;
+  }
 
-    .navbar-top{
+  /* Oculta textos dos botões de ação para manter apenas os ícones */
+  .nav-action-label {
+    display: none;
+  }
 
+  .nav-desktop {
+    display: none;
+  }
 
-        gap:12px;
+  /* Menu Mobile Ativo */
+  .nav-mobile.active {
+    display: block;
+    background: #18181b;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
 
+  .nav-mobile .nav-menu {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px 0;
+  }
 
-    }
+  .nav-mobile .nav-menu a {
+    display: block;
+    padding: 14px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    font-size: 0.95rem;
+  }
 
+  .nav-mobile .nav-menu a:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+}
 
+/* ===============================================
+   RESPONSIVIDADE (MOBILE SMALL - até 500px)
+================================================ */
+@media (max-width: 500px) {
+  .navbar-brand img,
+  .logo img {
+    width: 110px;
+  }
 
+  .nav-icon {
+    padding: 6px;
+  }
 
+  .nav-icon svg {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
 
-    .logo img{
+  .search-bar input {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
 
-
-        width:100px;
-
-
-    }
-
-
-
-
-
-
-    .navbar-actions{
-
-
-        gap:5px;
-
-
-    }
-
-
-
-
-
-
-    .nav-icon svg{
-
-
-        font-size:20px;
-
-
-    }
-
-
-
-
-
-
-    .search-bar input{
-
-
-        font-size:14px;
-
-
-    }
-
-
-
-
-
+  .search-bar button {
+    width: 42px;
+  }
 }

@@ -13,7 +13,7 @@ import Admin from "../pages/Admin/Admin";
 
 import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
 import AdminRoute from "../components/AdminRoute/AdminRoute";
-
+import AdminBanners from "../pages/Admin/Banners/AdminBanners";
 
 import AdminProducts from "../pages/Admin/Products";
 import Dashboard from "../pages/Admin/Dashboard";
@@ -228,7 +228,10 @@ export default function AppRoutes(){
                 />
 
 
-
+<Route
+ path="banners"
+ element={<AdminBanners/>}
+/>
                 <Route
 
                     path="pedidos"
