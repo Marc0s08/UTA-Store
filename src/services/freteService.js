@@ -12,8 +12,6 @@ import {
 
 
 
-
-
 // Busca configuração do frete no Firebase
 export async function getFreteConfig(){
 
@@ -35,7 +33,6 @@ export async function getFreteConfig(){
 
 
 
-
     if(snapshot.exists()){
 
 
@@ -47,13 +44,10 @@ export async function getFreteConfig(){
 
 
 
-
     return null;
 
 
 }
-
-
 
 
 
@@ -150,7 +144,7 @@ export async function calcularMelhorEnvio({
 
     console.log(
 
-        "Pacote enviado:",
+        "Enviando pacote:",
 
         pacote
 
@@ -176,6 +170,7 @@ export async function calcularMelhorEnvio({
             method:"POST",
 
 
+
             headers:{
 
 
@@ -187,6 +182,7 @@ export async function calcularMelhorEnvio({
             },
 
 
+
             body:JSON.stringify({
 
 
@@ -194,6 +190,7 @@ export async function calcularMelhorEnvio({
 
 
                 pacote
+
 
 
             })
@@ -219,11 +216,9 @@ export async function calcularMelhorEnvio({
 
 
 
-
-
     console.log(
 
-        "Fretes recebidos:",
+        "Resposta Melhor Envio:",
 
         data
 
@@ -250,6 +245,7 @@ export async function calcularMelhorEnvio({
             "Erro ao consultar Melhor Envio"
 
 
+
         );
 
 
@@ -263,12 +259,30 @@ export async function calcularMelhorEnvio({
 
 
 
-    if(!Array.isArray(data)){
+    // Caso a API retorne lista de serviços
+    // pega o primeiro serviço
+
+
+    const frete = Array.isArray(data)
+
+        ? data[0]
+
+        : data;
+
+
+
+
+
+
+
+
+
+    if(!frete){
 
 
         throw new Error(
 
-            "Resposta inválida do Melhor Envio"
+            "Nenhum frete encontrado"
 
         );
 
@@ -283,44 +297,13 @@ export async function calcularMelhorEnvio({
 
 
 
-    // Retorna todos os fretes
-    return data.map(frete => ({
+    return {
 
 
 
         id:
 
         frete.id || null,
-
-
-
-        empresa:
-
-        frete.empresa ||
-
-
-
-        frete.company?.name ||
-
-
-
-        "",
-
-
-
-
-
-        logo:
-
-        frete.logo ||
-
-
-
-        frete.company?.picture ||
-
-
-
-        "",
 
 
 
@@ -331,11 +314,7 @@ export async function calcularMelhorEnvio({
 
         Number(
 
-            frete.valor ??
-
-            frete.price ??
-
-            0
+            frete.price
 
         ),
 
@@ -347,16 +326,9 @@ export async function calcularMelhorEnvio({
         servico:
 
 
-        frete.servico ||
-
-
-
         frete.name ||
 
-
-
         "Frete",
-
 
 
 
@@ -365,28 +337,26 @@ export async function calcularMelhorEnvio({
         prazo:
 
 
-        frete.prazo ||
+        frete.delivery_time
+
+        ?
 
 
+        `${frete.delivery_time} dias úteis`
 
-        (
 
-            frete.delivery_time
+        :
 
-            ?
 
-            `${frete.delivery_time} dias úteis`
-
-            :
-
-            "Prazo não informado"
-
-        )
+        "Prazo não informado"
 
 
 
 
-    }));
+    };
+
+
+
 
 
 }
