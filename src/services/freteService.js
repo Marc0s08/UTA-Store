@@ -3,6 +3,7 @@ import {
     getDoc
 } from "firebase/firestore";
 
+
 import {
     db
 } from "../firebase/firebaseConfig";
@@ -11,28 +12,40 @@ import {
 
 
 
+// Busca configuração do frete no Firebase
 export async function getFreteConfig(){
 
 
     const ref = doc(
+
         db,
+
         "configuracoes",
+
         "frete"
+
     );
+
 
 
     const snapshot = await getDoc(ref);
 
 
 
+
     if(snapshot.exists()){
 
+
         return snapshot.data();
+
 
     }
 
 
+
+
     return null;
+
 
 }
 
@@ -42,23 +55,40 @@ export async function getFreteConfig(){
 
 
 
+
+
+// Calcula frete pelo Melhor Envio
 export async function calcularMelhorEnvio({
 
+
     cepDestino,
+
+
     peso
 
+
+
 }){
+
+
+
 
 
     const config = await getFreteConfig();
 
 
 
+
+
     if(!config){
 
+
         throw new Error(
+
             "Configuração de frete não encontrada"
+
         );
+
 
     }
 
@@ -66,56 +96,115 @@ export async function calcularMelhorEnvio({
 
 
 
+
+
+
+    const pacote = {
+
+
+        cepOrigem:
+
+        config.cepOrigem,
+
+
+
+        altura:
+
+        Number(config.altura),
+
+
+
+        largura:
+
+        Number(config.largura),
+
+
+
+        comprimento:
+
+        Number(config.comprimento),
+
+
+
+        peso:
+
+        Number(peso)
+
+
+
+    };
+
+
+
+
+
+
+
+
+
+    console.log(
+
+        "Enviando pacote:",
+
+        pacote
+
+    );
+
+
+
+
+
+
+
+
+
     const response = await fetch(
+
 
         "/.netlify/functions/calcularFrete",
 
+
         {
+
 
             method:"POST",
 
+
+
             headers:{
 
+
                 "Content-Type":
+
                 "application/json"
+
 
             },
 
 
+
             body:JSON.stringify({
+
 
                 cepDestino,
 
 
-                pacote:{
+                pacote
 
 
-                    cepOrigem:
-                    config.cepOrigem,
-
-
-                    altura:
-                    config.altura,
-
-
-                    largura:
-                    config.largura,
-
-
-                    comprimento:
-                    config.comprimento,
-
-
-                    peso:
-                    Number(peso)
-
-                }
 
             })
 
+
+
         }
 
+
     );
+
+
+
+
 
 
 
@@ -126,10 +215,18 @@ export async function calcularMelhorEnvio({
 
 
 
+
     console.log(
+
         "Resposta Melhor Envio:",
+
         data
+
     );
+
+
+
+
 
 
 
@@ -137,28 +234,20 @@ export async function calcularMelhorEnvio({
 
     if(!response.ok){
 
+
         throw new Error(
 
+
             data.message ||
+
+            data.erro ||
+
             "Erro ao consultar Melhor Envio"
+
+
 
         );
 
-    }
-
-
-
-
-
-
-
-    // Caso venha apenas 1 serviço
-
-    if(!Array.isArray(data)){
-
-
-        return [data];
-
 
     }
 
@@ -168,7 +257,106 @@ export async function calcularMelhorEnvio({
 
 
 
-    return data;
+
+
+    // Caso a API retorne lista de serviços
+    // pega o primeiro serviço
+
+
+    const frete = Array.isArray(data)
+
+        ? data[0]
+
+        : data;
+
+
+
+
+
+
+
+
+
+    if(!frete){
+
+
+        throw new Error(
+
+            "Nenhum frete encontrado"
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    return {
+
+
+
+        id:
+
+        frete.id || null,
+
+
+
+
+
+        valor:
+
+
+        Number(
+
+            frete.price
+
+        ),
+
+
+
+
+
+
+        servico:
+
+
+        frete.name ||
+
+        "Frete",
+
+
+
+
+
+        prazo:
+
+
+        frete.delivery_time
+
+        ?
+
+
+        `${frete.delivery_time} dias úteis`
+
+
+        :
+
+
+        "Prazo não informado"
+
+
+
+
+    };
+
+
+
 
 
 }
