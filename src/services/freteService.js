@@ -12,193 +12,100 @@ import {
 
 
 
-// Busca configuração do frete no Firebase
-export async function getFreteConfig(){
-
-
-    const ref = doc(
-
-        db,
-
-        "configuracoes",
-
-        "frete"
-
-    );
-
-
-
-    const snapshot = await getDoc(ref);
-
-
-
-
-    if(snapshot.exists()){
-
-
-        return snapshot.data();
-
-
-    }
-
-
-
-
-    return null;
-
-
-}
-
-
-
-
-
-
-
-
-
-// Calcula frete pelo Melhor Envio
 export async function calcularMelhorEnvio({
-
 
     cepDestino,
 
-
     peso
-
-
 
 }){
 
 
 
+    const configSnap =
+    await getDoc(
 
-
-    const config = await getFreteConfig();
-
-
-
-
-
-    if(!config){
-
-
-        throw new Error(
-
-            "Configuração de frete não encontrada"
-
-        );
-
-
-    }
-
-
-
-
-
-
-
-
-    const pacote = {
-
-
-        cepOrigem:
-
-        config.cepOrigem,
-
-
-
-        altura:
-
-        Number(config.altura),
-
-
-
-        largura:
-
-        Number(config.largura),
-
-
-
-        comprimento:
-
-        Number(config.comprimento),
-
-
-
-        peso:
-
-        Number(peso)
-
-
-
-    };
-
-
-
-
-
-
-
-
-
-    console.log(
-
-        "Enviando pacote:",
-
-        pacote
+        doc(
+            db,
+            "configuracoes",
+            "frete"
+        )
 
     );
 
 
 
 
+    if(!configSnap.exists()){
+
+        throw new Error(
+            "Configuração de frete não encontrada"
+        );
+
+    }
+
+
+
+
+    const config =
+    configSnap.data();
 
 
 
 
 
-    const response = await fetch(
 
+    const resposta =
+    await fetch(
 
         "/.netlify/functions/calcularFrete",
 
-
         {
-
 
             method:"POST",
 
-
-
             headers:{
 
-
                 "Content-Type":
-
                 "application/json"
-
 
             },
 
 
-
             body:JSON.stringify({
-
 
                 cepDestino,
 
 
-                pacote
+                pacote:{
 
+
+                    cepOrigem:
+                    config.cepOrigem,
+
+
+                    altura:
+                    config.altura,
+
+
+                    largura:
+                    config.largura,
+
+
+                    comprimento:
+                    config.comprimento,
+
+
+                    peso
+
+
+                }
 
 
             })
 
 
-
         }
-
 
     );
 
@@ -208,20 +115,18 @@ export async function calcularMelhorEnvio({
 
 
 
+    const fretes =
+    await resposta.json();
 
 
-    const data = await response.json();
 
 
 
 
 
     console.log(
-
-        "Resposta Melhor Envio:",
-
-        data
-
+        "Fretes:",
+        fretes
     );
 
 
@@ -230,21 +135,14 @@ export async function calcularMelhorEnvio({
 
 
 
-
-
-    if(!response.ok){
+    if(!Array.isArray(fretes)){
 
 
         throw new Error(
 
+            fretes.message ||
 
-            data.message ||
-
-            data.erro ||
-
-            "Erro ao consultar Melhor Envio"
-
-
+            "Erro retornando fretes"
 
         );
 
@@ -257,106 +155,31 @@ export async function calcularMelhorEnvio({
 
 
 
-
-
-    // Caso a API retorne lista de serviços
-    // pega o primeiro serviço
-
-
-    const frete = Array.isArray(data)
-
-        ? data[0]
-
-        : data;
-
-
-
-
-
-
-
-
-
-    if(!frete){
-
-
-        throw new Error(
-
-            "Nenhum frete encontrado"
-
-        );
-
-
-    }
-
-
-
-
-
-
-
-
-
-    return {
-
+    return fretes.map(item=>({
 
 
         id:
-
-        frete.id || null,
-
+        item.id,
 
 
-
-
-        valor:
-
-
-        Number(
-
-            frete.price
-
-        ),
-
-
-
-
+        empresa:
+        item.company?.name,
 
 
         servico:
+        item.name,
 
 
-        frete.name ||
-
-        "Frete",
-
-
-
+        valor:
+        Number(item.price),
 
 
         prazo:
 
-
-        frete.delivery_time
-
-        ?
+        `${item.delivery_time} dias úteis`
 
 
-        `${frete.delivery_time} dias úteis`
-
-
-        :
-
-
-        "Prazo não informado"
-
-
-
-
-    };
-
-
-
+    }));
 
 
 }

@@ -10,64 +10,27 @@ import {
 
 
 
+if(!getApps().length){
 
-// ==============================
-// Firebase Admin
-// ==============================
+    initializeApp({
 
-if (!getApps().length) {
+        credential: cert({
 
+            projectId:
+            process.env.FIREBASE_PROJECT_ID,
 
-    const privateKey =
-        process.env.FIREBASE_PRIVATE_KEY;
+            clientEmail:
+            process.env.FIREBASE_CLIENT_EMAIL,
 
+            privateKey:
+            process.env.FIREBASE_PRIVATE_KEY.replace(
+                /\\n/g,
+                "\n"
+            )
 
+        })
 
-    if (
-        process.env.FIREBASE_PROJECT_ID &&
-        process.env.FIREBASE_CLIENT_EMAIL &&
-        privateKey
-    ) {
-
-
-        initializeApp({
-
-
-            credential: cert({
-
-
-                projectId:
-                process.env.FIREBASE_PROJECT_ID,
-
-
-                clientEmail:
-                process.env.FIREBASE_CLIENT_EMAIL,
-
-
-                privateKey:
-                privateKey.replace(
-                    /\\n/g,
-                    "\n"
-                )
-
-
-            })
-
-
-        });
-
-
-
-    } else {
-
-
-        console.error(
-            "Firebase não configurado"
-        );
-
-
-    }
-
+    });
 
 }
 
@@ -79,142 +42,31 @@ const db = getFirestore();
 
 
 
-
-
-
-
 export async function handler(event){
 
 
-    try {
+    try{
 
 
-
-        const method =
-
-        event.requestContext?.http?.method
-
-        ||
-
-        event.httpMethod
-
-        ||
-
-        "UNKNOWN";
-
-
-
-
-
-        console.log(
-            "Método:",
-            method
-        );
-
-
-
-
-
-        // teste navegador
-
-        if(method === "GET"){
-
-
-            return {
-
-
-                statusCode:200,
-
-
-                headers:{
-                    "Content-Type":
-                    "application/json"
-                },
-
-
-                body:JSON.stringify({
-
-                    funcionando:true,
-
-                    mensagem:
-                    "calcularFrete online"
-
-                })
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-        if(method !== "POST"){
-
-
-            return {
-
-
-                statusCode:405,
-
-
-                body:JSON.stringify({
-
-                    erro:
-                    "Método não permitido",
-
-                    metodo:
-                    method
-
-                })
-
-
-            };
-
-
-        }
-
-
-
-
-
+        const body =
+        JSON.parse(event.body);
 
 
 
         const {
-
             cepDestino,
-
             pacote
-
-        } = JSON.parse(
-
-            event.body || "{}"
-
-        );
+        } = body;
 
 
 
 
-
-
-
-
-        if(
-            !cepDestino ||
-            !pacote
-        ){
+        if(!cepDestino || !pacote){
 
 
             return {
 
-
                 statusCode:400,
-
 
                 body:JSON.stringify({
 
@@ -223,9 +75,7 @@ export async function handler(event){
 
                 })
 
-
             };
-
 
         }
 
@@ -233,41 +83,21 @@ export async function handler(event){
 
 
 
-
-
-
-
-        // ==========================
-        // Buscar token
-        // ==========================
-
-
-        const tokenSnap = await db
-
-        .collection(
-            "configuracoes"
-        )
-
-        .doc(
-            "melhorEnvio"
-        )
-
+        const tokenDoc =
+        await db
+        .collection("configuracoes")
+        .doc("melhorEnvio")
         .get();
 
 
 
 
-
-
-
-        if(!tokenSnap.exists){
+        if(!tokenDoc.exists){
 
 
             return {
 
-
                 statusCode:400,
-
 
                 body:JSON.stringify({
 
@@ -276,7 +106,6 @@ export async function handler(event){
 
                 })
 
-
             };
 
 
@@ -285,52 +114,11 @@ export async function handler(event){
 
 
 
+        const token =
+        tokenDoc.data().access_token;
 
 
 
-        const config =
-        tokenSnap.data();
-
-
-
-
-
-
-
-        if(!config.access_token){
-
-
-            return {
-
-
-                statusCode:401,
-
-
-                body:JSON.stringify({
-
-                    erro:
-                    "Token ausente"
-
-                })
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-
-
-
-        // ==========================
-        // Dados envio
-        // ==========================
 
 
         const envio = {
@@ -338,88 +126,50 @@ export async function handler(event){
 
             from:{
 
-
                 postal_code:
-
-                String(
-                    pacote.cepOrigem
-                )
-
+                pacote.cepOrigem
 
             },
 
 
             to:{
 
-
                 postal_code:
-
-                String(
-                    cepDestino
-                )
-
+                cepDestino
 
             },
 
 
-
             products:[
-
 
                 {
 
-
                     id:"1",
 
-
                     width:
-
-                    Number(
-                        pacote.largura
-                    ),
-
+                    Number(pacote.largura),
 
 
                     height:
-
-                    Number(
-                        pacote.altura
-                    ),
-
+                    Number(pacote.altura),
 
 
                     length:
-
-                    Number(
-                        pacote.comprimento
-                    ),
-
+                    Number(pacote.comprimento),
 
 
                     weight:
-
-                    Number(
-                        pacote.peso
-                    ),
+                    Number(pacote.peso),
 
 
-
-                    insurance_value:
-
-                    Number(
-                        pacote.valor || 1
-                    ),
-
+                    insurance_value:1,
 
 
                     quantity:1
 
-
                 }
 
-
             ]
-
 
         };
 
@@ -429,74 +179,37 @@ export async function handler(event){
 
 
 
-
-
-
-        console.log(
-            "Enviando:",
-            JSON.stringify(
-                envio,
-                null,
-                2
-            )
-        );
-
-
-
-
-
-
-
-
-
-        const response = await fetch(
-
+        const resposta =
+        await fetch(
 
             "https://www.melhorenvio.com.br/api/v2/me/shipment/calculate",
 
-
             {
-
 
                 method:"POST",
 
-
                 headers:{
 
-
                     Authorization:
-
-                    `Bearer ${config.access_token}`,
-
+                    `Bearer ${token}`,
 
                     Accept:
-
                     "application/json",
-
 
                     "Content-Type":
-
                     "application/json",
 
-
                     "User-Agent":
-
                     "UTA Store"
-
 
                 },
 
 
                 body:
-
-                JSON.stringify(
-                    envio
-                )
-
+                JSON.stringify(envio)
 
             }
 
-
         );
 
 
@@ -505,8 +218,8 @@ export async function handler(event){
 
 
 
-
-        const data = await response.json();
+        const dados =
+        await resposta.json();
 
 
 
@@ -515,112 +228,9 @@ export async function handler(event){
 
 
         console.log(
-            "Status Melhor Envio:",
-            response.status
+            "Melhor Envio:",
+            dados
         );
-
-
-
-
-
-
-        console.log(
-            data
-        );
-
-
-
-
-
-
-
-
-
-        if(!response.ok){
-
-
-            return {
-
-
-                statusCode:
-                response.status,
-
-
-                body:
-                JSON.stringify(data)
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-
-
-
-        // ==========================
-        // FORMATAR TODOS OS FRETES
-        // ==========================
-
-
-        const fretes = data.map(item=>({
-
-
-
-            id:
-            item.id,
-
-
-
-            servico:
-
-            item.name,
-
-
-
-            empresa:
-
-            item.company?.name || "",
-
-
-
-            logo:
-
-            item.company?.picture || "",
-
-
-
-            valor:
-
-            Number(
-                item.price
-            ),
-
-
-
-            prazo:
-
-            item.delivery_time
-
-            ?
-
-            `${item.delivery_time} dias úteis`
-
-            :
-
-            "Prazo não informado"
-
-
-
-        }));
-
-
 
 
 
@@ -630,33 +240,20 @@ export async function handler(event){
 
         return {
 
-
             statusCode:200,
-
 
             headers:{
 
-
                 "Content-Type":
-
                 "application/json"
-
 
             },
 
 
             body:
-
-            JSON.stringify(
-                fretes
-            )
-
+            JSON.stringify(dados)
 
         };
-
-
-
-
 
 
 
@@ -665,12 +262,7 @@ export async function handler(event){
     }catch(error){
 
 
-
-        console.error(
-            "Erro:",
-            error
-        );
-
+        console.log(error);
 
 
         return {
