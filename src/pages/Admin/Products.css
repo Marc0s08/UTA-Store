@@ -1,493 +1,366 @@
-.products-admin{
-
-    width:50%;
-
-    padding:30px;
-
-    color:white;
-
+/* ===============================================
+   ESTRUTURA GERAL DA PÁGINA ADMIN
+================================================ */
+.products-admin {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  color: #f4f4f5;
+  box-sizing: border-box;
 }
 
-
-
-.products-admin h1{
-
-    color:#8BC34A;
-
-    margin-bottom:35px;
-
-    font-size:32px;
-
+.products-admin-header {
+  margin-bottom: 32px;
 }
 
-
-
-.products-list-section{
-
-    margin-top:50px;
-
+.products-admin-header h1 {
+  color: #8bc34a;
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
 }
 
-
-
-.products-list-section h2{
-
-    margin-bottom:25px;
-
+.products-admin-header .subtitle {
+  color: #a1a1aa;
+  font-size: 0.95rem;
+  margin: 0;
 }
 
-
-
-
-
-.product-list{
-
-    display:grid;
-
-    grid-template-columns:
-
-    repeat(auto-fill,minmax(280px,1fr));
-
-    gap:25px;
-
+/* Container do Formulário */
+.form-container-card {
+  background: #141416;
+  border: 1px solid #27272a;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 48px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-
-
-
-
-
-.product-card{
-
-
-    background:#181818;
-
-
-    border:1px solid #2d2d2d;
-
-
-    border-radius:20px;
-
-
-    padding:20px;
-
-
-    position:relative;
-
-
-    overflow:hidden;
-
-
-    transition:.3s;
-
-
+/* ===============================================
+   SEÇÃO DE LISTAGEM DE PRODUTOS
+================================================ */
+.products-list-section {
+  width: 100%;
 }
 
-
-
-
-
-.product-card:hover{
-
-
-    transform:translateY(-5px);
-
-
-    border-color:#8BC34A;
-
-
+.section-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #27272a;
 }
 
-
-
-
-
-
-/* Imagem */
-
-.product-thumbnail{
-
-
-    width:100%;
-
-
-    height:200px;
-
-
-    object-fit:cover;
-
-
-    border-radius:15px;
-
-
-    background:#101010;
-
-
-    margin-bottom:20px;
-
-
+.section-title-bar h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff;
 }
 
-
-
-
-
-
-
-/* Badge desconto */
-
-
-.discount-badge{
-
-
-    position:absolute;
-
-
-    top:15px;
-
-
-    left:15px;
-
-
-    background:#e53935;
-
-
-    color:white;
-
-
-    padding:8px 14px;
-
-
-    border-radius:20px;
-
-
-    font-weight:bold;
-
-
-    font-size:14px;
-
-
-    z-index:2;
-
-
+.products-count {
+  background: #27272a;
+  color: #a1a1aa;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
-
-
-
-
-
-
-.product-card h3{
-
-
-    font-size:20px;
-
-
-    margin-bottom:15px;
-
-
-    color:white;
-
-
+/* Grid de Produtos */
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
 }
 
-
-
-
-
-
-.product-card p{
-
-
-    margin:8px 0;
-
-
-    color:#ccc;
-
-
+/* ===============================================
+   CARD DO PRODUTO
+================================================ */
+.product-card {
+  background: #141416;
+  border: 1px solid #27272a;
+  border-radius: 18px;
+  padding: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 0.25s ease,
+              box-shadow 0.25s ease;
+  overflow: hidden;
 }
 
-
-
-
-
-
-
-/* Preços */
-
-
-.price-area{
-
-
-    margin:20px 0;
-
-
+.product-card:hover {
+  transform: translateY(-4px);
+  border-color: #8bc34a;
+  box-shadow: 0 12px 30px rgba(139, 195, 74, 0.1);
 }
 
-
-
-.old-price{
-
-
-    color:#777 !important;
-
-
-    text-decoration:line-through;
-
-
-    font-size:14px;
-
-
+/* Badge Desconto */
+.discount-badge {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background: #ef4444;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  z-index: 3;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
-
-
-
-
-.new-price{
-
-
-    color:#8BC34A !important;
-
-
-    font-size:24px;
-
-
-    font-weight:bold;
-
-
+/* Wrapper de Imagem */
+.product-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #09090b;
+  margin-bottom: 16px;
 }
 
-
-
-
-
-
-
-/* Status */
-
-
-.status{
-
-
-    display:inline-block;
-
-
-    padding:7px 15px;
-
-
-    border-radius:20px;
-
-
-    margin-top:15px;
-
-
-    font-size:14px;
-
-
-    font-weight:bold;
-
-
+.product-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-
-
-
-
-.status.active{
-
-
-    background:rgba(139,195,74,.15);
-
-
-    color:#8BC34A;
-
-
+.product-card:hover .product-thumbnail {
+  transform: scale(1.05);
 }
 
-
-
-.status.inactive{
-
-
-    background:rgba(229,57,53,.15);
-
-
-    color:#e53935;
-
-
+.no-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #52525b;
+  font-size: 0.85rem;
 }
 
-
-
-
-
-
-
-/* Botões */
-
-
-.product-actions{
-
-
-    display:flex;
-
-
-    gap:12px;
-
-
-    margin-top:25px;
-
-
+/* Status Pill */
+.status-pill {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+  z-index: 2;
 }
 
-
-
-
-
-
-.product-actions button{
-
-
-    flex:1;
-
-
-    padding:12px;
-
-
-    border:none;
-
-
-    border-radius:12px;
-
-
-    cursor:pointer;
-
-
-    font-weight:bold;
-
-
-    transition:.3s;
-
-
+.status-pill .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
 }
 
-
-
-
-
-
-
-.edit-button{
-
-
-    background:#1976d2;
-
-
-    color:white;
-
-
+.status-pill.active {
+  background: rgba(139, 195, 74, 0.2);
+  color: #8bc34a;
+  border: 1px solid rgba(139, 195, 74, 0.4);
 }
 
-
-
-
-
-.edit-button:hover{
-
-
-    background:#2196f3;
-
-
+.status-pill.active .dot {
+  background: #8bc34a;
+  box-shadow: 0 0 8px #8bc34a;
 }
 
-
-
-
-
-
-
-.delete-button{
-
-
-    background:#e53935;
-
-
-    color:white;
-
-
+.status-pill.inactive {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
 }
 
-
-
-
-
-.delete-button:hover{
-
-
-    background:#ef5350;
-
-
+.status-pill.inactive .dot {
+  background: #ef4444;
 }
 
+/* Corpo do Card */
+.product-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
 
+.product-category {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #a1a1aa;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
 
+.product-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
+.product-code {
+  font-size: 0.8rem;
+  color: #71717a;
+  margin: 0 0 12px 0;
+}
 
+/* Área de Preços */
+.price-area {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: auto;
+  margin-bottom: 12px;
+}
 
+.old-price {
+  color: #71717a;
+  text-decoration: line-through;
+  font-size: 0.85rem;
+}
 
+.new-price {
+  color: #8bc34a;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
 
+/* Estoque */
+.stock-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  padding-top: 10px;
+  border-top: 1px solid #27272a;
+  margin-bottom: 16px;
+}
 
-/* Mobile */
+.stock-info .in-stock {
+  color: #ffffff;
+}
 
+.stock-info .out-of-stock {
+  color: #ef4444;
+}
 
-@media(max-width:768px){
+/* ===============================================
+   BOTÕES DE AÇÃO
+================================================ */
+.product-actions {
+  display: flex;
+  gap: 10px;
+}
 
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
 
+.action-btn:active {
+  transform: scale(0.97);
+}
 
-    .products-admin{
+.edit-button {
+  background: #27272a;
+  color: #ffffff;
+  border: 1px solid #3f3f46;
+}
 
+.edit-button:hover {
+  background: #3f3f46;
+  border-color: #52525b;
+}
 
-        padding:15px;
+.delete-button {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
 
+.delete-button:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
 
-    }
+/* Estados vazios / loading */
+.products-skeleton,
+.empty-products-state {
+  text-align: center;
+  padding: 48px;
+  background: #141416;
+  border: 1px dashed #27272a;
+  border-radius: 16px;
+  color: #a1a1aa;
+}
 
+/* ===============================================
+   RESPONSIVIDADE (TABLETS E MOBILES)
+================================================ */
+@media (max-width: 768px) {
+  .products-admin {
+    padding: 20px 16px;
+  }
 
+  .products-admin-header h1 {
+    font-size: 1.6rem;
+  }
 
+  .form-container-card {
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+  }
 
+  .product-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 
-    .products-admin h1{
+  .product-card {
+    padding: 14px;
+  }
 
+  .product-image-wrapper {
+    height: 180px;
+  }
 
-        font-size:25px;
+  .product-actions {
+    flex-direction: row;
+  }
 
-
-    }
-
-
-
-
-
-    .product-list{
-
-
-        grid-template-columns:1fr;
-
-
-    }
-
-
-
-
-    .product-actions{
-
-
-        flex-direction:column;
-
-
-    }
-
-
+  .action-btn {
+    padding: 12px;
+  }
 }
