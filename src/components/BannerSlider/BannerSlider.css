@@ -24,16 +24,17 @@
 }
 
 /* ===============================================
-   CONTEÚDO DO TEXTO
+   CONTEÚDO DO TEXTO (MANTÉM AJUSTES DO ADMIN)
 ================================================ */
 .banner-content {
   position: absolute;
-  left: var(--custom-x, 50%);
-  top: var(--custom-y, 50%);
+  /* Respeita o X e Y do Admin, mas impede sair das bordas da tela */
+  left: clamp(15%, var(--custom-x, 50%), 85%);
+  top: clamp(20%, var(--custom-y, 50%), 80%);
   transform: translate(-50%, -50%);
   text-align: center;
-  width: 80%;
-  max-width: 900px;
+  width: max-content;
+  max-width: 85%;
   z-index: 5;
   box-sizing: border-box;
   word-wrap: break-word;
@@ -43,18 +44,19 @@
 .banner-content h2 {
   margin: 0;
   font-weight: 900;
-  font-size: var(--custom-size, 42px);
+  /* Fonte proporcional ao Admin no Desktop, com redução fluida no Mobile */
+  font-size: clamp(1.25rem, calc(var(--custom-size, 42px) * 0.65), var(--custom-size, 42px));
   line-height: 1.15;
 }
 
 .banner-content p {
-  margin: 12px 0 20px 0;
-  font-size: clamp(0.9rem, 2vw, 1.2rem);
-  line-height: 1.4;
+  margin: 10px 0 16px 0;
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  line-height: 1.35;
 }
 
 .banner-content.sombra {
-  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.9);
 }
 
 .banner-content button {
@@ -82,12 +84,12 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: none;
   background: rgba(0, 0, 0, 0.5);
-  color: white;
+  color: #ffffff;
   font-size: 20px;
   cursor: pointer;
   display: flex;
@@ -122,7 +124,7 @@
 .banner-dots span {
   width: 10px;
   height: 10px;
-  background: white;
+  background: #ffffff;
   opacity: 0.5;
   border-radius: 50%;
   cursor: pointer;
@@ -137,7 +139,7 @@
 }
 
 /* ===============================================
-   RESPONSIVIDADE (TABLET & MOBILE)
+   RESPONSIVIDADE (MOBILE & DISPOSITIVOS MENORES)
 ================================================ */
 @media (max-width: 768px) {
   .banner-slider {
@@ -146,29 +148,18 @@
   }
 
   .banner-image {
-    height: 320px;
+    height: 280px;
   }
 
-  /* Força o conteúdo a ficar centralizado e contido no mobile */
+  /* Aplica margens de segurança para a navegação do celular */
   .banner-content {
-    left: 50% !important;
-    top: 50% !important;
-    width: 90% !important;
-    padding: 0 10px;
-  }
-
-  .banner-content h2 {
-    /* O tamanho da fonte no mobile passa a responder de forma proporcional */
-    font-size: clamp(1.25rem, 5vw, 1.75rem) !important;
-  }
-
-  .banner-content p {
-    font-size: 0.85rem;
-    margin: 8px 0 14px 0;
+    left: clamp(20%, var(--custom-x, 50%), 80%);
+    top: clamp(22%, var(--custom-y, 50%), 78%);
+    max-width: 90%;
   }
 
   .banner-content button {
-    padding: 8px 18px;
+    padding: 8px 20px;
     font-size: 0.85rem;
   }
 
@@ -189,6 +180,6 @@
 
 @media (max-width: 480px) {
   .banner-image {
-    height: 250px;
+    height: 240px;
   }
 }

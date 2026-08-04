@@ -21,11 +21,12 @@ export default function BannerSlider() {
         ...item.data(),
       }));
 
+      // Ordena os banners pela propriedade 'ordem'
       lista.sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 
       setBanners(lista);
     } catch (error) {
-      console.log("Erro banners:", error);
+      console.log("Erro ao carregar banners:", error);
     }
   }
 
@@ -33,6 +34,7 @@ export default function BannerSlider() {
     carregarBanners();
   }, []);
 
+  // Transição automática de slides (5 segundos)
   useEffect(() => {
     if (banners.length <= 1) return;
 
@@ -57,12 +59,14 @@ export default function BannerSlider() {
 
   return (
     <section className="banner-slider">
+      {/* Imagem do Banner */}
       <img
         className="banner-image"
         src={banner.imagem}
         alt={banner.titulo || "Banner promocional"}
       />
 
+      {/* Camada de Overlay / Escurecimento */}
       {banner.overlay?.ativo && (
         <div
           className="banner-overlay"
@@ -72,6 +76,7 @@ export default function BannerSlider() {
         />
       )}
 
+      {/* Bloco do Conteúdo (Texto e Botão) */}
       <div
         className={
           banner.texto?.sombra
@@ -82,7 +87,7 @@ export default function BannerSlider() {
           "--custom-x": `${banner.texto?.x ?? 50}%`,
           "--custom-y": `${banner.texto?.y ?? 50}%`,
           "--custom-size": `${banner.texto?.tamanho ?? 42}px`,
-          color: banner.texto?.cor || "#fff",
+          color: banner.texto?.cor || "#ffffff",
         }}
       >
         {banner.titulo && <h2>{banner.titulo}</h2>}
@@ -96,13 +101,22 @@ export default function BannerSlider() {
         )}
       </div>
 
+      {/* Navegação por Setas e Pontos (Apenas se houver mais de 1 banner) */}
       {banners.length > 1 && (
         <>
-          <button className="banner-arrow left" onClick={anterior} aria-label="Banner anterior">
+          <button
+            className="banner-arrow left"
+            onClick={anterior}
+            aria-label="Banner anterior"
+          >
             ❮
           </button>
 
-          <button className="banner-arrow right" onClick={proximo} aria-label="Próximo banner">
+          <button
+            className="banner-arrow right"
+            onClick={proximo}
+            aria-label="Próximo banner"
+          >
             ❯
           </button>
 
