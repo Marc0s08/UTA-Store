@@ -1,17 +1,3 @@
-import {
-    doc,
-    getDoc
-} from "firebase/firestore";
-
-
-import {
-    db
-} from "../firebase/firebaseConfig";
-
-
-
-
-
 export async function calcularMelhorEnvio({
 
     cepDestino,
@@ -21,42 +7,7 @@ export async function calcularMelhorEnvio({
 }){
 
 
-
-    const configSnap =
-    await getDoc(
-
-        doc(
-            db,
-            "configuracoes",
-            "frete"
-        )
-
-    );
-
-
-
-
-    if(!configSnap.exists()){
-
-        throw new Error(
-            "Configuração de frete não encontrada"
-        );
-
-    }
-
-
-
-
-    const config =
-    configSnap.data();
-
-
-
-
-
-
-    const resposta =
-    await fetch(
+    const response = await fetch(
 
         "/.netlify/functions/calcularFrete",
 
@@ -76,34 +27,9 @@ export async function calcularMelhorEnvio({
 
                 cepDestino,
 
-
-                pacote:{
-
-
-                    cepOrigem:
-                    config.cepOrigem,
-
-
-                    altura:
-                    config.altura,
-
-
-                    largura:
-                    config.largura,
-
-
-                    comprimento:
-                    config.comprimento,
-
-
-                    peso
-
-
-                }
-
+                peso
 
             })
-
 
         }
 
@@ -112,126 +38,97 @@ export async function calcularMelhorEnvio({
 
 
 
-
-
-
-    const fretes =
-    await resposta.json();
-
-
-
+    const data = await response.json();
 
 
 
 
     console.log(
-        "Fretes:",
-        fretes
+        "Retorno fretes:",
+        data
     );
 
 
 
 
 
+    if(!response.ok){
 
+        throw new Error(
+            data.message ||
+            data.erro ||
+            "Erro no Melhor Envio"
+        );
 
-    let lista = [];
-
-
-
-// Caso venha lista
-if(Array.isArray(fretes)){
-
-
-    lista = fretes;
-
-
-}
-
-
-
-// Caso venha apenas um frete
-else if(fretes.id){
-
-
-    lista = [fretes];
-
-
-}
-
-
-
-else{
-
-
-    console.log(
-        "Resposta inválida:",
-        fretes
-    );
-
-
-    throw new Error(
-        "Erro retornando fretes"
-    );
-
-
-}
+    }
 
 
 
 
 
+    const lista = Array.isArray(data)
 
-return lista.map(item=>({
-
-
-    id:
-
-    item.id,
-
-
-
-    empresa:
-
-    item.company?.name || "",
-
-
-
-    logo:
-
-    item.company?.picture || "",
-
-
-
-    servico:
-
-    item.name || "Frete",
-
-
-
-    valor:
-
-    Number(
-        item.price || 0
-    ),
-
-
-
-    prazo:
-
-
-    item.delivery_time
-
-    ?
-
-    `${item.delivery_time} dias úteis`
+    ? data
 
     :
 
-    "Prazo não informado"
+    [data];
 
 
 
-}));
+
+
+
+
+    return lista.map(item=>({
+
+
+        id:item.id,
+
+
+        servico:
+
+        item.name || 
+        item.company?.name ||
+        "Frete",
+
+
+
+        valor:
+
+        Number(
+
+            item.price ||
+            item.custom_price ||
+            0
+
+        ),
+
+
+
+
+        prazo:
+
+        item.delivery_time
+
+        ?
+
+        `${item.delivery_time} dias úteis`
+
+        :
+
+        "Prazo não informado",
+
+
+
+
+        transportadora:
+
+        item.company?.name || ""
+
+
+
+    }));
+
 
 }

@@ -1,10 +1,9 @@
-export async function getAddressByCep(cep){
+export async function buscarCEP(cep){
+
+    const cepLimpo = cep.replace(/\D/g,"");
 
 
-    const cleanCep = cep.replace(/\D/g,"");
-
-
-    if(cleanCep.length !== 8){
+    if(cepLimpo.length !== 8){
 
         throw new Error(
             "CEP inválido"
@@ -13,16 +12,12 @@ export async function getAddressByCep(cep){
     }
 
 
-
     const response = await fetch(
-
-        `https://viacep.com.br/ws/${cleanCep}/json/`
-
+        `https://viacep.com.br/ws/${cepLimpo}/json/`
     );
 
 
     const data = await response.json();
-
 
 
     if(data.erro){
@@ -34,7 +29,12 @@ export async function getAddressByCep(cep){
     }
 
 
-    return data;
+    return {
 
+        ...data,
+
+        cep:cepLimpo
+
+    };
 
 }

@@ -26,8 +26,17 @@ import {
 } from "../../services/freteService";
 
 import {
+    buscarCEP
+} from "../../services/cepService";
+
+import {
+    moeda
+} from "../../utils/freteFormatter";
+
+import {
     useNavigate
 } from "react-router-dom";
+
 
 
 
@@ -68,13 +77,14 @@ export default function Cart(){
 
 
 
-
     const [cep,setCep] = useState("");
+
+    const [perfil,setPerfil] = useState(null);
 
     const [endereco,setEndereco] = useState(null);
 
 
-    // ALTERADO
+
     const [fretes,setFretes] = useState([]);
 
     const [freteSelecionado,setFreteSelecionado] = useState(null);
@@ -84,12 +94,7 @@ export default function Cart(){
     const [calculando,setCalculando] = useState(false);
 
 
-    const [perfil,setPerfil] = useState(null);
-
-
     const [usarEnderecoCadastro,setUsarEnderecoCadastro] = useState(true);
-
-
 
 
 
@@ -118,9 +123,7 @@ export default function Cart(){
         }
 
 
-
         carregarPerfil();
-
 
 
     },[user]);
@@ -129,16 +132,13 @@ export default function Cart(){
 
 
 
-
-
-
     const pesoTotal = cart.reduce(
 
 
-        (soma,item)=>{
+        (total,item)=>{
 
 
-            return soma +
+            return total +
 
             (
 
@@ -158,17 +158,7 @@ export default function Cart(){
 
 
     );
-
-
-
-
-
-
-
-
-
-
-    async function calcularFrete(){
+        async function calcularFrete(){
 
 
         try{
@@ -178,9 +168,7 @@ export default function Cart(){
 
 
 
-
             let cepDestino = cep;
-
 
 
 
@@ -196,71 +184,15 @@ export default function Cart(){
 
 
 
-
-            const cepLimpo = cepDestino?.replace(/\D/g,"");
-
-
-
-
-
-
-            if(!cepLimpo || cepLimpo.length !== 8){
-
-
-                alert(
-                    "Digite um CEP válido"
-                );
-
-
-                return;
-
-
-            }
-
-
-
-
-
-
-
-
-            const response = await fetch(
-
-                `https://viacep.com.br/ws/${cepLimpo}/json/`
-
+            const enderecoEncontrado = await buscarCEP(
+                cepDestino
             );
 
 
 
-
-
-            const data = await response.json();
-
-
-
-
-
-            if(data.erro){
-
-
-                alert(
-                    "CEP não encontrado"
-                );
-
-
-                return;
-
-
-            }
-
-
-
-
-            setEndereco(data);
-
-
-
-
+            setEndereco(
+                enderecoEncontrado
+            );
 
 
 
@@ -269,10 +201,12 @@ export default function Cart(){
             const resultado = await calcularMelhorEnvio({
 
 
-                cepDestino:cepLimpo,
+                cepDestino:
+                enderecoEncontrado.cep,
 
 
-                peso:pesoTotal
+                peso:
+                pesoTotal
 
 
             });
@@ -282,12 +216,10 @@ export default function Cart(){
 
 
 
+
             console.log(
-
-                "Frete retorno:",
-
+                "Fretes encontrados:",
                 resultado
-
             );
 
 
@@ -295,35 +227,23 @@ export default function Cart(){
 
 
 
-            const lista = Array.isArray(resultado)
 
-            ?
-
-            resultado
-
-            :
-
-            [resultado];
-
-
-
-
-
-
-
-            setFretes(lista);
-
-
-
-
-
-
-            setFreteSelecionado(
-
-                lista[0]
-
+            setFretes(
+                resultado
             );
 
+
+
+
+            if(resultado.length > 0){
+
+
+                setFreteSelecionado(
+                    resultado[0]
+                );
+
+
+            }
 
 
 
@@ -333,14 +253,15 @@ export default function Cart(){
 
 
 
-            console.log(error);
+            console.log(
+                "Erro frete:",
+                error
+            );
 
 
 
             alert(
-
-                "Erro ao calcular frete"
-
+                error.message
             );
 
 
@@ -367,6 +288,7 @@ export default function Cart(){
 
 
 
+
     async function handleCheckout(){
 
 
@@ -375,9 +297,7 @@ export default function Cart(){
 
 
             alert(
-
                 "Faça login para finalizar a compra"
-
             );
 
 
@@ -395,15 +315,18 @@ export default function Cart(){
 
 
 
+
         try{
 
 
 
-            const profile = await getUserProfile(
-
+            const profile =
+            await getUserProfile(
                 user.uid
-
             );
+
+
+
 
 
 
@@ -421,7 +344,8 @@ export default function Cart(){
 
 
 
-            const order = {
+
+            const pedido = {
 
 
 
@@ -435,7 +359,9 @@ export default function Cart(){
                 cliente:{
 
 
+
                     nome:
+
 
                     profile?.nome ||
 
@@ -444,10 +370,15 @@ export default function Cart(){
                     user.email.split("@")[0],
 
 
+
                     email:user.email
 
 
+
                 },
+
+
+
 
 
 
@@ -474,6 +405,7 @@ export default function Cart(){
                     cep
 
 
+
                 },
 
 
@@ -483,9 +415,8 @@ export default function Cart(){
 
 
 
+
                 produtos:
-
-
 
                 cart.map(item=>(
 
@@ -505,18 +436,22 @@ export default function Cart(){
 
 
 
-                        quantidade:item.quantidade,
+                        quantidade:
+
+                        item.quantidade,
 
 
 
                         peso:
 
-                        Number(item.peso || 0),
+                        Number(
+                            item.peso || 0
+                        ),
+
 
 
 
                         preco:
-
 
                         Number(
 
@@ -543,11 +478,23 @@ export default function Cart(){
 
 
 
-                valorProdutos:total,
 
 
 
-                pesoTotal:pesoTotal,
+                valorProdutos:
+
+
+                total,
+
+
+
+
+
+                pesoTotal,
+
+
+
+
 
 
 
@@ -556,18 +503,33 @@ export default function Cart(){
                 frete:{
 
 
-                    valor:valorFrete,
+                    id:
+
+                    freteSelecionado?.id,
+
+
+
+                    valor:
+
+                    valorFrete,
+
 
 
                     servico:
 
-                    freteSelecionado?.servico || "",
+                    freteSelecionado?.servico,
+
+
+
+                    transportadora:
+
+                    freteSelecionado?.transportadora,
 
 
 
                     prazo:
 
-                    freteSelecionado?.prazo || ""
+                    freteSelecionado?.prazo
 
 
                 },
@@ -576,10 +538,16 @@ export default function Cart(){
 
 
 
+
+
+
+
                 valorTotal:
 
 
-                total + valorFrete
+                total +
+
+                valorFrete
 
 
 
@@ -591,7 +559,24 @@ export default function Cart(){
 
 
 
-            await createOrder(order);
+
+
+            console.log(
+                "Pedido:",
+                pedido
+            );
+
+
+
+
+
+
+
+
+            await createOrder(
+                pedido
+            );
+
 
 
 
@@ -604,20 +589,16 @@ export default function Cart(){
 
 
 
-
             alert(
-
                 "Pedido realizado com sucesso!"
-
             );
 
 
 
 
-
-
-            navigate("/meus-pedidos");
-
+            navigate(
+                "/meus-pedidos"
+            );
 
 
 
@@ -627,58 +608,43 @@ export default function Cart(){
 
 
             console.log(
-
-                "Erro ao criar pedido:",
-
+                "Erro pedido:",
                 error
-
             );
 
 
 
             alert(
-
-                "Erro ao finalizar pedido"
-
+                "Erro ao finalizar compra"
             );
 
 
         }
 
 
-    }
-    if(cart.length === 0){
 
+    }
+        if(cart.length === 0){
 
         return(
 
-
             <main className="cart-page">
 
-
                 <h1>
-
                     Seu carrinho está vazio
-
                 </h1>
 
 
                 <p>
-
                     Adicione produtos para continuar.
-
                 </p>
 
 
             </main>
 
-
-        )
-
+        );
 
     }
-
-
 
 
 
@@ -688,17 +654,12 @@ export default function Cart(){
 
     return(
 
-
         <main className="cart-page">
 
 
-
             <h1>
-
                 Carrinho de compras
-
             </h1>
-
 
 
 
@@ -710,39 +671,27 @@ export default function Cart(){
 
 
 
-
-
                 <div className="cart-products">
 
 
 
                 {
 
-
                 cart.map(product=>(
 
 
-
                     <div
-
                     className="cart-item"
-
                     key={product.id}
-
                     >
-
-
 
 
 
                         <img
 
                         src={
-
                             product.imagens?.[0] ||
-
                             "/placeholder.png"
-
                         }
 
                         alt={product.nome}
@@ -758,14 +707,9 @@ export default function Cart(){
                         <div className="cart-info">
 
 
-
                             <h2>
-
                                 {product.nome}
-
                             </h2>
-
-
 
 
 
@@ -774,36 +718,20 @@ export default function Cart(){
                             R$
 
                             {
+                                moeda(
 
+                                    product.precoPromocional > 0
 
-                            Number(
+                                    ?
 
-                                product.precoPromocional > 0
+                                    product.precoPromocional
 
-                                ?
+                                    :
 
-                                product.precoPromocional
+                                    product.preco
 
-                                :
-
-                                product.preco
-
-                            )
-
-                            .toLocaleString(
-
-                                "pt-BR",
-
-                                {
-
-                                minimumFractionDigits:2
-
-                                }
-
-                            )
-
+                                )
                             }
-
 
                             </p>
 
@@ -811,10 +739,7 @@ export default function Cart(){
 
 
 
-
-
                             <div className="quantity">
-
 
 
                                 <button
@@ -829,15 +754,11 @@ export default function Cart(){
 
 
 
-
-
                                 <span>
 
                                     {product.quantidade}
 
                                 </span>
-
-
 
 
 
@@ -850,6 +771,7 @@ export default function Cart(){
                                     +
 
                                 </button>
+
 
 
                             </div>
@@ -872,9 +794,7 @@ export default function Cart(){
 
                         >
 
-
                             Remover
-
 
                         </button>
 
@@ -887,8 +807,6 @@ export default function Cart(){
 
 
                 ))
-
-
 
                 }
 
@@ -907,22 +825,15 @@ export default function Cart(){
 
 
 
-
                 <aside className="cart-summary">
 
 
 
 
 
-
                     <h2>
-
                         Entrega
-
                     </h2>
-
-
-
 
 
 
@@ -947,7 +858,6 @@ export default function Cart(){
 
 
                     </label>
-
 
 
 
@@ -984,59 +894,44 @@ export default function Cart(){
 
                     {
 
-
                     usarEnderecoCadastro && perfil?.endereco && (
 
 
-                    <div className="address-box">
+                        <div className="address-box">
 
 
+                            <p>
 
-                        <p>
+                            {perfil.endereco.rua},
 
-                        {perfil.endereco.rua},
+                            {" "}
 
-                        {" "}
+                            {perfil.endereco.numero}
 
-                        {perfil.endereco.numero}
-
-                        </p>
-
+                            </p>
 
 
-                        <p>
+                            <p>
 
-                        {perfil.endereco.bairro}
+                            {perfil.endereco.cidade}
 
-                        </p>
+                            -
 
+                            {perfil.endereco.estado}
 
-
-                        <p>
-
-                        {perfil.endereco.cidade}
-
-                        -
-
-                        {perfil.endereco.estado}
-
-                        </p>
+                            </p>
 
 
+                            <p>
 
-                        <p>
+                            CEP:
 
-                        CEP:
+                            {perfil.endereco.cep}
 
-                        {" "}
-
-                        {perfil.endereco.cep}
-
-                        </p>
+                            </p>
 
 
-
-                    </div>
+                        </div>
 
 
                     )
@@ -1057,29 +952,21 @@ export default function Cart(){
                     !usarEnderecoCadastro && (
 
 
+                        <input
 
-                    <input
+                        type="text"
 
+                        placeholder="Digite seu CEP"
 
-                    type="text"
+                        value={cep}
 
+                        onChange={e=>
 
-                    placeholder="Digite seu CEP"
+                            setCep(e.target.value)
 
+                        }
 
-                    value={cep}
-
-
-                    onChange={(e)=>
-
-
-                        setCep(e.target.value)
-
-
-                    }
-
-
-                    />
+                        />
 
 
                     )
@@ -1105,7 +992,6 @@ export default function Cart(){
 
 
                     {
-
 
                     calculando
 
@@ -1133,44 +1019,31 @@ export default function Cart(){
 
                     {
 
-
                     endereco && (
 
 
-
-                    <div className="cep-result">
-
+                        <div className="cep-result">
 
 
-                        <p>
+                            <p>
 
-                        {endereco.logradouro}
+                            {endereco.logradouro}
 
-                        </p>
-
-
-
-                        <p>
-
-                        {endereco.bairro}
-
-                        </p>
+                            </p>
 
 
+                            <p>
 
-                        <p>
+                            {endereco.localidade}
 
-                        {endereco.localidade}
+                            -
 
-                        -
+                            {endereco.uf}
 
-                        {endereco.uf}
-
-                        </p>
-
+                            </p>
 
 
-                    </div>
+                        </div>
 
 
                     )
@@ -1185,162 +1058,116 @@ export default function Cart(){
 
 
 
-
-
-
                     {
 
-
                     fretes.length > 0 && (
-
 
 
                     <div className="fretes-box">
 
 
-
-                    <h3>
-
-                        Opções de entrega
-
-                    </h3>
+                        <h3>
+                            Opções de entrega
+                        </h3>
 
 
 
 
 
+                        {
 
-
-                    {
-
-
-                    fretes.map((item,index)=>(
+                        fretes.map(frete=>(
 
 
 
-                    <label
+                            <label
 
-                    key={item.id || index}
+                            key={frete.id}
 
-                    className="frete-item"
+                            className="frete-item"
 
-                    >
-
-
+                            >
 
 
-                        <input
+
+                                <input
+
+                                type="radio"
+
+                                name="frete"
+
+                                checked={
+
+                                freteSelecionado?.id === frete.id
+
+                                }
 
 
-                        type="radio"
+                                onChange={()=>
 
 
-                        name="frete"
+                                    setFreteSelecionado(frete)
+
+                                }
 
 
-                        checked={
+                                />
 
-                        freteSelecionado?.id === item.id
+
+
+
+
+                                <div>
+
+
+                                    <strong>
+
+                                    {frete.servico}
+
+                                    </strong>
+
+
+
+                                    <br/>
+
+                                    {frete.transportadora}
+
+
+
+                                    <br/>
+
+
+                                    R$
+
+                                    {moeda(frete.valor)}
+
+
+
+                                    <br/>
+
+
+                                    <small>
+
+                                    {frete.prazo}
+
+                                    </small>
+
+
+                                </div>
+
+
+
+                            </label>
+
+
+
+                        ))
 
                         }
 
 
-                        onChange={()=>{
-
-
-                            setFreteSelecionado(item);
-
-
-                        }}
-
-
-                        />
-
-
-
-
-
-
-
-                        <div>
-
-
-
-                            <strong>
-
-                            {item.servico}
-
-                            </strong>
-
-
-
-                            <br/>
-
-
-
-                            <span>
-
-
-                            R$
-
-                            {
-
-
-                            Number(item.valor)
-
-                            .toLocaleString(
-
-                                "pt-BR",
-
-                                {
-
-                                minimumFractionDigits:2
-
-                                }
-
-                            )
-
-
-                            }
-
-
-                            </span>
-
-
-
-
-
-                            <br/>
-
-
-
-
-                            <small>
-
-                            {item.prazo}
-
-                            </small>
-
-
-
-                        </div>
-
-
-
-
-                    </label>
-
-
-
-                    ))
-
-                    }
-
-
-
 
                     </div>
-
 
 
                     )
@@ -1359,14 +1186,8 @@ export default function Cart(){
 
 
                     <h2>
-
                         Resumo
-
                     </h2>
-
-
-
-
 
 
 
@@ -1375,7 +1196,6 @@ export default function Cart(){
                     <p>
 
                         Peso:
-
 
                         <strong>
 
@@ -1387,7 +1207,6 @@ export default function Cart(){
 
                         </strong>
 
-
                     </p>
 
 
@@ -1397,39 +1216,17 @@ export default function Cart(){
 
 
 
-
                     <h3>
-
 
                         Produtos:
 
-
                         <span>
-
 
                         R$
 
-
-                        {total.toLocaleString(
-
-
-                            "pt-BR",
-
-
-                            {
-
-
-                            minimumFractionDigits:2
-
-
-                            }
-
-
-                        )}
-
+                        {moeda(total)}
 
                         </span>
-
 
                     </h3>
 
@@ -1440,36 +1237,19 @@ export default function Cart(){
 
 
 
-
                     <h3>
-
 
                         Frete:
 
-
                         <span>
-
 
                         R$
 
-
-                        {(freteSelecionado?.valor || 0)
-
-                        .toLocaleString(
-
-                            "pt-BR",
-
-                            {
-
-                            minimumFractionDigits:2
-
-                            }
-
+                        {moeda(
+                            freteSelecionado?.valor
                         )}
 
-
                         </span>
-
 
                     </h3>
 
@@ -1480,41 +1260,23 @@ export default function Cart(){
 
 
 
-
                     <h3>
-
 
                         Total:
 
-
                         <span>
-
 
                         R$
 
+                        {moeda(
 
-                        {(
+                            total +
 
-                        total +
-
-                        (freteSelecionado?.valor || 0)
-
-                        )
-
-
-                        .toLocaleString(
-
-                            "pt-BR",
-
-                            {
-
-                            minimumFractionDigits:2
-
-                            }
+                            (
+                            freteSelecionado?.valor || 0
+                            )
 
                         )}
-
-
 
                         </span>
 
@@ -1537,15 +1299,10 @@ export default function Cart(){
 
                     >
 
-
                         Finalizar compra
 
 
-
                     </button>
-
-
-
 
 
 
@@ -1559,12 +1316,7 @@ export default function Cart(){
 
 
 
-
-
             </section>
-
-
-
 
 
 
@@ -1572,8 +1324,7 @@ export default function Cart(){
 
         </main>
 
-
-    )
+    );
 
 
 }
