@@ -1,198 +1,93 @@
-.home{
-
-
-    width:100%;
-
-    overflow:hidden;
-
-
+/* Reset local para garantir que padding não estoure a largura */
+.home,
+.home * {
+  box-sizing: border-box;
 }
 
-
-
-
-
-
-.home-banner{
-
-
-    width:100%;
-
-
+.home {
+  width: 100%;
+  min-height: 100vh;
+  /* Removido o overflow:hidden para não cortar textos/sombras */
 }
 
-
-
-
-
-
-
-.home-intro{
-
-
-    max-width:1200px;
-
-
-    margin:50px auto;
-
-
-    padding:0 25px;
-
-
-    text-align:center;
-
-
+.home-banner {
+  width: 100%;
+  overflow: hidden; /* Mantido apenas no banner caso os slides transbordem */
 }
 
-
-
-.home-intro h1{
-
-
-    color:white;
-
-
-    font-size:38px;
-
-
-    margin-bottom:15px;
-
-
+/* ===============================================
+   INTRODUÇÃO
+================================================ */
+.home-intro {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+  text-align: center;
+  /* Evita estouro de texto longo ou sem espaços */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-
-
-
-.home-intro p{
-
-
-    color:#aaa;
-
-
-    font-size:18px;
-
-
+.home-intro h1 {
+  color: #ffffff;
+  font-size: clamp(1.75rem, 5vw, 2.375rem); /* Tamanho responsivo automático */
+  margin-bottom: 12px;
+  line-height: 1.2;
+  font-weight: 800;
 }
 
-
-
-
-
-
-
-
-
-.home-products{
-
-
-    max-width:1200px;
-
-
-    margin:auto;
-
-
-    padding:30px 25px;
-
-
+.home-intro p {
+  color: #a1a1aa;
+  font-size: clamp(0.95rem, 3vw, 1.125rem);
+  line-height: 1.5;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-
-
-
-
-.home-products h2{
-
-
-    color:#8BC34A;
-
-
-    font-size:30px;
-
-
-    margin-bottom:25px;
-
-
+/* ===============================================
+   PRODUTOS EM DESTAQUE
+================================================ */
+.home-products {
+  max-width: 1200px;
+  margin: 0 auto 40px auto;
+  padding: 0 20px;
 }
 
-
-
-
-
-
-
-
-.products-placeholder{
-
-
-    height:200px;
-
-
-    background:#1a1a1a;
-
-
-    border-radius:15px;
-
-
-    display:flex;
-
-
-    align-items:center;
-
-
-    justify-content:center;
-
-
-    color:#777;
-
-
-    font-size:20px;
-
-
+.home-products h2 {
+  color: #8bc34a;
+  font-size: clamp(1.35rem, 4vw, 1.875rem);
+  margin-bottom: 20px;
+  font-weight: 700;
 }
 
+.products-placeholder {
+  height: 200px;
+  background: #18181b;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #71717a;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
 
+/* ===============================================
+   RESPONSIVIDADE (Telas menores de 600px)
+================================================ */
+@media (max-width: 600px) {
+  .home-intro {
+    margin: 24px auto;
+    padding: 0 16px; /* Espaçamento de segurança para não encostar nas bordas */
+  }
 
+  .home-products {
+    padding: 0 16px;
+  }
 
-
-
-
-
-
-@media(max-width:600px){
-
-
-
-    .home-intro{
-
-
-        margin:30px auto;
-
-
-    }
-
-
-
-
-
-    .home-intro h1{
-
-
-        font-size:28px;
-
-
-    }
-
-
-
-
-
-    .home-products h2{
-
-
-        font-size:24px;
-
-
-    }
-
-
+  .products-placeholder {
+    height: 160px;
+    font-size: 0.95rem;
+  }
 }
