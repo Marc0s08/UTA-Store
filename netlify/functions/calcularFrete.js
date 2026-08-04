@@ -1,113 +1,595 @@
-import { initializeApp, cert, getApps } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import {
+    initializeApp,
+    cert,
+    getApps
+} from "firebase-admin/app";
+
+import {
+    getFirestore
+} from "firebase-admin/firestore";
+
+
+
+
+// ==============================
+// Firebase Admin
+// ==============================
 
 if (!getApps().length) {
-    initializeApp({
-        credential: cert({
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
-        })
-    });
+
+    const privateKey =
+        process.env.FIREBASE_PRIVATE_KEY;
+
+
+    if (
+        process.env.FIREBASE_PROJECT_ID &&
+        process.env.FIREBASE_CLIENT_EMAIL &&
+        privateKey
+    ) {
+
+
+        initializeApp({
+
+            credential: cert({
+
+                projectId:
+                process.env.FIREBASE_PROJECT_ID,
+
+
+                clientEmail:
+                process.env.FIREBASE_CLIENT_EMAIL,
+
+
+                privateKey:
+                privateKey.replace(
+                    /\\n/g,
+                    "\n"
+                )
+
+            })
+
+        });
+
+
+    } else {
+
+
+        console.error(
+            "Variáveis Firebase ausentes"
+        );
+
+
+    }
+
 }
+
+
 
 const db = getFirestore();
 
+
+
+
+
+
+
+
 export async function handler(event) {
+
 
     try {
 
-        if (event.httpMethod !== "POST") {
-            return {
-                statusCode: 405,
-                body: JSON.stringify({
-                    erro: "Método não permitido"
-                })
-            };
-        }
 
-        const { cepDestino, pacote } = JSON.parse(event.body);
+        const method =
+            event.requestContext?.http?.method
+            ||
+            event.httpMethod
+            ||
+            "UNKNOWN";
 
-        const configSnap = await db
-            .collection("configuracoes")
-            .doc("melhorEnvio")
-            .get();
 
-        if (!configSnap.exists) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify({
-                    erro: "Melhor Envio não conectado."
-                })
-            };
-        }
 
-        const config = configSnap.data();
-
-        console.log("=== TOKEN ===");
-        console.log("Conectado:", config.conectado);
-        console.log("Possui token:", !!config.access_token);
-        console.log("Primeiros 40 caracteres:", config.access_token.substring(0,40));
-
-        const body = {
-            from: {
-                postal_code: pacote.cepOrigem
-            },
-            to: {
-                postal_code: cepDestino
-            },
-            products: [
-                {
-                    id: "1",
-                    width: Number(pacote.largura),
-                    height: Number(pacote.altura),
-                    length: Number(pacote.comprimento),
-                    weight: Number(pacote.peso),
-                    insurance_value: 1,
-                    quantity: 1
-                }
-            ]
-        };
-
-        const response = await fetch(
-            "https://www.melhorenvio.com.br/api/v2/me/shipment/calculate",
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${config.access_token}`,
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    "User-Agent": "UTA Store (marcoseduc2019@gmail.com)"
-                },
-                body: JSON.stringify(body)
-            }
+        console.log(
+            "Método recebido:",
+            method
         );
 
-        const text = await response.text();
 
-        console.log("==================================");
-        console.log("STATUS:", response.status);
-        console.log("BODY:");
-        console.log(text);
-        console.log("==================================");
 
-        return {
-            statusCode: response.status,
-            body: text
+
+
+        // ==============================
+        // TESTE NO NAVEGADOR
+        // ==============================
+
+
+        if(method === "GET"){
+
+
+            return {
+
+
+                statusCode:200,
+
+
+                headers:{
+
+                    "Content-Type":
+                    "application/json"
+
+                },
+
+
+                body:JSON.stringify({
+
+                    funcionando:true,
+
+                    mensagem:
+                    "calcularFrete online"
+
+                })
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+
+        if(method !== "POST"){
+
+
+            return {
+
+
+                statusCode:405,
+
+
+                headers:{
+
+                    "Content-Type":
+                    "application/json"
+
+                },
+
+
+                body:JSON.stringify({
+
+                    erro:
+                    "Método não permitido",
+
+                    metodo:
+                    method
+
+                })
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+
+
+        const bodyRecebido =
+        JSON.parse(
+            event.body || "{}"
+        );
+
+
+
+        const {
+
+            cepDestino,
+
+            pacote
+
+        } = bodyRecebido;
+
+
+
+
+
+
+
+        if(
+            !cepDestino ||
+            !pacote
+        ){
+
+
+            return {
+
+
+                statusCode:400,
+
+
+                body:JSON.stringify({
+
+                    erro:
+                    "CEP ou pacote ausente"
+
+                })
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+        console.log(
+            "CEP destino:",
+            cepDestino
+        );
+
+
+        console.log(
+            "Pacote:",
+            pacote
+        );
+
+
+
+
+
+
+
+
+
+        // ==============================
+        // TOKEN MELHOR ENVIO
+        // ==============================
+
+
+        const tokenSnap =
+        await db
+
+        .collection(
+            "configuracoes"
+        )
+
+        .doc(
+            "melhorEnvio"
+        )
+
+        .get();
+
+
+
+
+
+
+
+
+        if(!tokenSnap.exists){
+
+
+            return {
+
+
+                statusCode:400,
+
+
+                body:JSON.stringify({
+
+                    erro:
+                    "Melhor Envio não conectado"
+
+                })
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+
+        const config =
+        tokenSnap.data();
+
+
+
+
+
+        console.log(
+            "Token existe:",
+            !!config.access_token
+        );
+
+
+
+
+
+
+
+
+        if(!config.access_token){
+
+
+            return {
+
+
+                statusCode:401,
+
+
+                body:JSON.stringify({
+
+                    erro:
+                    "Token Melhor Envio inválido"
+
+                })
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+
+
+
+        const envio = {
+
+
+            from:{
+
+                postal_code:
+                String(
+                    pacote.cepOrigem
+                )
+
+            },
+
+
+            to:{
+
+                postal_code:
+                String(
+                    cepDestino
+                )
+
+            },
+
+
+            package:{
+
+
+                height:
+                Number(
+                    pacote.altura
+                ),
+
+
+                width:
+                Number(
+                    pacote.largura
+                ),
+
+
+                length:
+                Number(
+                    pacote.comprimento
+                ),
+
+
+                weight:
+                Number(
+                    pacote.peso
+                )
+
+
+            }
+
+
         };
 
-    } catch (e) {
 
-        console.error(e);
+
+
+
+
+
+        console.log(
+            "Enviando Melhor Envio:"
+        );
+
+
+        console.log(
+            JSON.stringify(
+                envio,
+                null,
+                2
+            )
+        );
+
+
+
+
+
+
+
+
+
+        const response =
+        await fetch(
+
+
+            "https://www.melhorenvio.com.br/api/v2/me/shipment/calculate",
+
+
+            {
+
+
+                method:
+                "POST",
+
+
+                headers:{
+
+
+                    Authorization:
+
+                    `Bearer ${config.access_token}`,
+
+
+                    Accept:
+
+                    "application/json",
+
+
+                    "Content-Type":
+
+                    "application/json",
+
+
+                    "User-Agent":
+
+                    "UTA Store"
+
+
+                },
+
+
+                body:
+
+                JSON.stringify(
+                    envio
+                )
+
+
+            }
+
+
+        );
+
+
+
+
+
+
+
+
+
+        const resposta =
+        await response.text();
+
+
+
+
+
+
+
+
+        console.log(
+            "STATUS MELHOR ENVIO:",
+            response.status
+        );
+
+
+        console.log(
+            resposta
+        );
+
+
+
+
+
+
+
 
         return {
-            statusCode: 500,
-            body: JSON.stringify({
-                erro: e.message,
-                stack: e.stack
+
+
+            statusCode:
+            response.status,
+
+
+            headers:{
+
+
+                "Content-Type":
+                "application/json"
+
+            },
+
+
+            body:
+            resposta
+
+
+        };
+
+
+
+
+
+
+
+    } catch(error){
+
+
+
+        console.error(
+            "ERRO FUNCTION:",
+            error
+        );
+
+
+
+
+        return {
+
+
+            statusCode:500,
+
+
+            headers:{
+
+
+                "Content-Type":
+                "application/json"
+
+            },
+
+
+            body:
+            JSON.stringify({
+
+                erro:
+                error.message
+
             })
+
+
         };
+
 
     }
+
 
 }
