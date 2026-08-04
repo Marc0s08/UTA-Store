@@ -17,8 +17,10 @@ import {
 
 if (!getApps().length) {
 
+
     const privateKey =
         process.env.FIREBASE_PRIVATE_KEY;
+
 
 
     if (
@@ -30,7 +32,9 @@ if (!getApps().length) {
 
         initializeApp({
 
+
             credential: cert({
+
 
                 projectId:
                 process.env.FIREBASE_PROJECT_ID,
@@ -46,18 +50,24 @@ if (!getApps().length) {
                     "\n"
                 )
 
+
             })
+
 
         });
 
 
+
     } else {
+
 
         console.error(
             "Firebase não configurado"
         );
 
+
     }
+
 
 }
 
@@ -72,18 +82,27 @@ const db = getFirestore();
 
 
 
-export async function handler(event) {
+
+export async function handler(event){
 
 
     try {
 
 
+
         const method =
-            event.requestContext?.http?.method
-            ||
-            event.httpMethod
-            ||
-            "UNKNOWN";
+
+        event.requestContext?.http?.method
+
+        ||
+
+        event.httpMethod
+
+        ||
+
+        "UNKNOWN";
+
+
 
 
 
@@ -96,19 +115,22 @@ export async function handler(event) {
 
 
 
-        // TESTE FUNCTION
+        // teste navegador
 
         if(method === "GET"){
 
 
             return {
 
+
                 statusCode:200,
+
 
                 headers:{
                     "Content-Type":
                     "application/json"
                 },
+
 
                 body:JSON.stringify({
 
@@ -119,10 +141,12 @@ export async function handler(event) {
 
                 })
 
+
             };
 
 
         }
+
 
 
 
@@ -138,12 +162,6 @@ export async function handler(event) {
                 statusCode:405,
 
 
-                headers:{
-                    "Content-Type":
-                    "application/json"
-                },
-
-
                 body:JSON.stringify({
 
                     erro:
@@ -154,11 +172,11 @@ export async function handler(event) {
 
                 })
 
+
             };
 
 
         }
-
 
 
 
@@ -174,7 +192,9 @@ export async function handler(event) {
             pacote
 
         } = JSON.parse(
+
             event.body || "{}"
+
         );
 
 
@@ -199,7 +219,7 @@ export async function handler(event) {
                 body:JSON.stringify({
 
                     erro:
-                    "Dados de frete ausentes"
+                    "Dados incompletos"
 
                 })
 
@@ -217,32 +237,12 @@ export async function handler(event) {
 
 
 
-        console.log(
-            "CEP DESTINO:",
-            cepDestino
-        );
+        // ==========================
+        // Buscar token
+        // ==========================
 
 
-        console.log(
-            "PACOTE:",
-            pacote
-        );
-
-
-
-
-
-
-
-
-
-        // ==============================
-        // Buscar Token Melhor Envio
-        // ==============================
-
-
-        const tokenSnap =
-        await db
+        const tokenSnap = await db
 
         .collection(
             "configuracoes"
@@ -276,6 +276,7 @@ export async function handler(event) {
 
                 })
 
+
             };
 
 
@@ -287,27 +288,8 @@ export async function handler(event) {
 
 
 
-
         const config =
         tokenSnap.data();
-
-
-
-
-
-
-
-        console.log(
-            "Conectado:",
-            config.conectado
-        );
-
-
-        console.log(
-            "Token existe:",
-            !!config.access_token
-        );
-
 
 
 
@@ -327,7 +309,7 @@ export async function handler(event) {
                 body:JSON.stringify({
 
                     erro:
-                    "Token Melhor Envio ausente"
+                    "Token ausente"
 
                 })
 
@@ -345,9 +327,10 @@ export async function handler(event) {
 
 
 
-        // ==============================
-        // Montar envio
-        // ==============================
+
+        // ==========================
+        // Dados envio
+        // ==========================
 
 
         const envio = {
@@ -355,22 +338,29 @@ export async function handler(event) {
 
             from:{
 
+
                 postal_code:
+
                 String(
                     pacote.cepOrigem
                 )
+
 
             },
 
 
             to:{
 
+
                 postal_code:
+
                 String(
                     cepDestino
                 )
 
+
             },
+
 
 
             products:[
@@ -379,48 +369,57 @@ export async function handler(event) {
                 {
 
 
-                    id:
-                    "1",
+                    id:"1",
 
 
                     width:
+
                     Number(
                         pacote.largura
                     ),
 
 
+
                     height:
+
                     Number(
                         pacote.altura
                     ),
 
 
+
                     length:
+
                     Number(
                         pacote.comprimento
                     ),
 
 
+
                     weight:
+
                     Number(
                         pacote.peso
                     ),
 
 
+
                     insurance_value:
+
                     Number(
                         pacote.valor || 1
                     ),
 
 
-                    quantity:
-                    1
+
+                    quantity:1
 
 
                 }
 
 
             ]
+
 
         };
 
@@ -432,17 +431,9 @@ export async function handler(event) {
 
 
 
-        console.log(
-            "======================"
-        );
-
 
         console.log(
-            "ENVIO:"
-        );
-
-
-        console.log(
+            "Enviando:",
             JSON.stringify(
                 envio,
                 null,
@@ -450,9 +441,6 @@ export async function handler(event) {
             )
         );
 
-        console.log(
-            "======================"
-        );
 
 
 
@@ -461,9 +449,7 @@ export async function handler(event) {
 
 
 
-
-        const response =
-        await fetch(
+        const response = await fetch(
 
 
             "https://www.melhorenvio.com.br/api/v2/me/shipment/calculate",
@@ -472,8 +458,7 @@ export async function handler(event) {
             {
 
 
-                method:
-                "POST",
+                method:"POST",
 
 
                 headers:{
@@ -521,8 +506,7 @@ export async function handler(event) {
 
 
 
-        const resultado =
-        await response.text();
+        const data = await response.json();
 
 
 
@@ -531,19 +515,112 @@ export async function handler(event) {
 
 
         console.log(
-            "STATUS MELHOR ENVIO:",
+            "Status Melhor Envio:",
             response.status
         );
 
 
-        console.log(
-            "RESPOSTA MELHOR ENVIO:"
-        );
+
+
 
 
         console.log(
-            resultado
+            data
         );
+
+
+
+
+
+
+
+
+
+        if(!response.ok){
+
+
+            return {
+
+
+                statusCode:
+                response.status,
+
+
+                body:
+                JSON.stringify(data)
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+        // ==========================
+        // FORMATAR TODOS OS FRETES
+        // ==========================
+
+
+        const fretes = data.map(item=>({
+
+
+
+            id:
+            item.id,
+
+
+
+            servico:
+
+            item.name,
+
+
+
+            empresa:
+
+            item.company?.name || "",
+
+
+
+            logo:
+
+            item.company?.picture || "",
+
+
+
+            valor:
+
+            Number(
+                item.price
+            ),
+
+
+
+            prazo:
+
+            item.delivery_time
+
+            ?
+
+            `${item.delivery_time} dias úteis`
+
+            :
+
+            "Prazo não informado"
+
+
+
+        }));
+
+
 
 
 
@@ -554,14 +631,14 @@ export async function handler(event) {
         return {
 
 
-            statusCode:
-            response.status,
+            statusCode:200,
 
 
             headers:{
 
 
                 "Content-Type":
+
                 "application/json"
 
 
@@ -569,7 +646,10 @@ export async function handler(event) {
 
 
             body:
-            resultado
+
+            JSON.stringify(
+                fretes
+            )
 
 
         };
@@ -582,15 +662,14 @@ export async function handler(event) {
 
 
 
-    } catch(error){
+    }catch(error){
 
 
 
         console.error(
-            "ERRO:",
+            "Erro:",
             error
         );
-
 
 
 
@@ -600,18 +679,7 @@ export async function handler(event) {
             statusCode:500,
 
 
-            headers:{
-
-
-                "Content-Type":
-                "application/json"
-
-
-            },
-
-
-            body:
-            JSON.stringify({
+            body:JSON.stringify({
 
                 erro:
                 error.message
