@@ -1,204 +1,100 @@
 import {
-
     doc,
-
     getDoc
-
 } from "firebase/firestore";
 
-
 import {
-
     db
-
 } from "../firebase/firebaseConfig";
 
-
-
-
-
-
-
-export async function getFreteConfig(){
-
+export async function getFreteConfig() {
 
     const ref = doc(
-
         db,
-
         "configuracoes",
-
         "frete"
-
     );
-
-
 
     const snapshot = await getDoc(ref);
 
-
-
-    if(snapshot.exists()){
-
-
+    if (snapshot.exists()) {
         return snapshot.data();
-
-
     }
 
-
-
     return null;
-
-
 }
-
-
-
-
-
-
-
-
 
 export async function calcularMelhorEnvio({
 
-
     cepDestino,
-
 
     peso
 
-
-}){
-
+}) {
 
     const config = await getFreteConfig();
 
-
-
-
-    if(!config){
-
-
-        throw new Error(
-
-            "Configuração de frete não encontrada"
-
-        );
-
-
+    if (!config) {
+        throw new Error("Configuração de frete não encontrada");
     }
 
-
-
-
-
     const response = await fetch(
-
-
         "/.netlify/functions/calcularFrete",
-
-
         {
-
-
-            method:"POST",
-
-
-            headers:{
-
-
-                "Content-Type":
-
-                "application/json"
-
-
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-
-
-            body:JSON.stringify({
-
+            body: JSON.stringify({
 
                 cepDestino,
 
+                pacote: {
 
-                peso,
+                    cepOrigem: config.cepOrigem,
 
+                    altura: Number(config.altura),
 
-                pacote:{
+                    largura: Number(config.largura),
 
+                    comprimento: Number(config.comprimento),
 
-                    cepOrigem:
-
-                    config.cepOrigem,
-
-
-                    altura:
-
-                    config.altura,
-
-
-                    largura:
-
-                    config.largura,
-
-
-                    comprimento:
-
-                    config.comprimento
-
+                    peso: Number(peso) + Number(config.pesoBase || 0)
 
                 }
 
-
             })
-
-
         }
-
-
     );
-
-
-
-
-
 
     const data = await response.json();
 
+    console.log("Resposta Melhor Envio:", data);
 
-
-
-
-    if(!Array.isArray(data)){
-
-
-        throw new Error(
-
-            "Erro ao consultar Melhor Envio"
-
-        );
-
-
+    if (!response.ok) {
+        throw new Error(data.erro || "Erro ao consultar Melhor Envio");
     }
 
+    if (!Array.isArray(data)) {
+        throw new Error("Resposta inválida do Melhor Envio");
+    }
 
+    const melhorOpcao = data
+        .filter(item => !item.error)
+        .sort((a, b) => Number(a.price) - Number(b.price))[0];
 
+    if (!melhorOpcao) {
+        throw new Error("Nenhuma transportadora disponível.");
+    }
 
+    return {
 
+        servico: melhorOpcao.name,
 
-    const tokenDoc = await getDoc(
-    doc(
-        db,
-        "configuracoes",
-        "melhorEnvio"
-    )
-);
+        valor: Number(melhorOpcao.price),
 
+        prazo: `${melhorOpcao.delivery_time} dias úteis`
 
-const tokenData = tokenDoc.data();
-
-
+    };
 
 }
