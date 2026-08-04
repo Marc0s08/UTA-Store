@@ -53,11 +53,9 @@ if (!getApps().length) {
 
     } else {
 
-
         console.error(
-            "Variáveis Firebase ausentes"
+            "Firebase não configurado"
         );
-
 
     }
 
@@ -90,7 +88,7 @@ export async function handler(event) {
 
 
         console.log(
-            "Método recebido:",
+            "Método:",
             method
         );
 
@@ -98,27 +96,19 @@ export async function handler(event) {
 
 
 
-        // ==============================
-        // TESTE NO NAVEGADOR
-        // ==============================
-
+        // TESTE FUNCTION
 
         if(method === "GET"){
 
 
             return {
 
-
                 statusCode:200,
 
-
                 headers:{
-
                     "Content-Type":
                     "application/json"
-
                 },
-
 
                 body:JSON.stringify({
 
@@ -129,12 +119,10 @@ export async function handler(event) {
 
                 })
 
-
             };
 
 
         }
-
 
 
 
@@ -151,10 +139,8 @@ export async function handler(event) {
 
 
                 headers:{
-
                     "Content-Type":
                     "application/json"
-
                 },
 
 
@@ -168,7 +154,6 @@ export async function handler(event) {
 
                 })
 
-
             };
 
 
@@ -181,12 +166,6 @@ export async function handler(event) {
 
 
 
-        const bodyRecebido =
-        JSON.parse(
-            event.body || "{}"
-        );
-
-
 
         const {
 
@@ -194,7 +173,10 @@ export async function handler(event) {
 
             pacote
 
-        } = bodyRecebido;
+        } = JSON.parse(
+            event.body || "{}"
+        );
+
 
 
 
@@ -217,7 +199,7 @@ export async function handler(event) {
                 body:JSON.stringify({
 
                     erro:
-                    "CEP ou pacote ausente"
+                    "Dados de frete ausentes"
 
                 })
 
@@ -232,14 +214,17 @@ export async function handler(event) {
 
 
 
+
+
+
         console.log(
-            "CEP destino:",
+            "CEP DESTINO:",
             cepDestino
         );
 
 
         console.log(
-            "Pacote:",
+            "PACOTE:",
             pacote
         );
 
@@ -252,7 +237,7 @@ export async function handler(event) {
 
 
         // ==============================
-        // TOKEN MELHOR ENVIO
+        // Buscar Token Melhor Envio
         // ==============================
 
 
@@ -268,7 +253,6 @@ export async function handler(event) {
         )
 
         .get();
-
 
 
 
@@ -292,11 +276,11 @@ export async function handler(event) {
 
                 })
 
-
             };
 
 
         }
+
 
 
 
@@ -309,6 +293,14 @@ export async function handler(event) {
 
 
 
+
+
+
+
+        console.log(
+            "Conectado:",
+            config.conectado
+        );
 
 
         console.log(
@@ -335,7 +327,7 @@ export async function handler(event) {
                 body:JSON.stringify({
 
                     erro:
-                    "Token Melhor Envio inválido"
+                    "Token Melhor Envio ausente"
 
                 })
 
@@ -351,6 +343,11 @@ export async function handler(event) {
 
 
 
+
+
+        // ==============================
+        // Montar envio
+        // ==============================
 
 
         const envio = {
@@ -376,35 +373,54 @@ export async function handler(event) {
             },
 
 
-            package:{
+            products:[
 
 
-                height:
-                Number(
-                    pacote.altura
-                ),
+                {
 
 
-                width:
-                Number(
-                    pacote.largura
-                ),
+                    id:
+                    "1",
 
 
-                length:
-                Number(
-                    pacote.comprimento
-                ),
+                    width:
+                    Number(
+                        pacote.largura
+                    ),
 
 
-                weight:
-                Number(
-                    pacote.peso
-                )
+                    height:
+                    Number(
+                        pacote.altura
+                    ),
 
 
-            }
+                    length:
+                    Number(
+                        pacote.comprimento
+                    ),
 
+
+                    weight:
+                    Number(
+                        pacote.peso
+                    ),
+
+
+                    insurance_value:
+                    Number(
+                        pacote.valor || 1
+                    ),
+
+
+                    quantity:
+                    1
+
+
+                }
+
+
+            ]
 
         };
 
@@ -414,8 +430,15 @@ export async function handler(event) {
 
 
 
+
+
         console.log(
-            "Enviando Melhor Envio:"
+            "======================"
+        );
+
+
+        console.log(
+            "ENVIO:"
         );
 
 
@@ -425,6 +448,10 @@ export async function handler(event) {
                 null,
                 2
             )
+        );
+
+        console.log(
+            "======================"
         );
 
 
@@ -494,10 +521,8 @@ export async function handler(event) {
 
 
 
-
-        const resposta =
+        const resultado =
         await response.text();
-
 
 
 
@@ -512,9 +537,13 @@ export async function handler(event) {
 
 
         console.log(
-            resposta
+            "RESPOSTA MELHOR ENVIO:"
         );
 
+
+        console.log(
+            resultado
+        );
 
 
 
@@ -535,14 +564,17 @@ export async function handler(event) {
                 "Content-Type":
                 "application/json"
 
+
             },
 
 
             body:
-            resposta
+            resultado
 
 
         };
+
+
 
 
 
@@ -555,7 +587,7 @@ export async function handler(event) {
 
 
         console.error(
-            "ERRO FUNCTION:",
+            "ERRO:",
             error
         );
 
@@ -573,6 +605,7 @@ export async function handler(event) {
 
                 "Content-Type":
                 "application/json"
+
 
             },
 
