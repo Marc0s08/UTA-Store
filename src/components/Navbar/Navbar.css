@@ -15,7 +15,6 @@
 }
 
 
-/* PARTE SUPERIOR */
 
 .navbar-top{
 
@@ -29,14 +28,13 @@
 
     align-items:center;
 
-    justify-content:space-between;
-
-    gap:30px;
+    gap:25px;
 
 }
 
 
-/* LOGO */
+
+
 
 .logo img{
 
@@ -47,7 +45,8 @@
 }
 
 
-/* PESQUISA */
+
+
 
 .search-bar{
 
@@ -66,145 +65,83 @@
 }
 
 
+
+
+
 .search-bar input{
 
     flex:1;
 
-    border:none;
+    padding:14px;
+
+    border:0;
 
     outline:none;
 
-    padding:14px 18px;
-
-    background:transparent;
+    background:none;
 
     color:white;
 
-    font-size:15px;
-
 }
 
-
-.search-bar input::placeholder{
-
-    color:#999;
-
-}
 
 
 .search-bar button{
 
     width:55px;
 
-    border:none;
+    border:0;
 
     background:#556B2F;
 
     color:white;
 
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
 }
 
 
-.search-bar button:hover{
-
-    background:#6B8E23;
-
-}
 
 
-/* AÇÕES */
+
+
 
 .navbar-actions{
 
+
     display:flex;
 
     align-items:center;
 
-    gap:15px;
+    gap:12px;
 
 }
+
 
 
 .nav-icon{
 
+
     background:none;
 
-    border:none;
+    border:0;
 
     color:white;
 
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    gap:5px;
-
-    position:relative;
-
-    font-size:12px;
-
 }
+
 
 
 .nav-icon svg{
 
-    font-size:26px;
-
-}
-
-
-.nav-icon:hover{
-
-    color:#8BC34A;
+    font-size:25px;
 
 }
 
 
 
-/* CARRINHO */
 
-.cart-badge{
-
-    position:absolute;
-
-    top:-5px;
-
-    right:0;
-
-    background:#8BC34A;
-
-    color:#111;
-
-    width:18px;
-
-    height:18px;
-
-    border-radius:50%;
-
-    font-size:11px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-weight:bold;
-
-}
-
-
-/* MENU */
 
 .nav-menu{
+
 
     background:#1a1a1a;
 
@@ -216,18 +153,22 @@
 
     padding:14px;
 
+
 }
+
 
 
 .nav-menu a{
 
+
     color:#ddd;
 
-    font-size:15px;
-
-    transition:.3s;
+    text-decoration:none;
 
 }
+
+
+
 
 
 .nav-menu a:hover{
@@ -237,45 +178,229 @@
 }
 
 
-/* RESPONSIVO */
+
+
+
+
+
+.menu-mobile{
+
+
+    display:none;
+
+    background:none;
+
+    border:0;
+
+    color:white;
+
+    font-size:28px;
+
+
+}
+
+
+
+
+
+.nav-mobile{
+
+    display:none;
+
+}
+
+
+
+
+
+
+/* TABLET */
+
 
 @media(max-width:900px){
 
 
+
     .navbar-top{
+
+
+        padding:15px;
 
         flex-wrap:wrap;
 
-        padding:15px;
 
     }
 
 
+
+
+
+
+    .menu-mobile{
+
+        display:block;
+
+    }
+
+
+
+
+
+
+
     .search-bar{
 
-        order:3;
+
+        order:5;
 
         width:100%;
 
         max-width:none;
 
+
     }
 
 
-    .navbar-actions span{
+
+
+
+
+
+    .nav-desktop{
+
 
         display:none;
 
+
+    }
+
+
+
+
+
+
+
+    .nav-mobile.active{
+
+
+        display:block;
+
+
     }
 
 
-    .nav-menu{
 
-        overflow-x:auto;
 
-        justify-content:flex-start;
+
+
+
+    .nav-mobile .nav-menu{
+
+
+        flex-direction:column;
+
+        align-items:center;
+
+        gap:20px;
+
 
     }
+
+
+
+
+
+
+
+    .navbar-actions{
+
+
+        margin-left:auto;
+
+        gap:8px;
+
+
+    }
+
+
+
+
+}
+
+
+
+
+
+
+
+/* CELULAR */
+
+
+@media(max-width:500px){
+
+
+
+    .navbar-top{
+
+
+        gap:12px;
+
+
+    }
+
+
+
+
+
+    .logo img{
+
+
+        width:100px;
+
+
+    }
+
+
+
+
+
+
+    .navbar-actions{
+
+
+        gap:5px;
+
+
+    }
+
+
+
+
+
+
+    .nav-icon svg{
+
+
+        font-size:20px;
+
+
+    }
+
+
+
+
+
+
+    .search-bar input{
+
+
+        font-size:14px;
+
+
+    }
+
+
+
 
 
 }

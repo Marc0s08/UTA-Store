@@ -1,7 +1,26 @@
 .layout-content{
 
+    width:100%;
 
-    min-height:calc(100vh - 80px);
+    min-height:calc(100vh - 120px);
+
+    padding:20px;
+
+    box-sizing:border-box;
+
+}
+
+
+/* CELULAR */
+
+@media(max-width:768px){
+
+
+    .layout-content{
+
+        padding:12px;
+
+    }
 
 
 }

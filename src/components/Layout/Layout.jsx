@@ -1,7 +1,6 @@
 import "./Layout.css";
 
 import Navbar from "../Navbar/Navbar";
-
 import CartMessage from "../CartMessage/CartMessage";
 
 import {
@@ -9,29 +8,24 @@ import {
 } from "react-router-dom";
 
 
-
 export default function Layout(){
 
-
-    return(
+    return (
 
         <>
 
-            <Navbar/>
+            <Navbar />
 
-            <CartMessage/>
-
+            <CartMessage />
 
             <main className="layout-content">
 
-                <Outlet/>
+                <Outlet />
 
             </main>
 
-
         </>
 
-    )
-
+    );
 
 }

@@ -1,4 +1,10 @@
+import {
+    useState
+} from "react";
+
+
 import "./Navbar.css";
+
 
 import Logo from "./Logo";
 import SearchBar from "./SearchBar";
@@ -10,35 +16,127 @@ import OrdersButton from "./OrdersButton";
 import AdminButton from "./AdminButton";
 
 
-export default function Navbar() {
+export default function Navbar(){
 
-  return (
 
-    <header className="navbar">
+    const [menu,setMenu] = useState(false);
 
-      <div className="navbar-top">
 
-        <Logo />
 
-        <SearchBar />
+    return(
 
-        <div className="navbar-actions">
 
-          <FavoriteButton />
-            <OrdersButton/>
-            <AdminButton/>
-          <CartButton />
+        <header className="navbar">
 
-          <UserMenu />
 
-        </div>
 
-      </div>
+            <div className="navbar-top">
 
-      <NavMenu />
 
-    </header>
 
-  );
+                <button
+
+                className="menu-mobile"
+
+                onClick={()=>setMenu(!menu)}
+
+                >
+
+                    ☰
+
+                </button>
+
+
+
+
+
+                <Logo/>
+
+
+
+
+
+
+                <SearchBar/>
+
+
+
+
+
+
+
+                <div className="navbar-actions">
+
+
+                    <FavoriteButton/>
+
+
+                    <OrdersButton/>
+
+
+                    <AdminButton/>
+
+
+                    <CartButton/>
+
+
+                    <UserMenu/>
+
+
+                </div>
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <div
+
+            className={
+
+                menu
+
+                ?
+
+                "nav-mobile active"
+
+                :
+
+                "nav-mobile"
+
+            }
+
+            >
+
+                <NavMenu/>
+
+            </div>
+
+
+
+
+
+
+
+            <div className="nav-desktop">
+
+                <NavMenu/>
+
+            </div>
+
+
+
+
+
+        </header>
+
+
+    )
 
 }

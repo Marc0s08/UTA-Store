@@ -1,5 +1,182 @@
-h1{
+.home-page{
 
-    margin-bottom:20px;
+    width:100%;
+
+}
+
+
+
+
+
+/* BANNER */
+
+
+.banner-container{
+
+    width:100%;
+
+    margin-bottom:30px;
+
+}
+
+
+
+
+
+.banner-placeholder{
+
+    width:100%;
+
+    height:350px;
+
+    background:
+
+    linear-gradient(
+
+        135deg,
+
+        #111,
+
+        #333
+
+    );
+
+
+    border-radius:15px;
+
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+
+    color:white;
+
+
+    text-align:center;
+
+
+}
+
+
+
+
+
+.banner-placeholder h1{
+
+    font-size:45px;
+
+    margin-bottom:10px;
+
+}
+
+
+
+
+
+.banner-placeholder p{
+
+    font-size:20px;
+
+    color:#ccc;
+
+}
+
+
+
+
+
+.home-content{
+
+
+    background:#151515;
+
+
+    color:white;
+
+
+    padding:30px;
+
+
+    border-radius:15px;
+
+
+}
+
+
+
+
+
+.home-content h2{
+
+    color:#8BC34A;
+
+}
+
+
+
+
+
+/* CELULAR */
+
+
+@media(max-width:768px){
+
+
+
+    .banner-placeholder{
+
+
+        height:200px;
+
+
+        border-radius:10px;
+
+
+    }
+
+
+
+
+
+    .banner-placeholder h1{
+
+
+        font-size:30px;
+
+
+    }
+
+
+
+
+
+    .banner-placeholder p{
+
+
+        font-size:15px;
+
+
+        padding:0 20px;
+
+
+    }
+
+
+
+
+
+    .home-content{
+
+
+        padding:20px;
+
+
+    }
+
 
 }

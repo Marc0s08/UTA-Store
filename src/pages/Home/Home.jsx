@@ -1,23 +1,73 @@
 import "./Home.css";
 
-import Layout from "../../components/Layout/Layout";
 
 export default function Home(){
 
+
     return(
 
-        <Layout>
 
-            <h1>Bem-vindo à UTA Store</h1>
+        <main className="home-page">
 
-            <p>
 
-                Nosso e-commerce está sendo desenvolvido.
+            <section className="banner-container">
 
-            </p>
 
-        </Layout>
+                <div className="banner-placeholder">
 
-    )
+
+                    <h1>
+
+                        UTA Store
+
+                    </h1>
+
+
+                    <p>
+
+                        Equipamentos e acessórios personalizados
+
+                    </p>
+
+
+                </div>
+
+
+            </section>
+
+
+
+
+
+            <section className="home-content">
+
+
+                <h2>
+
+                    Bem-vindo à UTA Store
+
+                </h2>
+
+
+                <p>
+
+                    Encontre produtos personalizados,
+
+                    equipamentos e acessórios.
+
+                </p>
+
+
+            </section>
+
+
+
+
+
+        </main>
+
+
+    );
+
 
 }
