@@ -26,17 +26,8 @@ import {
 } from "../../services/freteService";
 
 import {
-    buscarCEP
-} from "../../services/cepService";
-
-import {
-    moeda
-} from "../../utils/freteFormatter";
-
-import {
     useNavigate
 } from "react-router-dom";
-
 
 
 
@@ -72,32 +63,58 @@ export default function Cart(){
 
 
 
+
     const navigate = useNavigate();
 
 
 
 
-    const [cep,setCep] = useState("");
 
-    const [perfil,setPerfil] = useState(null);
+    // =====================
+    // STATES
+    // =====================
+
+
+    const [cep,setCep] = useState("");
 
     const [endereco,setEndereco] = useState(null);
 
 
-
-    const [fretes,setFretes] = useState([]);
-
-    const [freteSelecionado,setFreteSelecionado] = useState(null);
+    const [perfil,setPerfil] = useState(null);
 
 
-
-    const [calculando,setCalculando] = useState(false);
-
-
-    const [usarEnderecoCadastro,setUsarEnderecoCadastro] = useState(true);
+    const [usarEnderecoCadastro,setUsarEnderecoCadastro]
+    =
+    useState(true);
 
 
 
+    const [fretes,setFretes]
+    =
+    useState([]);
+
+
+
+    const [freteSelecionado,setFreteSelecionado]
+    =
+    useState(null);
+
+
+
+    const [calculando,setCalculando]
+    =
+    useState(false);
+
+
+
+
+
+
+
+
+    // =====================
+    // CARREGAR PERFIL
+    // =====================
 
 
     useEffect(()=>{
@@ -106,18 +123,18 @@ export default function Cart(){
         async function carregarPerfil(){
 
 
-            if(user){
+            if(!user)
+                return;
 
 
-                const data = await getUserProfile(
-                    user.uid
-                );
+
+            const dados =
+            await getUserProfile(
+                user.uid
+            );
 
 
-                setPerfil(data);
-
-
-            }
+            setPerfil(dados);
 
 
         }
@@ -132,13 +149,22 @@ export default function Cart(){
 
 
 
+
+
+
+
+    // =====================
+    // PESO TOTAL
+    // =====================
+
+
     const pesoTotal = cart.reduce(
 
 
-        (total,item)=>{
+        (soma,item)=>{
 
 
-            return total +
+            return soma +
 
             (
 
@@ -146,7 +172,7 @@ export default function Cart(){
 
                 *
 
-                Number(item.quantidade)
+                Number(item.quantidade || 1)
 
             );
 
@@ -158,7 +184,21 @@ export default function Cart(){
 
 
     );
-        async function calcularFrete(){
+
+
+
+
+
+
+
+
+
+    // =====================
+    // CALCULAR FRETE
+    // =====================
+
+
+    async function calcularFrete(){
 
 
         try{
@@ -167,15 +207,25 @@ export default function Cart(){
             setCalculando(true);
 
 
+            setFretes([]);
+
+            setFreteSelecionado(null);
+
+
+
+
 
             let cepDestino = cep;
+
+
 
 
 
             if(usarEnderecoCadastro){
 
 
-                cepDestino = perfil?.endereco?.cep;
+                cepDestino =
+                perfil?.endereco?.cep;
 
 
             }
@@ -184,29 +234,91 @@ export default function Cart(){
 
 
 
-            const enderecoEncontrado = await buscarCEP(
-                cepDestino
+
+            const cepLimpo =
+            cepDestino?.replace(/\D/g,"");
+
+
+
+
+
+
+            if(
+                !cepLimpo ||
+                cepLimpo.length !== 8
+            ){
+
+
+                alert(
+                    "Digite um CEP válido"
+                );
+
+
+                return;
+
+
+            }
+
+
+
+
+
+
+
+            const buscaCep =
+            await fetch(
+
+            `https://viacep.com.br/ws/${cepLimpo}/json/`
+
             );
+
+
+
+
+            const dadosCep =
+            await buscaCep.json();
+
+
+
+
+
+
+            if(dadosCep.erro){
+
+
+                alert(
+                    "CEP não encontrado"
+                );
+
+
+                return;
+
+
+            }
+
+
 
 
 
             setEndereco(
-                enderecoEncontrado
+                dadosCep
             );
 
 
 
 
 
-            const resultado = await calcularMelhorEnvio({
 
 
-                cepDestino:
-                enderecoEncontrado.cep,
+
+            const retorno =
+            await calcularMelhorEnvio({
 
 
-                peso:
-                pesoTotal
+                cepDestino:cepLimpo,
+
+
+                peso:pesoTotal
 
 
             });
@@ -216,10 +328,9 @@ export default function Cart(){
 
 
 
-
             console.log(
-                "Fretes encontrados:",
-                resultado
+                "Fretes:",
+                retorno
             );
 
 
@@ -227,19 +338,33 @@ export default function Cart(){
 
 
 
+            const lista = Array.isArray(retorno)
 
-            setFretes(
-                resultado
-            );
+            ?
+
+            retorno
+
+            :
+
+            [retorno];
 
 
 
 
-            if(resultado.length > 0){
+
+
+
+            setFretes(lista);
+
+
+
+
+
+            if(lista.length){
 
 
                 setFreteSelecionado(
-                    resultado[0]
+                    lista[0]
                 );
 
 
@@ -249,19 +374,18 @@ export default function Cart(){
 
 
 
+
+
         }catch(error){
 
 
-
-            console.log(
-                "Erro frete:",
+            console.error(
                 error
             );
 
 
-
             alert(
-                error.message
+                "Erro ao calcular frete"
             );
 
 
@@ -276,17 +400,9 @@ export default function Cart(){
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
+    // =====================
+    // FINALIZAR PEDIDO
+    // =====================
 
 
     async function handleCheckout(){
@@ -297,11 +413,47 @@ export default function Cart(){
 
 
             alert(
-                "Faça login para finalizar a compra"
+                "Faça login para finalizar a compra."
             );
 
 
             navigate("/login");
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+        if(!endereco){
+
+
+            alert(
+                "Calcule o frete antes de finalizar."
+            );
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+        if(!freteSelecionado){
+
+
+            alert(
+                "Selecione uma opção de entrega."
+            );
 
 
             return;
@@ -322,9 +474,10 @@ export default function Cart(){
 
             const profile =
             await getUserProfile(
-                user.uid
-            );
 
+                user.uid
+
+            );
 
 
 
@@ -334,9 +487,11 @@ export default function Cart(){
 
             const valorFrete =
 
-            freteSelecionado?.valor || 0;
+            Number(
 
+                freteSelecionado.valor || 0
 
+            );
 
 
 
@@ -350,7 +505,14 @@ export default function Cart(){
 
 
 
-                usuarioId:user.uid,
+
+                usuarioId:
+
+                user.uid,
+
+
+
+
 
 
 
@@ -365,14 +527,19 @@ export default function Cart(){
 
                     profile?.nome ||
 
+
                     user.displayName ||
+
 
                     user.email.split("@")[0],
 
 
 
-                    email:user.email
 
+
+                    email:
+
+                    user.email
 
 
                 },
@@ -388,7 +555,9 @@ export default function Cart(){
                 enderecoEntrega:{
 
 
+
                     ...endereco,
+
 
 
                     cep:
@@ -418,21 +587,31 @@ export default function Cart(){
 
                 produtos:
 
+
                 cart.map(item=>(
 
 
                     {
 
 
-                        id:item.id,
+                        id:
+
+                        item.id,
 
 
-                        nome:item.nome,
+
+                        nome:
+
+                        item.nome,
+
 
 
                         imagem:
 
+
                         item.imagens?.[0] || "",
+
+
 
 
 
@@ -442,18 +621,25 @@ export default function Cart(){
 
 
 
+
+
                         peso:
 
                         Number(
+
                             item.peso || 0
+
                         ),
+
 
 
 
 
                         preco:
 
+
                         Number(
+
 
                             item.precoPromocional > 0
 
@@ -465,10 +651,13 @@ export default function Cart(){
 
                             item.preco
 
+
                         )
 
 
+
                     }
+
 
 
                 )),
@@ -481,55 +670,95 @@ export default function Cart(){
 
 
 
-                valorProdutos:
-
-
-                total,
-
-
-
-
-
-                pesoTotal,
-
-
-
-
-
-
-
-
-
                 frete:{
+
 
 
                     id:
 
-                    freteSelecionado?.id,
+                    freteSelecionado.id || null,
 
 
-
-                    valor:
-
-                    valorFrete,
 
 
 
                     servico:
 
-                    freteSelecionado?.servico,
+
+                    freteSelecionado.servico ||
 
 
 
-                    transportadora:
 
-                    freteSelecionado?.transportadora,
+
+                    freteSelecionado.name ||
+
+
+
+
+
+                    "Frete",
+
+
+
+
+
+
+
+
+                    empresa:
+
+
+                    freteSelecionado.empresa ||
+
+
+
+
+
+                    freteSelecionado.company?.name ||
+
+
+
+
+
+                    "",
+
+
+
+
+
+
+
+
+                    valor:
+
+
+                    valorFrete,
+
+
+
+
+
 
 
 
                     prazo:
 
-                    freteSelecionado?.prazo
+
+                    freteSelecionado.prazo ||
+
+
+
+
+
+                    freteSelecionado.delivery_time ||
+
+
+
+
+
+                    ""
+
 
 
                 },
@@ -542,12 +771,61 @@ export default function Cart(){
 
 
 
-                valorTotal:
+                valores:{
 
 
-                total +
 
-                valorFrete
+                    produtos:
+
+
+                    Number(total),
+
+
+
+
+
+                    frete:
+
+
+                    valorFrete,
+
+
+
+
+
+                    total:
+
+
+                    Number(total) + valorFrete
+
+
+
+                },
+
+
+
+
+
+
+
+
+                status:
+
+
+                "aguardando pagamento",
+
+
+
+
+
+
+
+
+
+                criadoEm:
+
+
+                new Date()
 
 
 
@@ -560,11 +838,14 @@ export default function Cart(){
 
 
 
-
             console.log(
-                "Pedido:",
+
+                "Pedido criado:",
+
                 pedido
+
             );
+
 
 
 
@@ -574,8 +855,12 @@ export default function Cart(){
 
 
             await createOrder(
+
                 pedido
+
             );
+
+
 
 
 
@@ -588,17 +873,41 @@ export default function Cart(){
 
 
 
+            setFretes([]);
+
+            setFreteSelecionado(null);
+
+            setEndereco(null);
+
+
+
+
+
+
+
 
             alert(
+
                 "Pedido realizado com sucesso!"
+
             );
+
+
+
+
 
 
 
 
             navigate(
+
                 "/meus-pedidos"
+
             );
+
+
+
+
 
 
 
@@ -607,16 +916,22 @@ export default function Cart(){
 
 
 
-            console.log(
-                "Erro pedido:",
+            console.error(
+
+                "Erro ao finalizar:",
+
                 error
+
             );
 
 
 
             alert(
-                "Erro ao finalizar compra"
+
+                "Erro ao finalizar pedido."
+
             );
+
 
 
         }
@@ -624,707 +939,877 @@ export default function Cart(){
 
 
     }
-        if(cart.length === 0){
+
+
+
+
+
+
+
+    // =====================
+    // CARRINHO VAZIO
+    // =====================
+
+
+    if(cart.length === 0){
+
 
         return(
 
+
             <main className="cart-page">
 
+
                 <h1>
+
                     Seu carrinho está vazio
+
                 </h1>
 
 
+
                 <p>
+
                     Adicione produtos para continuar.
+
                 </p>
 
 
             </main>
 
+
         );
 
+
     }
-
-
-
-
-
-
-
+    id="r3cart"
     return(
 
-        <main className="cart-page">
+<main className="cart-page">
 
 
-            <h1>
-                Carrinho de compras
-            </h1>
+<h1>
+    Carrinho de compras
+</h1>
 
 
 
 
+<section className="cart-container">
 
-            <section className="cart-container">
 
 
 
 
+<div className="cart-products">
 
-                <div className="cart-products">
 
+{
 
+cart.map(product=>(
 
-                {
 
-                cart.map(product=>(
+<div
 
+className="cart-item"
 
-                    <div
-                    className="cart-item"
-                    key={product.id}
-                    >
+key={product.id}
 
+>
 
 
-                        <img
 
-                        src={
-                            product.imagens?.[0] ||
-                            "/placeholder.png"
-                        }
+<img
 
-                        alt={product.nome}
+src={
+product.imagens?.[0] ||
+"/placeholder.png"
+}
 
-                        />
+alt={product.nome}
 
+/>
 
 
 
 
+<div className="cart-info">
 
 
-                        <div className="cart-info">
+<h2>
 
+{product.nome}
 
-                            <h2>
-                                {product.nome}
-                            </h2>
+</h2>
 
 
 
-                            <p>
 
-                            R$
+<p>
 
-                            {
-                                moeda(
+R$
 
-                                    product.precoPromocional > 0
+{
 
-                                    ?
+Number(
 
-                                    product.precoPromocional
+product.precoPromocional > 0
 
-                                    :
+?
 
-                                    product.preco
+product.precoPromocional
 
-                                )
-                            }
+:
 
-                            </p>
+product.preco
 
+)
 
+.toLocaleString(
 
+"pt-BR",
 
+{
 
-                            <div className="quantity">
-
-
-                                <button
-
-                                onClick={()=>decreaseQuantity(product.id)}
-
-                                >
-
-                                    -
-
-                                </button>
-
-
-
-                                <span>
-
-                                    {product.quantidade}
-
-                                </span>
-
-
-
-                                <button
-
-                                onClick={()=>increaseQuantity(product.id)}
-
-                                >
-
-                                    +
-
-                                </button>
-
-
-
-                            </div>
-
-
-
-                        </div>
-
-
-
-
-
-
-
-                        <button
-
-                        className="remove-button"
-
-                        onClick={()=>removeFromCart(product.id)}
-
-                        >
-
-                            Remover
-
-                        </button>
-
-
-
-
-
-                    </div>
-
-
-
-                ))
-
-                }
-
-
-
-                </div>
-
-
-
-
-
-
-
-
-
-
-
-
-                <aside className="cart-summary">
-
-
-
-
-
-                    <h2>
-                        Entrega
-                    </h2>
-
-
-
-
-
-
-                    <label>
-
-
-                    <input
-
-                    type="radio"
-
-                    checked={usarEnderecoCadastro}
-
-                    onChange={()=>setUsarEnderecoCadastro(true)}
-
-                    />
-
-
-                    Usar endereço cadastrado
-
-
-                    </label>
-
-
-
-
-
-
-
-                    <label>
-
-
-                    <input
-
-                    type="radio"
-
-                    checked={!usarEnderecoCadastro}
-
-                    onChange={()=>setUsarEnderecoCadastro(false)}
-
-                    />
-
-
-                    Digitar outro CEP
-
-
-                    </label>
-
-
-
-
-
-
-
-
-
-                    {
-
-                    usarEnderecoCadastro && perfil?.endereco && (
-
-
-                        <div className="address-box">
-
-
-                            <p>
-
-                            {perfil.endereco.rua},
-
-                            {" "}
-
-                            {perfil.endereco.numero}
-
-                            </p>
-
-
-                            <p>
-
-                            {perfil.endereco.cidade}
-
-                            -
-
-                            {perfil.endereco.estado}
-
-                            </p>
-
-
-                            <p>
-
-                            CEP:
-
-                            {perfil.endereco.cep}
-
-                            </p>
-
-
-                        </div>
-
-
-                    )
-
-                    }
-
-
-
-
-
-
-
-
-
-                    {
-
-
-                    !usarEnderecoCadastro && (
-
-
-                        <input
-
-                        type="text"
-
-                        placeholder="Digite seu CEP"
-
-                        value={cep}
-
-                        onChange={e=>
-
-                            setCep(e.target.value)
-
-                        }
-
-                        />
-
-
-                    )
-
-
-                    }
-
-
-
-
-
-
-
-
-
-                    <button
-
-                    className="frete-button"
-
-                    onClick={calcularFrete}
-
-                    >
-
-
-                    {
-
-                    calculando
-
-                    ?
-
-                    "Calculando..."
-
-                    :
-
-                    "Calcular frete"
-
-
-                    }
-
-
-                    </button>
-
-
-
-
-
-
-
-
-
-                    {
-
-                    endereco && (
-
-
-                        <div className="cep-result">
-
-
-                            <p>
-
-                            {endereco.logradouro}
-
-                            </p>
-
-
-                            <p>
-
-                            {endereco.localidade}
-
-                            -
-
-                            {endereco.uf}
-
-                            </p>
-
-
-                        </div>
-
-
-                    )
-
-                    }
-
-
-
-
-
-
-
-
-
-                    {
-
-                    fretes.length > 0 && (
-
-
-                    <div className="fretes-box">
-
-
-                        <h3>
-                            Opções de entrega
-                        </h3>
-
-
-
-
-
-                        {
-
-                        fretes.map(frete=>(
-
-
-
-                            <label
-
-                            key={frete.id}
-
-                            className="frete-item"
-
-                            >
-
-
-
-                                <input
-
-                                type="radio"
-
-                                name="frete"
-
-                                checked={
-
-                                freteSelecionado?.id === frete.id
-
-                                }
-
-
-                                onChange={()=>
-
-
-                                    setFreteSelecionado(frete)
-
-                                }
-
-
-                                />
-
-
-
-
-
-                                <div>
-
-
-                                    <strong>
-
-                                    {frete.servico}
-
-                                    </strong>
-
-
-
-                                    <br/>
-
-                                    {frete.transportadora}
-
-
-
-                                    <br/>
-
-
-                                    R$
-
-                                    {moeda(frete.valor)}
-
-
-
-                                    <br/>
-
-
-                                    <small>
-
-                                    {frete.prazo}
-
-                                    </small>
-
-
-                                </div>
-
-
-
-                            </label>
-
-
-
-                        ))
-
-                        }
-
-
-
-                    </div>
-
-
-                    )
-
-                    }
-
-
-
-
-
-
-
-
-
-
-
-
-                    <h2>
-                        Resumo
-                    </h2>
-
-
-
-
-
-                    <p>
-
-                        Peso:
-
-                        <strong>
-
-                        {" "}
-
-                        {pesoTotal.toFixed(3)}
-
-                        kg
-
-                        </strong>
-
-                    </p>
-
-
-
-
-
-
-
-
-                    <h3>
-
-                        Produtos:
-
-                        <span>
-
-                        R$
-
-                        {moeda(total)}
-
-                        </span>
-
-                    </h3>
-
-
-
-
-
-
-
-
-                    <h3>
-
-                        Frete:
-
-                        <span>
-
-                        R$
-
-                        {moeda(
-                            freteSelecionado?.valor
-                        )}
-
-                        </span>
-
-                    </h3>
-
-
-
-
-
-
-
-
-                    <h3>
-
-                        Total:
-
-                        <span>
-
-                        R$
-
-                        {moeda(
-
-                            total +
-
-                            (
-                            freteSelecionado?.valor || 0
-                            )
-
-                        )}
-
-                        </span>
-
-
-                    </h3>
-
-
-
-
-
-
-
-
-
-                    <button
-
-                    className="checkout-button"
-
-                    onClick={handleCheckout}
-
-                    >
-
-                        Finalizar compra
-
-
-                    </button>
-
-
-
-
-
-                </aside>
-
-
-
-
-
-
-
-            </section>
-
-
-
-
-
-        </main>
-
-    );
-
+minimumFractionDigits:2
 
 }
+
+)
+
+}
+
+</p>
+
+
+
+
+
+<div className="quantity">
+
+
+<button
+
+onClick={()=>decreaseQuantity(product.id)}
+
+>
+
+-
+
+</button>
+
+
+
+
+<span>
+
+{product.quantidade}
+
+</span>
+
+
+
+
+<button
+
+onClick={()=>increaseQuantity(product.id)}
+
+>
+
++
+
+</button>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<button
+
+className="remove-button"
+
+onClick={()=>removeFromCart(product.id)}
+
+>
+
+
+Remover
+
+
+</button>
+
+
+
+</div>
+
+
+
+))
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<aside className="cart-summary">
+
+
+
+
+
+<h2>
+
+Entrega
+
+</h2>
+
+
+
+
+
+
+
+
+
+<label>
+
+
+<input
+
+type="radio"
+
+checked={usarEnderecoCadastro}
+
+onChange={()=>setUsarEnderecoCadastro(true)}
+
+/>
+
+
+Usar endereço cadastrado
+
+
+</label>
+
+
+
+
+
+
+
+
+
+<label>
+
+
+<input
+
+type="radio"
+
+checked={!usarEnderecoCadastro}
+
+onChange={()=>setUsarEnderecoCadastro(false)}
+
+/>
+
+
+Digitar outro CEP
+
+
+</label>
+
+
+
+
+
+
+
+
+
+{
+usarEnderecoCadastro && perfil?.endereco && (
+
+
+<div className="address-box">
+
+
+<p>
+
+{perfil.endereco.rua},
+
+{" "}
+
+{perfil.endereco.numero}
+
+</p>
+
+
+<p>
+
+{perfil.endereco.bairro}
+
+</p>
+
+
+<p>
+
+{perfil.endereco.cidade}
+
+-
+
+{perfil.endereco.estado}
+
+</p>
+
+
+
+<p>
+
+CEP:
+
+{" "}
+
+{perfil.endereco.cep}
+
+</p>
+
+
+
+</div>
+
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+{
+
+!usarEnderecoCadastro && (
+
+
+<input
+
+type="text"
+
+placeholder="Digite o CEP"
+
+value={cep}
+
+onChange={(e)=>setCep(e.target.value)}
+
+/>
+
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+<button
+
+className="frete-button"
+
+onClick={calcularFrete}
+
+>
+
+
+{
+
+calculando
+
+?
+
+"Calculando..."
+
+:
+
+"Calcular frete"
+
+}
+
+
+
+</button>
+
+
+
+
+
+
+
+
+
+{
+
+endereco && (
+
+
+<div className="cep-result">
+
+
+<p>
+
+{endereco.logradouro}
+
+</p>
+
+
+<p>
+
+{endereco.bairro}
+
+</p>
+
+
+
+<p>
+
+{endereco.localidade}
+
+-
+
+{endereco.uf}
+
+</p>
+
+
+
+</div>
+
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+{
+
+fretes.length > 0 && (
+
+
+
+<div className="fretes-box">
+
+
+<h3>
+
+Opções de entrega
+
+</h3>
+
+
+
+
+
+
+{
+
+fretes.map((frete,index)=>(
+
+
+<label
+
+key={frete.id || index}
+
+className="frete-option"
+
+>
+
+
+
+<input
+
+type="radio"
+
+name="frete"
+
+checked={
+
+freteSelecionado?.id === frete.id
+
+}
+
+onChange={()=>setFreteSelecionado(frete)}
+
+/>
+
+
+
+
+
+<div>
+
+
+<strong>
+
+{
+
+frete.servico ||
+
+frete.name ||
+
+"Frete"
+
+}
+
+</strong>
+
+
+
+
+
+<br/>
+
+
+
+
+
+{
+
+frete.empresa && (
+
+
+<span>
+
+{frete.empresa}
+
+</span>
+
+
+)
+
+}
+
+
+
+
+
+
+<p>
+
+R$
+
+{
+
+Number(
+
+frete.valor ||
+
+frete.price ||
+
+0
+
+)
+
+.toLocaleString(
+
+"pt-BR",
+
+{
+
+minimumFractionDigits:2
+
+}
+
+)
+
+}
+
+</p>
+
+
+
+
+
+
+<small>
+
+{
+
+frete.prazo ||
+
+"Prazo não informado"
+
+}
+
+</small>
+
+
+
+</div>
+
+
+
+</label>
+
+
+))
+
+}
+
+
+
+</div>
+
+
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+<h2>
+
+Resumo
+
+</h2>
+
+
+
+
+
+
+
+
+
+<p>
+
+Peso:
+
+<strong>
+
+{" "}
+
+{pesoTotal.toFixed(3)}
+
+kg
+
+</strong>
+
+
+</p>
+
+
+
+
+
+
+
+
+
+<h3>
+
+Produtos:
+
+<span>
+
+R$
+
+{
+
+total.toLocaleString(
+
+"pt-BR",
+
+{
+
+minimumFractionDigits:2
+
+}
+
+)
+
+}
+
+</span>
+
+
+</h3>
+
+
+
+
+
+
+
+
+
+<h3>
+
+Frete:
+
+<span>
+
+R$
+
+{
+
+Number(
+
+freteSelecionado?.valor || 0
+
+)
+
+.toLocaleString(
+
+"pt-BR",
+
+{
+
+minimumFractionDigits:2
+
+}
+
+)
+
+}
+
+</span>
+
+
+</h3>
+
+
+
+
+
+
+
+
+
+<h3>
+
+Total:
+
+<span>
+
+R$
+
+{
+
+(
+
+total +
+
+Number(
+
+freteSelecionado?.valor || 0
+
+)
+
+)
+
+.toLocaleString(
+
+"pt-BR",
+
+{
+
+minimumFractionDigits:2
+
+}
+
+)
+
+}
+
+</span>
+
+
+</h3>
+
+
+
+
+
+
+
+
+
+<button
+
+className="checkout-button"
+
+onClick={handleCheckout}
+
+>
+
+
+Finalizar compra
+
+
+</button>
+
+
+
+
+
+
+</aside>
+
+
+
+
+
+
+</section>
+
+
+
+
+
+</main>
+
+
+);
