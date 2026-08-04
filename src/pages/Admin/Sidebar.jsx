@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import "./Sidebar.css";
 
 import {
@@ -11,6 +11,7 @@ import {
   LocalOffer,
   Image,
   Settings,
+  Store, // Ícone importado para voltar à loja
   Menu as MenuIcon,
   Close as CloseIcon
 } from "@mui/icons-material";
@@ -42,6 +43,14 @@ export default function Sidebar() {
         </div>
 
         <nav>
+          {/* Botão para retornar à loja pública */}
+          <Link to="/" className="back-to-store-btn" onClick={closeSidebar}>
+            <Store />
+            <span>Voltar para a Loja</span>
+          </Link>
+
+          <div className="sidebar-divider" />
+
           <NavLink to="/admin" end onClick={closeSidebar}>
             <Dashboard />
             <span>Dashboard</span>

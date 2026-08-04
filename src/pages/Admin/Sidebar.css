@@ -22,7 +22,7 @@
   font-size: 1.35rem;
   font-weight: 900;
   letter-spacing: -0.03em;
-  margin-bottom: 35px;
+  margin-bottom: 24px;
   padding-left: 8px;
   color: #ffffff;
 }
@@ -76,6 +76,32 @@
 .admin-sidebar svg {
   font-size: 22px;
   transition: color 0.2s ease;
+}
+
+/* Botão Especial: Voltar para a Loja */
+.back-to-store-btn {
+  background: rgba(139, 195, 74, 0.08) !important;
+  color: #8BC34A !important;
+  border: 1px solid rgba(139, 195, 74, 0.2);
+  font-weight: 700 !important;
+}
+
+.back-to-store-btn:hover {
+  background: #8BC34A !important;
+  color: #09090b !important;
+  border-color: #8BC34A !important;
+  transform: translateX(0) !important;
+}
+
+.back-to-store-btn:hover svg {
+  color: #09090b !important;
+}
+
+/* Linha Divisória */
+.sidebar-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 10px 0 14px 0;
 }
 
 /* Ocultar elementos mobile no Desktop */
