@@ -13,6 +13,9 @@ import AdminButton from "./AdminButton";
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Função para fechar o menu mobile ao clicar em um item
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <header className="navbar">
       <div className="navbar-top">
@@ -41,9 +44,9 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Menu Mobile Dropped Down */}
+      {/* Menu Mobile Dropped Down (passando a prop onItemClick para fechar o menu) */}
       <div className={`nav-mobile ${menuOpen ? "active" : ""}`}>
-        <NavMenu />
+        <NavMenu onItemClick={closeMenu} />
       </div>
 
       {/* Menu Desktop Tradicional */}

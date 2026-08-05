@@ -1,0 +1,61 @@
+/* ===============================================
+   ESTILOS DO NAVMENU (LISTA DE LINKS DE NAVEGAÇÃO)
+================================================ */
+
+/* Limpa o estilo padrão da lista HTML */
+.nav-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Estilo padrão dos links no Desktop */
+.nav-menu-list a {
+  color: #e4e4e7;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+  display: inline-block;
+}
+
+/* Efeito ao passar o mouse (Hover) */
+.nav-menu-list a:hover {
+  color: #8bc34a;
+  background: rgba(139, 195, 74, 0.1);
+}
+
+/* Link da página atual onde o usuário está (Active) */
+.nav-menu-list a.active {
+  color: #8bc34a;
+  font-weight: 700;
+}
+
+/* ===============================================
+   AJUSTES PARA O MENU MOBILE
+================================================ */
+@media (max-width: 768px) {
+  .nav-menu-list {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 16px 0;
+  }
+
+  .nav-menu-list a {
+    font-size: 1.05rem;
+    padding: 12px 16px;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .nav-menu-list a:last-child {
+    border-bottom: none;
+  }
+}
