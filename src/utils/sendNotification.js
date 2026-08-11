@@ -4,7 +4,7 @@ import { db } from "../firebase/firebaseConfig";
 export async function notifyAdminsOnPayment(order) {
   try {
     // 1. Busca no Firestore os e-mails dos usuários onde tipo == "Admin"
-    const q = query(collection(db, "usuarios"), where("tipo", "==", "Admin"));
+    const q = query(collection(db, "usuarios"), where("tipo", "==", "admin"));
     const querySnapshot = await getDocs(q);
 
     const adminEmails = [];
