@@ -69,6 +69,11 @@ export default function Orders() {
                   <p className="item-count">
                     📦 <strong>{order.produtos?.length || 0}</strong> {order.produtos?.length === 1 ? "produto" : "produtos"}
                   </p>
+                  {order.cliente?.endereco && (
+                    <p style={{ fontSize: "13px", color: "#666", marginTop: "4px" }}>
+                      📍 <strong>Entrega:</strong> {order.cliente.endereco.cidade} - {order.cliente.endereco.estado}
+                    </p>
+                  )}
                 </div>
 
                 <div className="card-bottom">
@@ -104,6 +109,28 @@ export default function Orders() {
                 <span className={`status-badge ${(selectedOrder.status || "pendente").toLowerCase()}`}>
                   {selectedOrder.status || "Pendente"}
                 </span>
+              </div>
+
+              {/* Dados do Cliente e Entrega */}
+              <div style={{ margin: "15px 0", background: "#f9f9f9", padding: "12px", borderRadius: "8px", fontSize: "14px" }}>
+                <h4 style={{ margin: "0 0 8px 0", color: "#2b7a78" }}>📍 Informações de Entrega</h4>
+                <p style={{ margin: "2px 0" }}><strong>Nome:</strong> {selectedOrder.cliente?.nome || "Não informado"}</p>
+                <p style={{ margin: "2px 0" }}><strong>E-mail:</strong> {selectedOrder.cliente?.email || "Não informado"}</p>
+                <p style={{ margin: "2px 0" }}><strong>Telefone:</strong> {selectedOrder.cliente?.telefone || "Não informado"}</p>
+                <p style={{ margin: "2px 0" }}><strong>CPF/CNPJ:</strong> {selectedOrder.cliente?.cpf || selectedOrder.cliente?.cnpj || "Não informado"}</p>
+                
+                {selectedOrder.cliente?.endereco && (
+                  <div style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px solid #ddd" }}>
+                    <p style={{ margin: "2px 0" }}>
+                      <strong>Endereço:</strong> {selectedOrder.cliente.endereco.rua}, Nº {selectedOrder.cliente.endereco.numero}
+                      {selectedOrder.cliente.endereco.complemento ? `, ${selectedOrder.cliente.endereco.complemento}` : ""}
+                    </p>
+                    <p style={{ margin: "2px 0" }}>
+                      {selectedOrder.cliente.endereco.bairro} - {selectedOrder.cliente.endereco.cidade} / {selectedOrder.cliente.endereco.estado}
+                    </p>
+                    <p style={{ margin: "2px 0" }}><strong>CEP:</strong> {selectedOrder.cliente.endereco.cep}</p>
+                  </div>
+                )}
               </div>
 
               {/* Lista de Itens Comprados */}

@@ -1,119 +1,260 @@
-.orders-admin{
-
-    padding:40px;
-
+.orders-admin {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
 }
 
-.orders-admin h1{
-
-    color:#8BC34A;
-
-    margin-bottom:30px;
-
+.orders-admin h1 {
+  color: #8BC34A;
+  margin-bottom: 30px;
+  font-size: 28px;
 }
 
-.orders-grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-
-    gap:25px;
-
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
 }
 
-.order-card{
-
-    background:#1b1b1b;
-
-    border-radius:20px;
-
-    padding:25px;
-
-    color:white;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:10px;
-
-    box-shadow:0 15px 35px rgba(0,0,0,.25);
-
+.order-card {
+  background: #1b1b1b;
+  border-radius: 20px;
+  padding: 25px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  border: 1px solid #2a2a2a;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.order-card h2{
-
-    color:#8BC34A;
-
+.order-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
-.order-card h3{
-
-    font-size:30px;
-
-    color:#8BC34A;
-
+.order-card h2 {
+  color: #8BC34A;
+  font-size: 18px;
+  margin: 0;
 }
 
-.status{
-
-    width:max-content;
-
-    padding:8px 18px;
-
-    border-radius:20px;
-
-    font-weight:bold;
-
+.order-card h3 {
+  font-size: 24px;
+  color: #8BC34A;
+  margin: 5px 0 0 0;
 }
 
-.status.pendente{
-
-    background:#f39c12;
-
+.order-card p {
+  margin: 0;
+  color: #b0b0b0;
+  font-size: 14px;
 }
 
-.status.separando{
-
-    background:#3498db;
-
+/* Status Badges */
+.status, .status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.status.enviado{
-
-    background:#9b59b6;
-
+.status.pendente, .status-badge.pendente {
+  background: #f39c12;
+  color: #101010;
 }
 
-.status.entregue{
-
-    background:#2ecc71;
-
+.status.em, .status-badge.em-processamento {
+  background: #3498db;
+  color: #fff;
 }
 
-.status.cancelado{
-
-    background:#e74c3c;
-
+.status.enviado, .status-badge.enviado {
+  background: #9b59b6;
+  color: #fff;
 }
 
-.order-card button{
-
-    margin-top:15px;
-
-    background:#8BC34A;
-
-    color:white;
-
-    border:none;
-
-    padding:12px;
-
-    border-radius:10px;
-
-    cursor:pointer;
-
-    font-weight:bold;
-
+.status.entregue, .status-badge.entregue {
+  background: #2ecc71;
+  color: #101010;
 }
+
+.status.cancelado, .status-badge.cancelado {
+  background: #e74c3c;
+  color: #fff;
+}
+
+/* Select de Status */
+.order-card select, .modal-body select {
+  background: #2a2a2a;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.order-card select:focus, .modal-body select:focus {
+  border-color: #8BC34A;
+}
+
+/* Botões do Card */
+.order-card button, .btn-details {
+  margin-top: 5px;
+  background: #8BC34A;
+  color: #101010;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.order-card button:hover, .btn-details:hover {
+  background: #7cb342;
+}
+
+/* Modal Overlay & Content */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content, .user-modal-card {
+  background: #1b1b1b;
+  border: 1px solid #333;
+  border-radius: 20px;
+  padding: 30px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  color: white;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  color: #8BC34A;
+  margin: 0 0 5px 0;
+  font-size: 20px;
+}
+
+.order-id-sub {
+  color: #888;
+  font-size: 13px;
+}
+
+.close-btn {
+  background: #2a2a2a;
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: #e74c3c;
+}
+
+.modal-body p {
+  color: #ccc;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.modal-body h4 {
+  color: #fff;
+  margin: 20px 0 10px 0;
+  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 5px;
+}
+
+.modal-body ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modal-body li, .item-row {
+  background: #242424;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ddd;
+  font-size: 14px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+  border-top: 1px solid #2a2a2a;
+  padding-top: 15px;
+}
+
+.modal-footer button, .btn-close-modal {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modal-footer button:hover, .btn-close-modal:hover {
+  background: #444;
+}
+
+/* Estados vazios e loading */
+.loading-state, .empty-orders-card {
+  text-align: center;
+  padding: 60px 20px;
+  color: #888;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+

@@ -40,7 +40,7 @@ export default function Orders() {
     setClients(names);
   }
 
-  // 1. Atualizar o status do pedido no Firestore (Dispara a Cloud Function de envio se mudar para "Enviado")
+  // 1. Atualizar o status do pedido no Firestore
   async function handleStatusChange(orderId, newStatus) {
     setUpdatingOrderId(orderId);
     try {
@@ -68,7 +68,7 @@ export default function Orders() {
     }
   }
 
-  // 2. Disparo de teste gravando um pedido fake no Firestore (Dispara a Cloud Function de E-mail)
+  // 2. Disparo de teste com dados completos para etiqueta de envio
   async function handleTestEmail(e) {
     if (e) e.stopPropagation();
     setIsSendingTest(true);
@@ -76,23 +76,34 @@ export default function Orders() {
     try {
       const testOrder = {
         cliente: {
-          nome: "Cliente de Teste",
-          email: "seu-email-admin@gmail.com", // Coloque seu e-mail para receber
+          nome: "Maria da Silva Teste",
+          email: "marcoseduc2019@gmail.com",
+          telefone: "(14) 99888-7766",
+          cpf: "123.456.789-00",
+          endereco: {
+            rua: "Rua das Flores",
+            numero: "123",
+            complemento: "Apto 42",
+            bairro: "Centro",
+            cidade: "Marília",
+            estado: "SP",
+            cep: "17500-000",
+          },
         },
         produtos: [
-          { nome: "Produto de Teste 01", quantidade: 1, preco: 199.9 }
+          { nome: "Camiseta Estampada UTA", quantidade: 2, preco: 89.90 },
+          { nome: "Caneca Personalizada", quantidade: 1, preco: 20.10 },
         ],
-        valorTotal: 199.9,
+        valorTotal: 199.90,
         status: "Pendente",
         createdAt: serverTimestamp(),
       };
 
-      // Criar o documento na coleção "pedidos" ativa a Cloud Function automaticamente
       const docRef = await addDoc(collection(db, "pedidos"), testOrder);
       console.log("🧪 Pedido de teste criado no Firestore ID:", docRef.id);
 
-      alert("🚀 Pedido de teste gerado no Firestore! A Cloud Function enviará o e-mail em instantes.");
-      loadOrders(); // Recarrega a lista para mostrar o novo pedido
+      alert("🚀 Pedido de teste gerado com dados completos para etiqueta!");
+      loadOrders();
     } catch (error) {
       console.error("Erro ao disparar pedido de teste:", error);
       alert("Erro ao criar pedido de teste.");
@@ -180,8 +191,24 @@ export default function Orders() {
 
             <div className="modal-body">
               <p><strong>ID Completo:</strong> {selectedOrder.id}</p>
-              <p><strong>Cliente:</strong> {clients[selectedOrder.id] || "Não informado"}</p>
+              <p><strong>Cliente:</strong> {selectedOrder.cliente?.nome || clients[selectedOrder.id] || "Não informado"}</p>
               <p><strong>E-mail:</strong> {selectedOrder.cliente?.email || "Não informado"}</p>
+              <p><strong>Telefone:</strong> {selectedOrder.cliente?.telefone || "Não informado"}</p>
+              <p><strong>CPF/CNPJ:</strong> {selectedOrder.cliente?.cpf || selectedOrder.cliente?.cnpj || "Não informado"}</p>
+
+              {selectedOrder.cliente?.endereco && (
+                <div style={{ margin: "10px 0", background: "#f9f9f9", padding: "8px", borderRadius: "4px" }}>
+                  <p style={{ margin: "0 0 4px 0" }}><strong>Endereço de Entrega:</strong></p>
+                  <p style={{ margin: 0 }}>
+                    {selectedOrder.cliente.endereco.rua}, Nº {selectedOrder.cliente.endereco.numero}
+                    {selectedOrder.cliente.endereco.complemento ? `, ${selectedOrder.cliente.endereco.complemento}` : ""}
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    {selectedOrder.cliente.endereco.bairro} - {selectedOrder.cliente.endereco.cidade} / {selectedOrder.cliente.endereco.estado}
+                  </p>
+                  <p style={{ margin: 0 }}><strong>CEP:</strong> {selectedOrder.cliente.endereco.cep}</p>
+                </div>
+              )}
               
               <div style={{ margin: "15px 0" }}>
                 <strong>Alterar Status no Modal: </strong>
@@ -204,7 +231,7 @@ export default function Orders() {
                 {selectedOrder.produtos && selectedOrder.produtos.length > 0 ? (
                   selectedOrder.produtos.map((item, index) => (
                     <li key={index}>
-                      {item.nome || item.title || "Produto"} - Qtd: {item.quantidade || item.qtd || 1}
+                      {item.nome || item.title || "Produto"} - Qtd: {item.quantidade || item.qtd || 1} {item.preco ? `(R$ ${Number(item.preco).toFixed(2)})` : ""}
                     </li>
                   ))
                 ) : (
