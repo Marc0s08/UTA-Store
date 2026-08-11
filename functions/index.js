@@ -2,10 +2,10 @@ const {
   onDocumentCreated,
   onDocumentUpdated,
 } = require("firebase-functions/v2/firestore");
-const admin = require("firebase-admin");
+const firebaseAdmin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 
-admin.initializeApp();
+firebaseAdmin.initializeApp();
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -39,31 +39,37 @@ exports.notifyAdminOnNewOrder = onDocumentCreated(
           .toUpperCase();
 
       try {
-        const usuariosSnapshot = await admin
+        const usuariosSnapshot = await firebaseAdmin
             .firestore()
             .collection("usuarios")
-            .where("tipo", "in", ["admin", "Admin"])
             .get();
 
         const adminEmails = [];
+
         usuariosSnapshot.forEach((doc) => {
           const userData = doc.data();
-          if (userData.email) {
-            adminEmails.push(userData.email);
+          const tipoUser = userData.tipo ?
+            String(userData.tipo).trim()
+                .toLowerCase() : "";
+
+          if (tipoUser === "admin") {
+            if (userData.email) {
+              adminEmails.push(userData.email);
+            }
           }
         });
 
         if (adminEmails.length === 0) {
           adminEmails.push(
               process.env.GMAIL_USER ||
-              "seu-email-admin@gmail.com",
+              "marcoseduc2019@gmail.com",
           );
         }
 
         const mailOptions = {
           from: "\"UTA Store\" <" +
             (process.env.GMAIL_USER ||
-            "seu-email-admin@gmail.com") + ">",
+            "marcoseduc2019@gmail.com") + ">",
           to: adminEmails.join(", "),
           subject: `🔔 Novo Pedido: #${shortId}`,
           html: `
@@ -83,8 +89,7 @@ exports.notifyAdminOnNewOrder = onDocumentCreated(
 
         await transporter.sendMail(mailOptions);
         console.log(
-            "🚀 E-mail de novo pedido encaminhado" +
-            " com sucesso para os admins: [" +
+            "🚀 E-mail enviado para: [" +
             adminEmails.join(", ") + "]",
         );
       } catch (error) {
@@ -121,7 +126,7 @@ exports.notifyCustomerOnStatusChange = onDocumentUpdated(
         const mailOptions = {
           from: "\"UTA Store\" <" +
             (process.env.GMAIL_USER ||
-            "seu-email-admin@gmail.com") + ">",
+            "marcoseduc2019@gmail.com") + ">",
           to: clienteEmail,
           subject: `📦 Pedido #${shortId}: ${newStatus}`,
           html: `
@@ -138,8 +143,7 @@ exports.notifyCustomerOnStatusChange = onDocumentUpdated(
         try {
           await transporter.sendMail(mailOptions);
           console.log(
-              "🚀 E-mail de status encaminhado" +
-              " com sucesso para o cliente: [" +
+              "🚀 E-mail de status enviado para: [" +
               clienteEmail + "]",
           );
         } catch (error) {
