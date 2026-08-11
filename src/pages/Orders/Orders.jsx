@@ -1,125 +1,80 @@
 import "./Orders.css";
-
 import { useEffect, useState } from "react";
+import { getAllOrders } from "../../services/orderService";
+import { notifyAdminsOnPayment } from "../../utils/sendNotification";
 
-import {
+export default function Orders() {
+  const [orders, setOrders] = useState([]);
+  const [isSendingTest, setIsSendingTest] = useState(false);
 
-    getAllOrders
+  useEffect(() => {
+    loadOrders();
+  }, []);
 
-} from "../../services/orderService";
+  async function loadOrders() {
+    const data = await getAllOrders();
+    setOrders(data);
+  }
 
-export default function Orders(){
+  // Função para testar o envio de e-mail manualmente
+  async function handleTestEmail() {
+    setIsSendingTest(true);
+    console.log("🧪 Disparando e-mail de teste...");
 
-    const [orders,setOrders]=useState([]);
+    await notifyAdminsOnPayment({
+      id: "TESTE-" + Math.floor(Math.random() * 10000),
+      valorTotal: 199.90,
+      cliente: {
+        nome: "Cliente de Teste",
+        email: "cliente.teste@exemplo.com",
+      },
+    });
 
-    useEffect(()=>{
+    setIsSendingTest(false);
+    alert("Solicitação enviada! Verifique o console do navegador (F12) e a caixa de entrada dos admins.");
+  }
 
-        loadOrders();
+  return (
+    <div className="orders-admin">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <h1>📦 Pedidos</h1>
 
-    },[]);
+        {/* Botão para testar a notificação manualmente */}
+        <button
+          onClick={handleTestEmail}
+          disabled={isSendingTest}
+          style={{
+            padding: "10px 18px",
+            backgroundColor: isSendingTest ? "#666" : "#8bc34a",
+            color: "#101010",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            cursor: isSendingTest ? "not-allowed" : "pointer",
+            transition: "0.2s",
+          }}
+        >
+          {isSendingTest ? "Enviando..." : "🧪 Testar E-mail para Admins"}
+        </button>
+      </div>
 
-    async function loadOrders(){
+      <div className="orders-grid">
+        {orders.map((order) => (
+          <div key={order.id} className="order-card">
+            <h2>Pedido #{order.id?.substring(0, 8)}</h2>
+            <p>Cliente: {order.cliente?.nome || "Sem nome"}</p>
+            <p>{order.cliente?.email || "Sem e-mail"}</p>
+            <p>{order.produtos?.length || 0} produto(s)</p>
+            <h3>R$ {Number(order.valorTotal || 0).toFixed(2)}</h3>
 
-        const data=await getAllOrders();
+            <span className={`status ${(order.status || "pendente").toLowerCase()}`}>
+              {order.status || "Pendente"}
+            </span>
 
-        setOrders(data);
-
-    }
-
-    return(
-
-        <div className="orders-admin">
-
-            <h1>
-
-                📦 Pedidos
-
-            </h1>
-
-            <div className="orders-grid">
-
-                {
-
-                orders.map(order=>(
-
-                    <div
-
-                    key={order.id}
-
-                    className="order-card"
-
-                    >
-
-                        <h2>
-
-                            Pedido #
-
-                            {order.id.substring(0,8)}
-
-                        </h2>
-
-                        <p>
-
-                            Cliente:
-
-                            {order.cliente.nome || "Sem nome"}
-
-                        </p>
-
-                        <p>
-
-                            {order.cliente.email}
-
-                        </p>
-
-                        <p>
-
-                            {order.produtos.length}
-
-                            produto(s)
-
-                        </p>
-
-                        <h3>
-
-                            R$
-
-                            {
-
-                            Number(order.valorTotal)
-
-                            .toFixed(2)
-
-                            }
-
-                        </h3>
-
-                        <span
-
-                        className={`status ${order.status.toLowerCase()}`}
-
-                        >
-
-                            {order.status}
-
-                        </span>
-
-                        <button>
-
-                            Visualizar
-
-                        </button>
-
-                    </div>
-
-                ))
-
-                }
-
-            </div>
-
-        </div>
-
-    );
-
+            <button>Visualizar</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }

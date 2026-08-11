@@ -7,10 +7,8 @@ import {
   collection, 
   getDocs, 
   doc, 
-  updateDoc, 
   deleteDoc,
-  query,
-  where
+  writeBatch
 } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
 
@@ -18,15 +16,20 @@ import {
   Search,
   PersonRemove,
   ShoppingBag,
-  Close
+  Close,
+  Save
 } from "@mui/icons-material";
 
 export default function Customers() {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("Todos");
+
+  // Rastreia os IDs dos usuários com alterações pendentes de tipo
+  const [pendingChanges, setPendingChanges] = useState(new Set());
 
   // Estados do Modal
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -85,7 +88,7 @@ export default function Customers() {
           nome: userData.nome || userData.name || userData.displayName || "Sem Nome",
           email: userData.email || "Sem e-mail",
           telefone: userData.telefone || userData.phone || "Não informado",
-          tipo: userData.tipo || "Comum",
+          tipo: userData.tipo || userData.role || "Cliente",
           ultimaCompra: ultimaCompra,
           comprasRealizadas: userOrders.length,
           totalGasto: totalGasto,
@@ -94,6 +97,7 @@ export default function Customers() {
       });
 
       setCustomers(loadedCustomers);
+      setPendingChanges(new Set());
     } catch (error) {
       console.error("Erro ao carregar clientes do Firebase:", error);
       alert("Erro ao carregar lista de clientes.");
@@ -106,29 +110,57 @@ export default function Customers() {
     loadCustomersData();
   }, []);
 
-  // 2. Atualizar Tipo do Cliente no Firebase
-  async function handleTypeChange(id, newType) {
-    try {
-      // Atualização otimista na tela
-      setCustomers(prev =>
-        prev.map(c => (c.id === id ? { ...c, tipo: newType } : c))
-      );
+  // 2. Atualizar Tipo do Cliente Localmente e marcar como pendente de salvamento
+  function handleTypeChange(id, newType) {
+    setCustomers(prev =>
+      prev.map(c => (c.id === id ? { ...c, tipo: newType } : c))
+    );
 
-      const userRef = doc(db, "users", id);
-      await updateDoc(userRef, { tipo: newType });
+    setPendingChanges(prev => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }
+
+  // 3. Salvar no Firebase todas as alterações pendentes
+  async function handleSaveChanges() {
+    if (pendingChanges.size === 0) return;
+
+    try {
+      setSaving(true);
+      const batch = writeBatch(db);
+
+      pendingChanges.forEach((userId) => {
+        const customer = customers.find(c => c.id === userId);
+        if (customer) {
+          const userRef = doc(db, "usuarios", userId);
+          batch.update(userRef, { tipo: customer.tipo });
+        }
+      });
+
+      await batch.commit();
+      setPendingChanges(new Set());
+      alert("Alterações salvas com sucesso!");
     } catch (error) {
-      console.error("Erro ao atualizar tipo de cliente:", error);
-      alert("Erro ao atualizar o tipo de cliente no banco de dados.");
-      loadCustomersData(); // Reverte em caso de falha
+      console.error("Erro ao salvar alterações:", error);
+      alert("Erro ao salvar alterações no Firebase.");
+    } finally {
+      setSaving(false);
     }
   }
 
-  // 3. Excluir Cliente no Firebase
+  // 4. Excluir Cliente no Firebase (na coleção "usuarios")
   async function handleDelete(id, nome) {
-    if (window.confirm(`Deseja realmente remover o cliente "${nome}"?`)) {
+    if (window.confirm(`Deseja realmente remover o usuário "${nome}"?`)) {
       try {
-        await deleteDoc(doc(db, "users", id));
+        await deleteDoc(doc(db, "usuarios", id));
         setCustomers(prev => prev.filter(c => c.id !== id));
+        setPendingChanges(prev => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
         if (selectedCustomer?.id === id) setShowHistoryModal(false);
       } catch (error) {
         console.error("Erro ao remover cliente:", error);
@@ -183,6 +215,23 @@ export default function Customers() {
           ← Voltar
         </button>
         <h1>Gerenciar Clientes</h1>
+
+        {/* Botão de Salvar no Cabeçalho */}
+        <button
+          className={`save-btn ${pendingChanges.size > 0 ? "active" : ""}`}
+          onClick={handleSaveChanges}
+          disabled={pendingChanges.size === 0 || saving}
+          title={pendingChanges.size > 0 ? "Salvar alterações pendentes" : "Nenhuma alteração pendente"}
+        >
+          <Save fontSize="small" />
+          <span>
+            {saving
+              ? "Salvando..."
+              : pendingChanges.size > 0
+              ? `Salvar (${pendingChanges.size})`
+              : "Salvar"}
+          </span>
+        </button>
       </header>
 
       {/* Controles e Filtros */}
@@ -204,10 +253,8 @@ export default function Customers() {
             onChange={(e) => setFilterType(e.target.value)}
           >
             <option value="Todos">Todos os Tipos</option>
-            <option value="Comum">Comum</option>
-            <option value="VIP">VIP</option>
-            <option value="Atacadista">Atacadista</option>
-            <option value="Premium">Premium</option>
+            <option value="Cliente">Cliente</option>
+            <option value="Admin">Admin</option>
           </select>
         </div>
       </section>
@@ -215,19 +262,19 @@ export default function Customers() {
       {/* Lista de Clientes */}
       <section className="customers-list-section">
         <h2>
-          Clientes Cadastrados <span>({filteredCustomers.length})</span>
+          Usuários Cadastrados <span>({filteredCustomers.length})</span>
         </h2>
 
         {loading ? (
-          <div className="empty-state">Carregando clientes do Firebase...</div>
+          <div className="empty-state">Carregando usuários do Firebase...</div>
         ) : filteredCustomers.length === 0 ? (
-          <div className="empty-state">Nenhum cliente encontrado.</div>
+          <div className="empty-state">Nenhum usuário encontrado.</div>
         ) : (
           <div className="customers-table-wrapper">
             <table className="customers-table">
               <thead>
                 <tr>
-                  <th>Cliente</th>
+                  <th>Usuário</th>
                   <th>Tipo</th>
                   <th>Última Compra</th>
                   <th>Total Gasto</th>
@@ -236,65 +283,66 @@ export default function Customers() {
                 </tr>
               </thead>
               <tbody>
-                {filteredCustomers.map((customer) => (
-                  <tr key={customer.id}>
-                    <td>
-                      <div className="customer-info-cell">
-                        <div className="customer-avatar">
-                          {customer.nome ? customer.nome.charAt(0).toUpperCase() : "U"}
+                {filteredCustomers.map((customer) => {
+                  const isModified = pendingChanges.has(customer.id);
+                  return (
+                    <tr key={customer.id} className={isModified ? "row-modified" : ""}>
+                      <td>
+                        <div className="customer-info-cell">
+                          <div className="customer-avatar">
+                            {customer.nome ? customer.nome.charAt(0).toUpperCase() : "U"}
+                          </div>
+                          <div>
+                            <strong>{customer.nome}</strong>
+                            <small>{customer.email}</small>
+                          </div>
                         </div>
-                        <div>
-                          <strong>{customer.nome}</strong>
-                          <small>{customer.email}</small>
-                        </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    <td>
-                      <select
-                        className={`type-badge-select badge-${(customer.tipo || "comum").toLowerCase()}`}
-                        value={customer.tipo || "Comum"}
-                        onChange={(e) =>
-                          handleTypeChange(customer.id, e.target.value)
-                        }
-                      >
-                        <option value="Comum">Comum</option>
-                        <option value="VIP">VIP</option>
-                        <option value="Atacadista">Atacadista</option>
-                        <option value="Premium">Premium</option>
-                      </select>
-                    </td>
-
-                    <td>{formatDate(customer.ultimaCompra)}</td>
-
-                    <td className="highlight-price">
-                      {formatCurrency(customer.totalGasto)}
-                    </td>
-
-                    <td>
-                      <button
-                        className="view-items-btn"
-                        onClick={() => openHistoryModal(customer)}
-                        title="Ver histórico de compras"
-                      >
-                        <ShoppingBag fontSize="small" />
-                        <span>Ver Itens</span>
-                      </button>
-                    </td>
-
-                    <td>
-                      <div className="action-buttons">
-                        <button
-                          className="delete-customer-btn"
-                          onClick={() => handleDelete(customer.id, customer.nome)}
-                          title="Excluir Cliente"
+                      <td>
+                        <select
+                          className={`type-badge-select badge-${(customer.tipo || "cliente").toLowerCase()}`}
+                          value={customer.tipo || "Cliente"}
+                          onChange={(e) =>
+                            handleTypeChange(customer.id, e.target.value)
+                          }
                         >
-                          <PersonRemove fontSize="small" />
+                          <option value="Cliente">Cliente</option>
+                          <option value="Admin">Admin</option>
+                        </select>
+                      </td>
+
+                      <td>{formatDate(customer.ultimaCompra)}</td>
+
+                      <td className="highlight-price">
+                        {formatCurrency(customer.totalGasto)}
+                      </td>
+
+                      <td>
+                        <button
+                          className="view-items-btn"
+                          onClick={() => openHistoryModal(customer)}
+                          title="Ver histórico de compras"
+                        >
+                          <ShoppingBag fontSize="small" />
+                          <span>Ver Itens</span>
                         </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+
+                      <td>
+                        <div className="action-buttons">
+                          <button
+                            className="delete-customer-btn"
+                            onClick={() => handleDelete(customer.id, customer.nome)}
+                            title="Excluir Usuário"
+                          >
+                            <PersonRemove fontSize="small" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -353,7 +401,7 @@ export default function Customers() {
                   ))}
                 </ul>
               ) : (
-                <p className="no-items">Este cliente ainda não realizou compras.</p>
+                <p className="no-items">Este usuário ainda não realizou compras.</p>
               )}
             </div>
           </div>
