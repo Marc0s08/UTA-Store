@@ -60,16 +60,11 @@ exports.notifyAdminOnNewOrder = onDocumentCreated(
         });
 
         if (adminEmails.length === 0) {
-          adminEmails.push(
-              process.env.GMAIL_USER ||
-              "marcoseduc2019@gmail.com",
-          );
+          adminEmails.push("marcoseduc2019@gmail.com");
         }
 
         const mailOptions = {
-          from: "\"UTA Store\" <" +
-            (process.env.GMAIL_USER ||
-            "marcoseduc2019@gmail.com") + ">",
+          from: "\"UTA Store\" <marcoseduc2019@gmail.com>",
           to: adminEmails.join(", "),
           subject: `🔔 Novo Pedido: #${shortId}`,
           html: `
@@ -124,9 +119,7 @@ exports.notifyCustomerOnStatusChange = onDocumentUpdated(
             .toUpperCase();
 
         const mailOptions = {
-          from: "\"UTA Store\" <" +
-            (process.env.GMAIL_USER ||
-            "marcoseduc2019@gmail.com") + ">",
+          from: "\"UTA Store\" <marcoseduc2019@gmail.com>",
           to: clienteEmail,
           subject: `📦 Pedido #${shortId}: ${newStatus}`,
           html: `
