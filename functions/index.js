@@ -45,11 +45,6 @@ exports.notifyAdminOnNewOrder = onDocumentCreated(
             .where("tipo", "in", ["admin", "Admin"])
             .get();
 
-        console.log(
-            "🔍 Total de admins encontrados: " +
-            usuariosSnapshot.size,
-        );
-
         const adminEmails = [];
         usuariosSnapshot.forEach((doc) => {
           const userData = doc.data();
@@ -88,11 +83,15 @@ exports.notifyAdminOnNewOrder = onDocumentCreated(
 
         await transporter.sendMail(mailOptions);
         console.log(
-            "✅ E-mail enviado para admins: " +
-            adminEmails.join(", "),
+            "🚀 E-mail de novo pedido encaminhado" +
+            " com sucesso para os admins: [" +
+            adminEmails.join(", ") + "]",
         );
       } catch (error) {
-        console.error("❌ Erro:", error);
+        console.error(
+            "❌ Erro ao enviar e-mail para admins:",
+            error,
+        );
       }
     },
 );
@@ -138,9 +137,16 @@ exports.notifyCustomerOnStatusChange = onDocumentUpdated(
 
         try {
           await transporter.sendMail(mailOptions);
-          console.log("✅ E-mail enviado para o cliente.");
+          console.log(
+              "🚀 E-mail de status encaminhado" +
+              " com sucesso para o cliente: [" +
+              clienteEmail + "]",
+          );
         } catch (error) {
-          console.error("❌ Erro no status:", error);
+          console.error(
+              "❌ Erro ao enviar e-mail ao cliente:",
+              error,
+          );
         }
       }
     },
