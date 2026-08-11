@@ -1,15 +1,15 @@
 import "./Orders.css";
 import { useEffect, useState } from "react";
 import { getAllOrders } from "../../services/orderService";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
-import { notifyAdminsOnPayment } from "../../utils/sendNotification";
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
   const [clients, setClients] = useState({});
-  const [selectedOrder, setSelectedOrder] = useState(null); // Estado para controlar o modal
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [isSendingTest, setIsSendingTest] = useState(false);
+  const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
   useEffect(() => {
     loadOrders();
@@ -40,35 +40,74 @@ export default function Orders() {
     setClients(names);
   }
 
-  // Disparo manual de teste de e-mail
-  async function handleTestEmail(e, order) {
-    e.stopPropagation();
+  // 1. Atualizar o status do pedido no Firestore (Dispara a Cloud Function de envio se mudar para "Enviado")
+  async function handleStatusChange(orderId, newStatus) {
+    setUpdatingOrderId(orderId);
+    try {
+      const orderRef = doc(db, "pedidos", orderId);
+      await updateDoc(orderRef, {
+        status: newStatus,
+        updatedAt: serverTimestamp(),
+      });
+
+      // Atualiza a lista local sem precisar recarregar tudo
+      setOrders((prevOrders) =>
+        prevOrders.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
+      );
+
+      if (selectedOrder && selectedOrder.id === orderId) {
+        setSelectedOrder((prev) => ({ ...prev, status: newStatus }));
+      }
+
+      alert(`Status do pedido alterado para "${newStatus}" com sucesso!`);
+    } catch (error) {
+      console.error("Erro ao alterar status:", error);
+      alert("Erro ao atualizar status do pedido no Firestore.");
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  }
+
+  // 2. Disparo de teste gravando um pedido fake no Firestore (Dispara a Cloud Function de E-mail)
+  async function handleTestEmail(e) {
+    if (e) e.stopPropagation();
     setIsSendingTest(true);
 
-    const targetOrder = order || {
-      id: "TESTE-" + Math.floor(Math.random() * 10000),
-      valorTotal: 199.90,
-      cliente: {
-        nome: "Cliente de Teste",
-        email: "cliente@exemplo.com",
-      },
-    };
+    try {
+      const testOrder = {
+        cliente: {
+          nome: "Cliente de Teste",
+          email: "seu-email-admin@gmail.com", // Coloque seu e-mail para receber
+        },
+        produtos: [
+          { nome: "Produto de Teste 01", quantidade: 1, preco: 199.9 }
+        ],
+        valorTotal: 199.9,
+        status: "Pendente",
+        createdAt: serverTimestamp(),
+      };
 
-    console.log("🧪 Disparando e-mail de teste para o pedido:", targetOrder.id);
+      // Criar o documento na coleção "pedidos" ativa a Cloud Function automaticamente
+      const docRef = await addDoc(collection(db, "pedidos"), testOrder);
+      console.log("🧪 Pedido de teste criado no Firestore ID:", docRef.id);
 
-    await notifyAdminsOnPayment(targetOrder);
-
-    setIsSendingTest(false);
-    alert("Notificação enviada! Confira o console (F12) e a caixa de entrada dos admins.");
+      alert("🚀 Pedido de teste gerado no Firestore! A Cloud Function enviará o e-mail em instantes.");
+      loadOrders(); // Recarrega a lista para mostrar o novo pedido
+    } catch (error) {
+      console.error("Erro ao disparar pedido de teste:", error);
+      alert("Erro ao criar pedido de teste.");
+    } finally {
+      setIsSendingTest(false);
+    }
   }
 
   return (
     <div className="orders-admin">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <h1>📦 Pedidos</h1>
+        <h1>📦 Pedidos (Admin)</h1>
 
         <button
-          onClick={(e) => handleTestEmail(e, null)}
+          onClick={handleTestEmail}
           disabled={isSendingTest}
           style={{
             padding: "10px 18px",
@@ -80,7 +119,7 @@ export default function Orders() {
             cursor: isSendingTest ? "not-allowed" : "pointer",
           }}
         >
-          {isSendingTest ? "Enviando..." : "🧪 Testar E-mail para Admins"}
+          {isSendingTest ? "Criando Teste..." : "🧪 Gerar Pedido de Teste (Enviar E-mail)"}
         </button>
       </div>
 
@@ -88,9 +127,9 @@ export default function Orders() {
         {orders.map((order) => (
           <div key={order.id} className="order-card">
             <h2>Pedido #{order.id.substring(0, 8).toUpperCase()}</h2>
-            <p>Cliente: {clients[order.id] || "Carregando..."}</p>
-            <p>{order.cliente?.email || "Sem email"}</p>
-            <p>{order.produtos?.length || 0} produto(s)</p>
+            <p><strong>Cliente:</strong> {clients[order.id] || "Carregando..."}</p>
+            <p><strong>E-mail:</strong> {order.cliente?.email || "Sem email"}</p>
+            <p><strong>Itens:</strong> {order.produtos?.length || 0} produto(s)</p>
             <h3>
               R${" "}
               {Number(order.valorTotal || 0).toLocaleString("pt-BR", {
@@ -98,13 +137,33 @@ export default function Orders() {
               })}
             </h3>
 
-            <span className={`status ${(order.status || "pendente").toLowerCase()}`}>
-              {order.status || "Pendente"}
-            </span>
+            {/* Seletor para alterar o status direto no card */}
+            <div style={{ margin: "10px 0" }}>
+              <label style={{ fontSize: "12px", display: "block", marginBottom: "4px" }}>Status do Pedido:</label>
+              <select
+                value={order.status || "Pendente"}
+                disabled={updatingOrderId === order.id}
+                onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                style={{
+                  padding: "6px",
+                  borderRadius: "4px",
+                  width: "100%",
+                  fontWeight: "bold",
+                }}
+              >
+                <option value="Pendente">⏳ Pendente</option>
+                <option value="Em Processamento">⚙️ Em Processamento</option>
+                <option value="Enviado">🚚 Enviado</option>
+                <option value="Entregue">✅ Entregue</option>
+                <option value="Cancelado">❌ Cancelado</option>
+              </select>
+            </div>
 
-            {/* Ação do botão Visualizar */}
-            <button onClick={() => setSelectedOrder(order)}>
-              Visualizar
+            <button 
+              onClick={() => setSelectedOrder(order)}
+              style={{ width: "100%", marginTop: "5px", padding: "8px" }}
+            >
+              Visualizar Detalhes
             </button>
           </div>
         ))}
@@ -123,8 +182,23 @@ export default function Orders() {
               <p><strong>ID Completo:</strong> {selectedOrder.id}</p>
               <p><strong>Cliente:</strong> {clients[selectedOrder.id] || "Não informado"}</p>
               <p><strong>E-mail:</strong> {selectedOrder.cliente?.email || "Não informado"}</p>
-              <p><strong>Status:</strong> {selectedOrder.status}</p>
               
+              <div style={{ margin: "15px 0" }}>
+                <strong>Alterar Status no Modal: </strong>
+                <select
+                  value={selectedOrder.status || "Pendente"}
+                  disabled={updatingOrderId === selectedOrder.id}
+                  onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value)}
+                  style={{ padding: "6px", borderRadius: "4px", marginLeft: "8px" }}
+                >
+                  <option value="Pendente">⏳ Pendente</option>
+                  <option value="Em Processamento">⚙️ Em Processamento</option>
+                  <option value="Enviado">🚚 Enviado</option>
+                  <option value="Entregue">✅ Entregue</option>
+                  <option value="Cancelado">❌ Cancelado</option>
+                </select>
+              </div>
+
               <h4>Produtos:</h4>
               <ul>
                 {selectedOrder.produtos && selectedOrder.produtos.length > 0 ? (
@@ -143,13 +217,7 @@ export default function Orders() {
               </h3>
             </div>
 
-            <div className="modal-footer" style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-              <button 
-                onClick={(e) => handleTestEmail(e, selectedOrder)}
-                style={{ backgroundColor: "#8bc34a", color: "#000", border: "none", padding: "8px 12px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" }}
-              >
-                Disparar E-mail Deste Pedido
-              </button>
+            <div className="modal-footer" style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "20px" }}>
               <button onClick={() => setSelectedOrder(null)}>Fechar</button>
             </div>
           </div>
