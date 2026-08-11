@@ -38,18 +38,21 @@ exports.notifyAdminOnNewOrder = onDocumentCreated(
             .where("tipo", "in", ["admin", "Admin"])
             .get();
 
+        console.log(`🔍 Total de admins encontrados no Firestore: ${usuariosSnapshot.size}`);
+
         const adminEmails = [];
         usuariosSnapshot.forEach((doc) => {
           const userData = doc.data();
+          console.log(`👤 Usuário admin ID: ${doc.id}, E-mail: ${userData.email}`);
           if (userData.email) {
             adminEmails.push(userData.email);
           }
         });
 
-        // Caso nenhum admin seja encontrado na coleção, define um e-mail de fallback opcional
+        // Fallback caso nenhum admin seja retornado na busca
         if (adminEmails.length === 0) {
-          console.warn("⚠️ Nenhum admin encontrado no Firestore. Usando fallback.");
-          adminEmails.push("seu-email-admin@gmail.com");
+          console.warn("⚠️ Nenhum admin encontrado. Usando e-mail de fallback.");
+          adminEmails.push(process.env.GMAIL_USER || "seu-email-admin@gmail.com");
         }
 
         const mailOptions = {
@@ -130,9 +133,9 @@ exports.notifyCustomerOnStatusChange = onDocumentUpdated(
 
         try {
           await transporter.sendMail(mailOptions);
-          console.log(`✅ E-mail enviado para ${clienteEmail}`);
+          console.log(`✅ E-mail de mudança de status enviado para ${clienteEmail}`);
         } catch (error) {
-          console.error("❌ Erro ao enviar e-mail:", error);
+          console.error("❌ Erro ao enviar e-mail de status:", error);
         }
       }
     },
