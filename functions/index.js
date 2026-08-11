@@ -10,10 +10,8 @@ firebaseAdmin.initializeApp();
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.GMAIL_USER ||
-      "marcoseduc2019@gmail.com",
-    pass: process.env.GMAIL_APP_PASSWORD ||
-      "orddzjyoxoicmmbc",
+    user: process.env.GMAIL_USER || "marcoseduc2019@gmail.com",
+    pass: process.env.GMAIL_APP_PASSWORD || "orddzjyoxoicmmbc",
   },
 });
 
@@ -22,76 +20,48 @@ exports.notifyAdminOnNewOrder = onDocumentCreated(
     async (event) => {
       const snap = event.data;
       if (!snap) return;
-
       const order = snap.data() || {};
-      const orderId = event.params.orderId;
-
-      const clienteNome = order.cliente &&
-        order.cliente.nome ?
-        order.cliente.nome : "Não informado";
-      const clienteEmail = order.cliente &&
-        order.cliente.email ?
-        order.cliente.email : "Não informado";
-      const valorTotal = Number(
-          order.valorTotal || 0,
-      ).toFixed(2);
-      const shortId = orderId.substring(0, 8)
-          .toUpperCase();
+      const id = event.params.orderId;
+      const c = order.cliente || {};
+      const end = c.endereco || {};
+      const vTotal = Number(order.valorTotal || 0).toFixed(2);
+      const sId = id.substring(0, 8).toUpperCase();
+      const prods = Array.isArray(order.produtos) ? order.produtos : [];
+      const prodsHtml = prods.map((i) => {
+        const p = Number(i.preco || i.price || 0).toFixed(2);
+        return `<li>${i.nome || "Prod"} - Qtd: ${i.quantidade || 1} - ` +
+               `R$ ${p}</li>`;
+      }).join("");
 
       try {
-        const usuariosSnapshot = await firebaseAdmin
-            .firestore()
-            .collection("usuarios")
-            .get();
-
-        const adminEmails = [];
-
-        usuariosSnapshot.forEach((doc) => {
-          const userData = doc.data();
-          const tipoUser = userData.tipo ?
-            String(userData.tipo).trim()
-                .toLowerCase() : "";
-
-          if (tipoUser === "admin") {
-            if (userData.email) {
-              adminEmails.push(userData.email);
-            }
-          }
+        const snapU = await firebaseAdmin.firestore()
+            .collection("usuarios").get();
+        const admins = [];
+        snapU.forEach((doc) => {
+          const d = doc.data();
+          const t = d.tipo ? String(d.tipo).trim().toLowerCase() : "";
+          if (t === "admin" && d.email) admins.push(d.email);
         });
 
-        if (adminEmails.length === 0) {
-          adminEmails.push("marcoseduc2019@gmail.com");
-        }
-
-        const mailOptions = {
+        const mailOpts = {
           from: "\"UTA Store\" <marcoseduc2019@gmail.com>",
-          to: adminEmails.join(", "),
-          subject: `🔔 Novo Pedido: #${shortId}`,
-          html: `
-          <div style="font-family: Arial; padding: 20px;">
-            <h2>🛒 Novo Pedido Confirmado!</h2>
-            <p><strong>ID:</strong> ${orderId}</p>
-            <hr />
-            <h3>Cliente:</h3>
-            <p><strong>Nome:</strong> ${clienteNome}</p>
-            <p><strong>E-mail:</strong> ${clienteEmail}</p>
-            <hr />
-            <h3>Total:</h3>
-            <p><strong>R$</strong> ${valorTotal}</p>
-          </div>
-        `,
+          to: admins.length > 0 ? admins.join(", ") :
+              "marcoseduc2019@gmail.com",
+          subject: `🔔 Novo Pedido: #${sId}`,
+          html: `<div style="font-family: Arial; padding: 20px;">` +
+                `<h2>🛒 Novo Pedido!</h2><p><strong>ID:</strong> ${id}</p>` +
+                `<h3>Dados do Cliente:</h3>` +
+                `<p>Nome: ${c.nome || "N/A"} | Email: ${c.email || "N/A"}</p>` +
+                `<p>Tel: ${c.telefone || "N/A"} | CPF: ${c.cpf || "N/A"}</p>` +
+                `<h3>Endereço:</h3>` +
+                `<p>${end.rua || ""}, ${end.numero || "S/N"} - ` +
+                `${end.cidade || ""}/${end.estado || ""}</p>` +
+                `<h3>Itens:</h3><ul>${prodsHtml}</ul>` +
+                `<p><strong>Total: R$ ${vTotal}</strong></p></div>`,
         };
-
-        await transporter.sendMail(mailOptions);
-        console.log(
-            "🚀 E-mail enviado para: [" +
-            adminEmails.join(", ") + "]",
-        );
-      } catch (error) {
-        console.error(
-            "❌ Erro ao enviar e-mail para admins:",
-            error,
-        );
+        await transporter.sendMail(mailOpts);
+      } catch (e) {
+        console.error("Erro:", e);
       }
     },
 );
@@ -99,51 +69,25 @@ exports.notifyAdminOnNewOrder = onDocumentCreated(
 exports.notifyCustomerOnStatusChange = onDocumentUpdated(
     "pedidos/{orderId}",
     async (event) => {
-      const beforeData = event.data.before.data();
-      const afterData = event.data.after.data();
-      const orderId = event.params.orderId;
+      const b = event.data.before.data();
+      const a = event.data.after.data();
+      const id = event.params.orderId;
 
-      const oldStatus = beforeData.status || "Pendente";
-      const newStatus = afterData.status || "Pendente";
-
-      if (oldStatus !== newStatus) {
-        const clienteEmail = afterData.cliente &&
-          afterData.cliente.email;
-        const clienteNome =
-          (afterData.cliente &&
-          afterData.cliente.nome) || "Cliente";
-
-        if (!clienteEmail) return;
-
-        const shortId = orderId.substring(0, 8)
-            .toUpperCase();
-
-        const mailOptions = {
+      if (b.status !== a.status && a.cliente && a.cliente.email) {
+        const mailOpts = {
           from: "\"UTA Store\" <marcoseduc2019@gmail.com>",
-          to: clienteEmail,
-          subject: `📦 Pedido #${shortId}: ${newStatus}`,
-          html: `
-          <div style="font-family: Arial; padding: 20px;">
-            <h2>Olá, ${clienteNome}!</h2>
-            <p>O status do pedido <strong>#${shortId}</strong> 
-               foi atualizado para:</p>
-            <p style="color: #2b7a78; font-size: 16px;">
-               <strong>${newStatus}</strong></p>
-          </div>
-        `,
+          to: a.cliente.email,
+          subject: `📦 Pedido #${id.substring(0, 8).toUpperCase()}: ` +
+                   `${a.status}`,
+          html: `<div style="font-family: Arial; padding: 20px;">` +
+                `<h2>Olá, ${a.cliente.nome || "Cliente"}!</h2>` +
+                `<p>Status atualizado para: <strong>${a.status}</strong></p>` +
+                `</div>`,
         };
-
         try {
-          await transporter.sendMail(mailOptions);
-          console.log(
-              "🚀 E-mail de status enviado para: [" +
-              clienteEmail + "]",
-          );
-        } catch (error) {
-          console.error(
-              "❌ Erro ao enviar e-mail ao cliente:",
-              error,
-          );
+          await transporter.sendMail(mailOpts);
+        } catch (e) {
+          console.error("Erro:", e);
         }
       }
     },
