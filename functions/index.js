@@ -31,30 +31,50 @@ exports.notifyAdminOnNewOrder = onDocumentCreated(
       const valorTotal = Number(order.valorTotal || 0).toFixed(2);
       const shortId = orderId.substring(0, 8).toUpperCase();
 
-      const mailOptions = {
-        from: "\"UTA Store\" <seu-email-admin@gmail.com>",
-        to: "seu-email-admin@gmail.com",
-        subject: `🔔 Novo Pedido Recebido: #${shortId}`,
-        html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px;">
-          <h2>🛒 Novo Pedido Confirmado!</h2>
-          <p><strong>ID do Pedido:</strong> ${orderId}</p>
-          <hr />
-          <h3>Dados do Cliente:</h3>
-          <p><strong>Nome:</strong> ${clienteNome}</p>
-          <p><strong>E-mail:</strong> ${clienteEmail}</p>
-          <hr />
-          <h3>Resumo financeiro:</h3>
-          <p><strong>Valor Total:</strong> R$ ${valorTotal}</p>
-        </div>
-      `,
-      };
-
       try {
+        // 1. Busca no Firestore os usuários que são administradores
+        const usuariosSnapshot = await admin.firestore()
+            .collection("usuarios")
+            .where("tipo", "in", ["admin", "Admin"])
+            .get();
+
+        const adminEmails = [];
+        usuariosSnapshot.forEach((doc) => {
+          const userData = doc.data();
+          if (userData.email) {
+            adminEmails.push(userData.email);
+          }
+        });
+
+        // Caso nenhum admin seja encontrado na coleção, define um e-mail de fallback opcional
+        if (adminEmails.length === 0) {
+          console.warn("⚠️ Nenhum admin encontrado no Firestore. Usando fallback.");
+          adminEmails.push("seu-email-admin@gmail.com");
+        }
+
+        const mailOptions = {
+          from: "\"UTA Store\" <" + (process.env.GMAIL_USER || "seu-email-admin@gmail.com") + ">",
+          to: adminEmails.join(", "),
+          subject: `🔔 Novo Pedido Recebido: #${shortId}`,
+          html: `
+          <div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2>🛒 Novo Pedido Confirmado!</h2>
+            <p><strong>ID do Pedido:</strong> ${orderId}</p>
+            <hr />
+            <h3>Dados do Cliente:</h3>
+            <p><strong>Nome:</strong> ${clienteNome}</p>
+            <p><strong>E-mail:</strong> ${clienteEmail}</p>
+            <hr />
+            <h3>Resumo financeiro:</h3>
+            <p><strong>Valor Total:</strong> R$ ${valorTotal}</p>
+          </div>
+        `,
+        };
+
         await transporter.sendMail(mailOptions);
-        console.log(`✅ E-mail de novo pedido enviado para #${orderId}`);
+        console.log(`✅ E-mail de novo pedido enviado para os admins: ${adminEmails.join(", ")}`);
       } catch (error) {
-        console.error("❌ Erro ao enviar e-mail:", error);
+        console.error("❌ Erro ao buscar administradores ou enviar e-mail:", error);
       }
     },
 );
@@ -82,7 +102,7 @@ exports.notifyCustomerOnStatusChange = onDocumentUpdated(
         const shortId = orderId.substring(0, 8).toUpperCase();
 
         const mailOptions = {
-          from: "\"UTA Store\" <seu-email-admin@gmail.com>",
+          from: "\"UTA Store\" <" + (process.env.GMAIL_USER || "seu-email-admin@gmail.com") + ">",
           to: clienteEmail,
           subject: `📦 Atualização no pedido #${shortId}: ${newStatus}`,
           html: `
