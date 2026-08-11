@@ -17,7 +17,7 @@ export async function handler(event, context) {
     const adminEmail = process.env.ADMIN_EMAIL || "seu-email@exemplo.com";
 
     const data = await resend.emails.send({
-      from: "UTA Store <onboarding@resend.dev>", // Ou seu domínio verificado
+      from: "UTA Store <marcoseduc2019@gmail.com>", // Ou seu domínio verificado
       to: [adminEmail],
       subject: `🔔 Novo Pedido Recebido: #${order?.id?.substring(0, 8).toUpperCase()}`,
       html: `
