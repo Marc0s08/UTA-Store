@@ -1,9 +1,9 @@
 import { NavLink } from "react-router-dom";
-import "./NavMenu.css"; // ajuste o caminho se seu css estiver em outro diretório
+import "./NavMenu.css";
 
 export default function NavMenu({ onItemClick }) {
   return (
-    <ul className="nav-menu-list">
+    <ul className="nav-menu">
       <li>
         <NavLink to="/" end onClick={onItemClick}>
           Início

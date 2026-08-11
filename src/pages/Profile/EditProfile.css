@@ -1,152 +1,162 @@
-.edit-profile{
-
-    min-height:100vh;
-
-    background:#121212;
-
-    padding:40px 20px;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
+/* Container Principal */
+.edit-profile {
+  min-height: 100vh;
+  background: #121212;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
 }
 
-
-
-.edit-card{
-
-    width:100%;
-
-    max-width:600px;
-
-    background:#1c1c1c;
-
-    padding:35px;
-
-    border-radius:15px;
-
-    color:white;
-
+/* Card do Formulário */
+.edit-card {
+  width: 100%;
+  max-width: 600px;
+  background: #1c1c1c;
+  padding: 35px;
+  border-radius: 15px;
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
 }
 
-
-
-.edit-card h1{
-
-    text-align:center;
-
-    margin-bottom:30px;
-
+/* Títulos */
+.edit-card h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 26px;
+  font-weight: 700;
 }
 
-
-
-.edit-card h2{
-
-    color:#8BC34A;
-
-    margin-top:25px;
-
-    margin-bottom:15px;
-
+.edit-card h2 {
+  color: #8BC34A;
+  margin-top: 25px;
+  margin-bottom: 12px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 6px;
 }
 
-
-
-.edit-card input{
-
-    width:100%;
-
-    padding:14px;
-
-    margin-bottom:15px;
-
-    background:#111;
-
-    border:1px solid #333;
-
-    border-radius:8px;
-
-    color:white;
-
-    font-size:15px;
-
+/* Inputs */
+.edit-card input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 15px;
+  background: #111111;
+  border: 1px solid #333333;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-
-
-.edit-card input:focus{
-
-    outline:none;
-
-    border-color:#8BC34A;
-
+.edit-card input::placeholder {
+  color: #666666;
 }
 
-
-
-.edit-card button{
-
-    width:100%;
-
-    padding:15px;
-
-    margin-top:20px;
-
-    border:none;
-
-    border-radius:8px;
-
-    background:#556B2F;
-
-    color:white;
-
-    font-size:16px;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
+.edit-card input:focus {
+  outline: none;
+  border-color: #8BC34A;
+  box-shadow: 0 0 0 2px rgba(139, 195, 74, 0.2);
 }
 
-
-
-.edit-card button:hover{
-
-    background:#8BC34A;
-
-    color:#111;
-
+/* Layout em Colunas */
+.edit-row {
+  display: flex;
+  gap: 15px;
 }
 
-.edit-row{
-
-    display:flex;
-
-    gap:15px;
-
+.edit-row input {
+  flex: 1;
 }
 
-
-.edit-row input{
-
-    flex:1;
-
+/* Ajuste específico para o campo UF */
+.edit-row input[name="estado"] {
+  flex: 0.5;
+  text-transform: uppercase;
+  text-align: center;
 }
 
+/* Área de Ações / Botões */
+.edit-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
 
+.edit-actions button,
+.edit-card > button {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
-@media(max-width:600px){
+/* Botão Salvar */
+.save-button,
+.edit-card > button {
+  background: #556B2F;
+  color: #ffffff;
+}
 
-    .edit-row{
+.save-button:hover,
+.edit-card > button:hover {
+  background: #8BC34A;
+  color: #111111;
+}
 
-        flex-direction:column;
+.save-button:disabled {
+  background: #333333;
+  color: #666666;
+  cursor: not-allowed;
+}
 
-        gap:0;
+/* Botão Cancelar */
+.cancel-button {
+  background: #2a2a2a;
+  color: #ffffff;
+}
 
-    }
+.cancel-button:hover {
+  background: #3d3d3d;
+}
 
+/* Feedback de Carregamento */
+.profile-loading {
+  min-height: 100vh;
+  background: #121212;
+  color: #8BC34A;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Responsividade Mobile */
+@media (max-width: 600px) {
+  .edit-card {
+    padding: 20px 16px;
+  }
+
+  .edit-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .edit-row input[name="estado"] {
+    text-align: left;
+  }
+
+  .edit-actions {
+    flex-direction: column;
+  }
 }

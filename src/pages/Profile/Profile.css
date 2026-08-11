@@ -1,217 +1,201 @@
-.profile-page{
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    min-height:100vh;
-
-    background:#121212;
-
-    padding:40px 20px;
-
-    display:flex;
-
-    justify-content:center;
-
+.profile-page {
+  min-height: 100vh;
+  background: #121212;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: 'Inter', sans-serif;
 }
 
-
-
-.profile-card{
-
-    width:100%;
-
-    max-width:700px;
-
-    background:#1c1c1c;
-
-    color:white;
-
-    padding:35px;
-
-    border-radius:15px;
-
+.profile-card {
+  width: 100%;
+  max-width: 700px;
+  background: #1c1c1c;
+  color: #ffffff;
+  padding: 35px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-
-
-.profile-card h1{
-
-    text-align:center;
-
-    margin-bottom:30px;
-
+.profile-card h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
-
-
-.profile-card section{
-
-    margin-bottom:30px;
-
-    border-bottom:1px solid #333;
-
-    padding-bottom:20px;
-
+.profile-card section {
+  margin-bottom: 25px;
+  border-bottom: 1px solid #333333;
+  padding-bottom: 20px;
 }
 
-
-
-.profile-card h2{
-
-    color:#8BC34A;
-
-    font-size:20px;
-
+.profile-card h2 {
+  color: #8BC34A;
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 15px;
 }
 
-
-
-.profile-card p{
-
-    color:#ddd;
-
-    margin:10px 0;
-
+.profile-card p {
+  color: #dddddd;
+  margin: 10px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-
-
-.profile-card strong{
-
-    color:white;
-
-    margin-right:8px;
-
+.profile-card strong {
+  color: #ffffff;
+  margin-right: 8px;
 }
 
-
-
-.profile-card button{
-
-    width:100%;
-
-    padding:15px;
-
-    border:none;
-
-    border-radius:8px;
-
-    background:#8B0000;
-
-    color:white;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
+/* Badges de Verificação do E-mail */
+.badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 3px 10px;
+  font-size: 11px;
+  border-radius: 20px;
+  font-weight: 600;
 }
 
-
-
-.profile-card button:hover{
-
-    background:#c62828;
-
+.badge.verified {
+  background: rgba(139, 195, 74, 0.15);
+  color: #8BC34A;
+  border: 1px solid rgba(139, 195, 74, 0.3);
 }
 
-
-
-.profile-loading{
-
-    height:100vh;
-
-    background:#121212;
-
-    color:white;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
+.badge.unverified {
+  background: rgba(220, 53, 69, 0.15);
+  color: #ff5252;
+  border: 1px solid rgba(220, 53, 69, 0.3);
 }
 
-.profile-actions{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:15px;
-
-    margin-top:30px;
-
+.no-address {
+  color: #888888;
+  font-style: italic;
 }
 
-
-
-.profile-actions button{
-
-    width:100%;
-
-    padding:15px;
-
-    border:none;
-
-    border-radius:8px;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
+/* Área de Botões e Ações */
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 30px;
 }
 
-
-
-.home-button{
-
-    background:#333;
-
-    color:white;
-
+/* Aplica o estilo tanto em <button> quanto em <a> (Links estilizados como botões) */
+.profile-actions button,
+.profile-actions a,
+.btn-action {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  display: inline-block;
 }
 
-
-
-.home-button:hover{
-
-    background:#555;
-
+/* Botão Voltar para Loja */
+.home-button {
+  background: #333333;
+  color: #ffffff;
 }
 
-
-
-.edit-button{
-
-    background:#556B2F;
-
-    color:white;
-
+.home-button:hover {
+  background: #555555;
+  transform: translateY(-1px);
 }
 
-
-
-.edit-button:hover{
-
-    background:#8BC34A;
-
-    color:#111;
-
+/* Botão Editar */
+.edit-button {
+  background: #556B2F;
+  color: #ffffff;
 }
 
-
-
-.logout-button{
-
-    background:#8B0000;
-
-    color:white;
-
+.edit-button:hover {
+  background: #8BC34A;
+  color: #111111;
+  transform: translateY(-1px);
 }
 
+/* Botão Meus Pedidos */
+.orders-button {
+  background: #8BC34A;
+  color: #111111;
+}
 
+.orders-button:hover {
+  background: #9ED65A;
+  transform: translateY(-1px);
+}
 
-.logout-button:hover{
+/* Botão Sair da Conta */
+.logout-button {
+  background: #8B0000;
+  color: #ffffff;
+}
 
-    background:#c62828;
+.logout-button:hover {
+  background: #c62828;
+  transform: translateY(-1px);
+}
 
+/* Efeito de clique */
+.profile-actions button:active,
+.profile-actions a:active {
+  transform: translateY(0);
+}
+
+/* Loading */
+.profile-loading {
+  height: 100vh;
+  background: #121212;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+}
+
+/* Responsividade Mobile */
+@media (max-width: 600px) {
+  .profile-page {
+    padding: 20px 12px;
+  }
+
+  .profile-card {
+    padding: 24px 18px;
+    border-radius: 12px;
+  }
+
+  .profile-card h1 {
+    font-size: 22px;
+  }
+
+  .profile-card h2 {
+    font-size: 16px;
+  }
+
+  .badge {
+    margin-left: 0;
+    margin-top: 4px;
+  }
 }

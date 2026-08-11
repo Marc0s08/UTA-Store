@@ -1,539 +1,131 @@
 import "./Profile.css";
-
-import {
-    Link,
-    useNavigate
-} from "react-router-dom";
-
-
-import {
-    useEffect,
-    useState
-} from "react";
-
-
-import {
-    signOut
-} from "firebase/auth";
-
-
-import {
-    auth
-} from "../../firebase/firebaseConfig";
-
-
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase/firebaseConfig";
 import useAuth from "../../hooks/useAuth";
-
-
-import {
-    getUserProfile
-} from "../../services/userService";
-
-
-
-
-export default function Profile(){
-
-
-    const {
-
-        user
-
-    } = useAuth();
-
-
-
-    const navigate = useNavigate();
-
-
-
-    const [
-
-        profile,
-
-        setProfile
-
-    ] = useState(null);
-
-
-
-    const [
-
-        loading,
-
-        setLoading
-
-    ] = useState(true);
-
-
-
-
-
-
-
-
-    useEffect(()=>{
-
-
-
-        async function loadProfile(){
-
-
-
-            if(user){
-
-
-
-                const data = await getUserProfile(
-
-                    user.uid
-
-                );
-
-
-
-                setProfile(data);
-
-
-
-            }
-
-
-
-            setLoading(false);
-
-
-
-        }
-
-
-
-        loadProfile();
-
-
-
-    },[user]);
-
-
-
-
-
-
-
-
-
-    async function handleLogout(){
-
-
-
-        await signOut(auth);
-
-
-
-        navigate("/login");
-
-
+import { getUserProfile } from "../../services/userService";
+
+export default function Profile() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProfile() {
+      if (user) {
+        const data = await getUserProfile(user.uid);
+        setProfile(data);
+      }
+      setLoading(false);
     }
+    loadProfile();
+  }, [user]);
 
+  async function handleLogout() {
+    await signOut(auth);
+    navigate("/login");
+  }
 
+  if (loading) {
+    return <div className="profile-loading">Carregando perfil...</div>;
+  }
 
+  // Garante compatibilidade tanto com 'enderecoEnvio' quanto 'endereco'
+  const endereco = profile?.enderecoEnvio || profile?.endereco;
 
+  return (
+    <div className="profile-page">
+      <div className="profile-card">
+        <h1>Minha Conta</h1>
 
+        {profile && (
+          <>
+            <section className="profile-section">
+              <h2>Dados Pessoais</h2>
 
+              <p>
+                <strong>Nome:</strong> {profile.nome || "Não informado"}
+              </p>
 
-    if(loading){
+              <p>
+                <strong>CPF/CNPJ:</strong> {profile.cpfCnpj || "Não informado"}
+              </p>
 
+              <p>
+                <strong>E-mail:</strong> {profile.email || user?.email}
+                {user?.emailVerified ? (
+                  <span className="badge verified">Verificado</span>
+                ) : (
+                  <span className="badge unverified">E-mail não verificado</span>
+                )}
+              </p>
 
+              <p>
+                <strong>Telefone:</strong> {profile.telefone || "Não informado"}
+              </p>
+            </section>
 
-        return(
+            <section className="profile-section">
+              <h2>Endereço de Entrega</h2>
 
-
-            <div className="profile-loading">
-
-
-                Carregando...
-
-
-            </div>
-
-
-        )
-
-
-    }
-
-
-
-
-
-
-
-
-    return(
-
-
-
-        <div className="profile-page">
-
-
-
-
-
-            <div className="profile-card">
-
-
-
-
-
-                <h1>
-
-                    Minha Conta
-
-                </h1>
-
-
-
-
-
-
-
-                {
-
-                profile &&
-
+              {endereco ? (
                 <>
+                  <p>
+                    <strong>Logradouro:</strong> {endereco.rua}, Nº {endereco.numero}
+                  </p>
 
-
-
-
-
-                <section>
-
-
-                    <h2>
-
-                        Dados pessoais
-
-                    </h2>
-
-
-
-
-
+                  {endereco.complemento && (
                     <p>
-
-                        <strong>
-
-                        Nome:
-
-                        </strong>
-
-
-                        {" "}
-
-                        {profile.nome}
-
-
+                      <strong>Complemento:</strong> {endereco.complemento}
                     </p>
+                  )}
 
-
-
-
-
-
+                  {endereco.referencia && (
                     <p>
-
-                        <strong>
-
-                        Email:
-
-                        </strong>
-
-
-                        {" "}
-
-                        {profile.email}
-
-
+                      <strong>Referência:</strong> {endereco.referencia}
                     </p>
-
-
-
-
-
-
-                    <p>
-
-                        <strong>
-
-                        Telefone:
-
-                        </strong>
-
-
-                        {" "}
-
-                        {profile.telefone}
-
-
-                    </p>
-
-
-
-                </section>
-
-
-
-
-
-
-
-
-
-                <section>
-
-
-                    <h2>
-
-                        Endereço
-
-                    </h2>
-
-
-
-
-
-
-
-                    {
-
-                    profile.endereco &&
-
-                    <>
-
-
-
-                    <p>
-
-
-                        {profile.endereco.rua}
-
-                        ,
-
-                        {" "}
-
-                        {profile.endereco.numero}
-
-
-                    </p>
-
-
-
-
-
-                    <p>
-
-
-                        {profile.endereco.bairro}
-
-
-                    </p>
-
-
-
-
-
-
-
-                    <p>
-
-
-                        {profile.endereco.cidade}
-
-
-                        {" - "}
-
-
-                        {profile.endereco.estado}
-
-
-                    </p>
-
-
-
-
-
-
-
-                    <p>
-
-
-                        CEP:
-
-                        {" "}
-
-                        {profile.endereco.cep}
-
-
-                    </p>
-
-
-
-
-                    </>
-
-
-                    }
-
-
-
-
-
-                </section>
-
-
-
-
-
-
-
+                  )}
+
+                  <p>
+                    <strong>Bairro:</strong> {endereco.bairro}
+                  </p>
+
+                  <p>
+                    <strong>Cidade/UF:</strong> {endereco.cidade} - {endereco.estado}
+                  </p>
+
+                  <p>
+                    <strong>CEP:</strong> {endereco.cep}
+                  </p>
                 </>
-
-                }
-
-
-
-
-
-
-
-
-
-                <div className="profile-actions">
-
-
-
-
-
-
-
-                    <Link to="/">
-
-
-
-                        <button className="home-button">
-
-
-                            Voltar para loja
-
-
-
-                        </button>
-
-
-
-                    </Link>
-
-
-
-
-
-
-
-
-                    <Link to="/editar-perfil">
-
-
-
-                        <button className="edit-button">
-
-
-                            Editar informações
-
-
-
-                        </button>
-
-
-
-                    </Link>
-
-
-
-
-
-
-
-
-
-                    <Link to="/meus-pedidos">
-
-
-
-                        <button className="orders-button">
-
-
-                            Meus Pedidos 📦
-
-
-
-                        </button>
-
-
-
-                    </Link>
-
-
-
-
-
-
-
-
-
-                    <button
-
-                    onClick={handleLogout}
-
-                    className="logout-button"
-
-                    >
-
-
-
-                        Sair da conta
-
-
-
-                    </button>
-
-
-
-
-
-
-
-
-                </div>
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-
-
+              ) : (
+                <p className="no-address">Nenhum endereço cadastrado.</p>
+              )}
+            </section>
+          </>
+        )}
+
+        <div className="profile-actions">
+          <Link to="/" className="btn-action home-button">
+            Voltar para loja
+          </Link>
+
+          <Link to="/editar-perfil" className="btn-action edit-button">
+            Editar informações
+          </Link>
+
+          <Link to="/meus-pedidos" className="btn-action orders-button">
+            Meus Pedidos 📦
+          </Link>
+
+          <button onClick={handleLogout} className="btn-action logout-button">
+            Sair da conta
+          </button>
         </div>
-
-
-    )
-
-
+      </div>
+    </div>
+  );
 }

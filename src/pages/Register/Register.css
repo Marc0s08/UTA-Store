@@ -1,248 +1,188 @@
-.register-page{
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    min-height:100vh;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    background:#121212;
-
-    padding:30px 15px;
-
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #101010;
+  padding: 40px 15px;
+  font-family: 'Inter', sans-serif;
 }
 
-
-
-.register-page form{
-
-    width:100%;
-
-    max-width:550px;
-
-    background:#1c1c1c;
-
-    padding:40px;
-
-    border-radius:15px;
-
-    box-shadow:
-    0 10px 30px rgba(0,0,0,.4);
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:15px;
-
+.register-page form {
+  width: 100%;
+  max-width: 580px;
+  background: #171717;
+  padding: 40px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-
-
-.register-page h1{
-
-    text-align:center;
-
-    color:white;
-
-    margin-bottom:15px;
-
-    font-size:30px;
-
+.register-page h1 {
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 8px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
-
-
-.register-page h3{
-
-    color:#8BC34A;
-
-    font-size:16px;
-
-    margin-top:15px;
-
-    margin-bottom:5px;
-
-    border-bottom:1px solid #333;
-
-    padding-bottom:8px;
-
+.register-page h3 {
+  color: #8BC34A;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 16px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
 }
 
-
-
-.register-page input{
-
-    width:100%;
-
-    padding:14px;
-
-    background:#111;
-
-    color:white;
-
-    border:1px solid #333;
-
-    border-radius:8px;
-
-    font-size:15px;
-
-    outline:none;
-
+.register-page input {
+  width: 100%;
+  padding: 13px 16px;
+  background: #101010;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  font-size: 14.5px;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
-
-
-.register-page input::placeholder{
-
-    color:#777;
-
+.register-page input::placeholder {
+  color: #777777;
 }
 
-
-
-.register-page input:focus{
-
-    border-color:#8BC34A;
-
+.register-page input:focus {
+  border-color: #8BC34A;
+  box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.15);
 }
 
-
-
-/* Campos lado a lado */
-
-.address-row{
-
-    display:flex;
-
-    gap:15px;
-
+/* Linhas com múltiplos campos */
+.address-row {
+  display: flex;
+  gap: 12px;
 }
 
-
-
-.address-row input{
-
-    flex:1;
-
+.address-row input {
+  flex: 1;
 }
 
-
-
-/* Botão */
-
-.register-page button{
-
-    margin-top:20px;
-
-    padding:15px;
-
-    border:none;
-
-    border-radius:8px;
-
-    background:#556B2F;
-
-    color:white;
-
-    font-size:16px;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
-    transition:.3s;
-
+/* Ajustes de proporção para campos específicos dentro de address-row */
+.address-row input[name="numero"] {
+  flex: 0.8;
 }
 
-
-
-.register-page button:hover{
-
-    background:#8BC34A;
-
-    color:#111;
-
+.address-row input[name="complemento"] {
+  flex: 1.2;
 }
 
-
-
-.register-page button:disabled{
-
-    opacity:.6;
-
-    cursor:not-allowed;
-
+.address-row input[name="estado"] {
+  flex: 0.5;
+  text-transform: uppercase;
+  text-align: center;
 }
 
-
-
-/* Link Login */
-
-.login-link{
-
-    text-align:center;
-
-    color:#aaa;
-
-    margin-top:10px;
-
+.address-row input[name="cidade"] {
+  flex: 1.5;
 }
 
-
-
-.login-link a{
-
-    color:#8BC34A;
-
-    margin-left:5px;
-
-    font-weight:bold;
-
-    text-decoration:none;
-
+/* Botão de Envio */
+.register-page button {
+  margin-top: 20px;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  background: #8BC34A;
+  color: #101010;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(139, 195, 74, 0.2);
 }
 
-
-
-.login-link a:hover{
-
-    text-decoration:underline;
-
+.register-page button:hover {
+  background: #9ED65A;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(139, 195, 74, 0.3);
 }
 
+.register-page button:active {
+  transform: translateY(0);
+}
 
+.register-page button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 
-/* Responsivo */
+/* Link para Login */
+.login-link {
+  text-align: center;
+  color: #9c9c9c;
+  margin-top: 12px;
+  font-size: 14px;
+}
 
-@media(max-width:600px){
+.login-link a {
+  color: #8BC34A;
+  margin-left: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
 
+.login-link a:hover {
+  color: #9ED65A;
+  text-decoration: underline;
+}
 
-    .register-page form{
+/* Responsividade Mobile */
+@media (max-width: 600px) {
+  .register-page {
+    padding: 20px 12px;
+  }
 
-        padding:25px 20px;
+  .register-page form {
+    padding: 24px 18px;
+    border-radius: 12px;
+  }
 
-    }
+  .register-page h1 {
+    font-size: 22px;
+  }
 
+  .address-row {
+    flex-direction: column;
+    gap: 14px;
+  }
 
-
-    .register-page h1{
-
-        font-size:24px;
-
-    }
-
-
-
-    .address-row{
-
-        flex-direction:column;
-
-        gap:15px;
-
-    }
-
-
+  .address-row input[name="numero"],
+  .address-row input[name="complemento"],
+  .address-row input[name="estado"],
+  .address-row input[name="cidade"] {
+    flex: 1;
+    text-align: left;
+  }
+}
+.error-message {
+  background-color: rgba(255, 77, 77, 0.15);
+  border: 1px solid #ff4d4d;
+  color: #ff6b6b;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: 500;
 }

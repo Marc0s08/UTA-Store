@@ -1,61 +1,99 @@
 /* ===============================================
-   ESTILOS DO NAVMENU (LISTA DE LINKS DE NAVEGAÇÃO)
+   ESTILOS DO NAVMENU (NAVEGAÇÃO DE LINKS)
 ================================================ */
 
-/* Limpa o estilo padrão da lista HTML */
-.nav-menu-list {
+.nav-menu {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   align-items: center;
-  gap: 24px;
+  justify-content: center;
+  gap: 12px;
 }
 
-/* Estilo padrão dos links no Desktop */
-.nav-menu-list a {
-  color: #e4e4e7;
+.nav-menu li {
+  display: flex;
+  align-items: center;
+}
+
+/* Estilo dos links no Desktop */
+.nav-menu a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  color: #d6d6d6;
   text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 8px 12px;
+  font-size: 0.92rem;
+  font-weight: 500;
   border-radius: 8px;
-  transition: all 0.2s ease-in-out;
-  display: inline-block;
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
 }
 
-/* Efeito ao passar o mouse (Hover) */
-.nav-menu-list a:hover {
-  color: #8bc34a;
-  background: rgba(139, 195, 74, 0.1);
+/* Hover e Link Ativo */
+.nav-menu a:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Link da página atual onde o usuário está (Active) */
-.nav-menu-list a.active {
-  color: #8bc34a;
-  font-weight: 700;
+.nav-menu a.active {
+  color: #8BC34A;
+  background-color: rgba(139, 195, 74, 0.12);
+  font-weight: 600;
+}
+
+/* Indicador visual inferior para o item ativo no desktop */
+.nav-menu a.active::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 2px;
+  background-color: #8BC34A;
+  border-radius: 2px;
 }
 
 /* ===============================================
-   AJUSTES PARA O MENU MOBILE
+   COMPORTAMENTO DENTRO DO MOBILE DRAWER
 ================================================ */
-@media (max-width: 768px) {
-  .nav-menu-list {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    padding: 16px 0;
-  }
+.drawer-content .nav-menu {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+}
 
-  .nav-menu-list a {
-    font-size: 1.05rem;
-    padding: 12px 16px;
-    width: 100%;
-    box-sizing: border-box;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  }
+.drawer-content .nav-menu li {
+  width: 100%;
+}
 
-  .nav-menu-list a:last-child {
-    border-bottom: none;
+.drawer-content .nav-menu a {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  justify-content: flex-start;
+  box-sizing: border-border;
+}
+
+.drawer-content .nav-menu a:hover {
+  padding-left: 20px;
+  background-color: rgba(139, 195, 74, 0.12);
+  color: #8BC34A;
+}
+
+.drawer-content .nav-menu a.active::after {
+  display: none; /* Desativa a barrinha inferior quando exibido no menu mobile */
+}
+
+/* ===============================================
+   AJUSTE DE SEGURANÇA PARA TELAS MENORES (BREAKPOINT)
+================================================ */
+@media (max-width: 850px) {
+  .navbar-desktop-menu .nav-menu {
+    display: none;
   }
 }

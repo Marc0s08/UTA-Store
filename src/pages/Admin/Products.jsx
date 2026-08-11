@@ -1,10 +1,12 @@
 import "./Products.css";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ProductForm from "../../components/ProductForm/ProductForm";
 import { getProducts, deleteProduct } from "../../services/productService";
 import { calculateDiscount } from "../../utils/discount";
 
 export default function Products() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -48,10 +50,12 @@ export default function Products() {
   return (
     <main className="products-admin">
       <header className="products-admin-header">
-        <h1>Gerenciar Produtos</h1>
-        <p className="subtitle">
-          Cadastre, edite e organize o catálogo da sua loja
-        </p>
+        <div>
+          <h1>Gerenciar Produtos</h1>
+          <p className="subtitle">
+            Cadastre, edite e organize o catálogo da sua loja
+          </p>
+        </div>
       </header>
 
       {/* Formulário de Produto */}
@@ -68,8 +72,18 @@ export default function Products() {
       {/* Lista de Produtos */}
       <section className="products-list-section">
         <div className="section-title-bar">
-          <h2>Produtos Cadastrados</h2>
-          <span className="products-count">{products.length} itens</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <h2>Produtos Cadastrados</h2>
+            <span className="products-count">{products.length} itens</span>
+          </div>
+
+          {/* Opção para gerenciar/cadastrar categorias integrada à listagem */}
+          <button
+            className="manage-categories-btn"
+            onClick={() => navigate("/admin/categorias")}
+          >
+            ➕ Gerenciar / Cadastrar Categorias
+          </button>
         </div>
 
         {loading ? (

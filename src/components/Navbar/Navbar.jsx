@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./Navbar.css";
 
 import Logo from "./Logo";
 import SearchBar from "./SearchBar";
-import FavoriteButton from "./FavoriteButton";
 import CartButton from "./CartButton";
 import UserMenu from "./UserMenu";
 import NavMenu from "./NavMenu";
@@ -11,48 +10,126 @@ import OrdersButton from "./OrdersButton";
 import AdminButton from "./AdminButton";
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const drawerRef = useRef(null);
 
-  // Função para fechar o menu mobile ao clicar em um item
-  const closeMenu = () => setMenuOpen(false);
+  const toggleDrawer = () => setDrawerOpen((prev) => !prev);
+  const closeDrawer = () => setDrawerOpen(false);
+
+  // Fecha ao pressionar ESC
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") closeDrawer();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Trava scroll quando a gaveta está aberta
+  useEffect(() => {
+    document.body.style.overflow = drawerOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [drawerOpen]);
+
+  // Fecha ao clicar fora
+  useEffect(() => {
+    function handleClick(event) {
+      if (
+        drawerOpen &&
+        drawerRef.current &&
+        !drawerRef.current.contains(event.target)
+      ) {
+        closeDrawer();
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [drawerOpen]);
 
   return (
-    <header className="navbar">
-      <div className="navbar-top">
-        <button
-          className="menu-mobile"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
-        >
-          {menuOpen ? "✕" : "☰"}
-        </button>
+    <>
+      <header className="navbar">
+        <div className="navbar-container">
+          {/* LOGO ESQUERDA */}
+          <div className="navbar-logo">
+            <Logo />
+          </div>
 
-        <div className="navbar-brand">
-          <Logo />
+          {/* BARRA DE PESQUISA AMAPLIADA */}
+          <div className="navbar-center">
+            <SearchBar />
+          </div>
+
+          {/* BOTÃO DA GAVETA */}
+          <div className="navbar-right">
+            <button
+              className="drawer-toggle-btn"
+              onClick={toggleDrawer}
+              aria-label="Abrir Menu"
+            >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* OVERLAY ESCURO */}
+      <div
+        className={`navbar-overlay ${drawerOpen ? "active" : ""}`}
+        onClick={closeDrawer}
+      />
+
+      {/* GAVETA LATERAL DIREITA */}
+      <aside
+        ref={drawerRef}
+        className={`mobile-drawer ${drawerOpen ? "active" : ""}`}
+      >
+        <div className="drawer-header">
+          <h3>Menu</h3>
+          <button className="drawer-close" onClick={closeDrawer}>
+            ✕
+          </button>
         </div>
 
-        <div className="search-bar-wrapper">
-          <SearchBar />
+        <div className="drawer-content">
+          {/* Categorias / Navegação */}
+          <nav className="drawer-nav">
+            <NavMenu onItemClick={closeDrawer} />
+          </nav>
+
+          <div className="drawer-divider" />
+
+          {/* ÍCONES ORGANIZADOS VERTICALMENTE */}
+          <div className="drawer-icons-list">
+            <div className="drawer-icon-item">
+              <UserMenu />
+            </div>
+            <div className="drawer-icon-item">
+              <CartButton />
+            </div>
+            <div className="drawer-icon-item">
+              <OrdersButton />
+            </div>
+            <div className="drawer-icon-item">
+              <AdminButton />
+            </div>
+          </div>
         </div>
 
-        <div className="navbar-actions">
-          <FavoriteButton />
-          <OrdersButton />
-          <AdminButton />
-          <CartButton />
-          <UserMenu />
+        <div className="drawer-footer">
+          <p>UTA STORE © {new Date().getFullYear()}</p>
+          <small>Equipamentos • Airsoft • Acessórios</small>
         </div>
-      </div>
-
-      {/* Menu Mobile Dropped Down (passando a prop onItemClick para fechar o menu) */}
-      <div className={`nav-mobile ${menuOpen ? "active" : ""}`}>
-        <NavMenu onItemClick={closeMenu} />
-      </div>
-
-      {/* Menu Desktop Tradicional */}
-      <nav className="nav-desktop">
-        <NavMenu />
-      </nav>
-    </header>
+      </aside>
+    </>
   );
 }

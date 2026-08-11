@@ -13,6 +13,8 @@ import AdminProducts from "../pages/Admin/Products";
 import Dashboard from "../pages/Admin/Dashboard";
 import Orders from "../pages/Admin/Orders";
 import Settings from "../pages/Admin/Settings";
+import Categories from "../pages/Admin/Categories";
+import Customers from "../pages/Admin/Customers"; // <-- Importação do componente de Clientes
 
 import StoreProducts from "../pages/Products/Products";
 
@@ -74,7 +76,7 @@ export default function AppRoutes() {
           }
         />
 
-        {/* PAINEL ADMIN (AGORA DENTRO DO LAYOUT) */}
+        {/* PAINEL ADMIN (DENTRO DO LAYOUT) */}
         <Route
           path="/admin"
           element={
@@ -85,6 +87,8 @@ export default function AppRoutes() {
         >
           <Route index element={<Dashboard />} />
           <Route path="produtos" element={<AdminProducts />} />
+          <Route path="categorias" element={<Categories />} />
+          <Route path="clientes" element={<Customers />} /> {/* <-- Rota de Clientes configurada */}
           <Route path="banners" element={<AdminBanners />} />
           <Route path="pedidos" element={<Orders />} />
           <Route path="configuracoes" element={<Settings />} />
