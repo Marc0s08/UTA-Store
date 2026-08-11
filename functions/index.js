@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
     user: process.env.GMAIL_USER ||
       "marcoseduc2019@gmail.com",
     pass: process.env.GMAIL_APP_PASSWORD ||
-      "sua-senha-de-app-16-letras",
+      "orddzjyoxoicmmbc",
   },
 });
 
