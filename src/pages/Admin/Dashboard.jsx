@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase/config"; // Ajuste o caminho se necessário
+import { db } from "../../firebase/config";; // Ajuste o caminho se necessário
 import "./Dashboard.css";
 
 export default function Dashboard() {
