@@ -1,0 +1,130 @@
+.store-category-products {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 25px;
+    color: white;
+}
+
+.category-header-bar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.category-header-bar h1 {
+    font-size: 36px;
+    margin: 0;
+    color: #8BC34A;
+}
+
+.back-btn-category {
+    background: #2a2a2a;
+    color: #fff;
+    border: 1px solid #3d3d3d;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.back-btn-category:hover {
+    background: #333;
+}
+
+.empty-category-message {
+    text-align: center;
+    color: #888;
+    padding: 50px 0;
+    font-size: 18px;
+}
+
+.store-product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+@media(max-width: 768px) {
+    .store-category-products {
+        padding: 20px;
+    }
+
+    .category-header-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .category-header-bar h1 {
+        font-size: 28px;
+    }
+
+    .store-product-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.store-category-grid-admin {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.store-category-box {
+    background: #181818;
+    border: 1px solid #2d2d2d;
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    color: white;
+    transition: transform 0.3s, border-color 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.store-category-box:hover {
+    transform: translateY(-5px);
+    border-color: #8BC34A;
+}
+
+.category-img-container {
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.store-category-box:hover .category-img-container img {
+    transform: scale(1.05);
+}
+
+.category-box-info {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.category-box-info h2 {
+    font-size: 20px;
+    margin: 0;
+    color: #fff;
+}
+
+.category-box-info p {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+}

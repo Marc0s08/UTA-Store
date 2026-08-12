@@ -14,9 +14,12 @@ import Dashboard from "../pages/Admin/Dashboard";
 import Orders from "../pages/Admin/Orders";
 import Settings from "../pages/Admin/Settings";
 import Categories from "../pages/Admin/Categories";
-import Customers from "../pages/Admin/Customers"; // <-- Importação do componente de Clientes
+import Customers from "../pages/Admin/Customers";
 
 import StoreProducts from "../pages/Products/Products";
+import CategoryProducts from "../pages/Categories/CategoryProducts";
+import Promotions from "../pages/Promotions/Promotions";
+import Contact from "../pages/Contact/Contact"; // <-- Importação da página de contato
 
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
@@ -63,6 +66,16 @@ export default function AppRoutes() {
 
         <Route path="/produtos" element={<StoreProducts />} />
 
+        {/* Ambas as rotas usam a mesma página de categorias */}
+        <Route path="/categorias" element={<CategoryProducts />} />
+        <Route path="/categoria/:nomeCategoria" element={<CategoryProducts />} />
+
+        {/* Rota da página de promoções */}
+        <Route path="/promocoes" element={<Promotions />} />
+
+        {/* Rota da página de contato */}
+        <Route path="/contato" element={<Contact />} />
+
         <Route path="/produto/:id" element={<Product />} />
 
         <Route path="/carrinho" element={<Cart />} />
@@ -88,7 +101,7 @@ export default function AppRoutes() {
           <Route index element={<Dashboard />} />
           <Route path="produtos" element={<AdminProducts />} />
           <Route path="categorias" element={<Categories />} />
-          <Route path="clientes" element={<Customers />} /> {/* <-- Rota de Clientes configurada */}
+          <Route path="clientes" element={<Customers />} />
           <Route path="banners" element={<AdminBanners />} />
           <Route path="pedidos" element={<Orders />} />
           <Route path="configuracoes" element={<Settings />} />
