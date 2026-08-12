@@ -8,7 +8,7 @@ import {
   deleteDoc, 
   doc 
 } from "firebase/firestore";
-import { db } from "./firebase"; // Ajuste o caminho do seu firebase.js se necessário
+import { db } from "../firebase/firebaseConfig"; // <-- Caminho exato do seu projeto
 
 const COUPONS_COLLECTION = "cupons";
 
@@ -29,12 +29,10 @@ export async function validateCoupon(codigo, totalCarrinho) {
   const docData = querySnapshot.docs[0];
   const cupom = { id: docData.id, ...docData.data() };
 
-  // 1. Verifica se está ativo
   if (cupom.ativo === false) {
     throw new Error("Este cupom não está mais ativo.");
   }
 
-  // 2. Verifica a validade (se houver data de expiração)
   if (cupom.validade) {
     const dataExpiracao = new Date(cupom.validade);
     const hoje = new Date();
@@ -43,7 +41,6 @@ export async function validateCoupon(codigo, totalCarrinho) {
     }
   }
 
-  // 3. Verifica o valor mínimo de compra (se houver)
   if (cupom.valorMinimo && totalCarrinho < Number(cupom.valorMinimo)) {
     throw new Error(
       `O valor mínimo para usar este cupom é R$ ${Number(cupom.valorMinimo).toFixed(2).replace(".", ",")}.`
@@ -53,9 +50,6 @@ export async function validateCoupon(codigo, totalCarrinho) {
   return cupom;
 }
 
-/**
- * Busca todos os cupons (Usado no Painel Admin)
- */
 export async function getCoupons() {
   const querySnapshot = await getDocs(collection(db, COUPONS_COLLECTION));
   return querySnapshot.docs.map((doc) => ({
@@ -64,9 +58,6 @@ export async function getCoupons() {
   }));
 }
 
-/**
- * Cria um novo cupom (Usado no Painel Admin)
- */
 export async function createCoupon(data) {
   const docRef = await addDoc(collection(db, COUPONS_COLLECTION), {
     ...data,
@@ -77,9 +68,6 @@ export async function createCoupon(data) {
   return docRef.id;
 }
 
-/**
- * Atualiza um cupom (Usado no Painel Admin)
- */
 export async function updateCoupon(id, data) {
   const couponRef = doc(db, COUPONS_COLLECTION, id);
   if (data.codigo) {
@@ -88,9 +76,6 @@ export async function updateCoupon(id, data) {
   await updateDoc(couponRef, data);
 }
 
-/**
- * Deleta um cupom (Usado no Painel Admin)
- */
 export async function deleteCoupon(id) {
   const couponRef = doc(db, COUPONS_COLLECTION, id);
   await deleteDoc(couponRef);
