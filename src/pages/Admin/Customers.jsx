@@ -254,7 +254,7 @@ export default function Customers() {
           >
             <option value="Todos">Todos os Tipos</option>
             <option value="Cliente">Cliente</option>
-            <option value="Admin">Admin</option>
+            <option value="admin">admin</option>
           </select>
         </div>
       </section>
@@ -308,7 +308,7 @@ export default function Customers() {
                           }
                         >
                           <option value="Cliente">Cliente</option>
-                          <option value="Admin">Admin</option>
+                          <option value="admin">admin</option>
                         </select>
                       </td>
 
