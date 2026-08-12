@@ -3,12 +3,40 @@
   max-width: 1400px;
   margin: 0 auto;
   font-family: Arial, sans-serif;
+  color: #fff;
 }
 
 .orders-admin h1 {
   color: #8BC34A;
-  margin-bottom: 30px;
+  margin: 0;
   font-size: 28px;
+}
+
+/* Barra de Pesquisa */
+.orders-search-container {
+  margin-bottom: 30px;
+}
+
+.orders-search-input {
+  width: 100%;
+  padding: 14px 18px;
+  background: #1b1b1b;
+  border: 1px solid #333;
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  outline: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.orders-search-input:focus {
+  border-color: #8BC34A;
+  box-shadow: 0 4px 15px rgba(139, 195, 74, 0.15);
+}
+
+.orders-search-input::placeholder {
+  color: #777;
 }
 
 .orders-grid {
@@ -39,6 +67,8 @@
   color: #8BC34A;
   font-size: 18px;
   margin: 0;
+  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 10px;
 }
 
 .order-card h3 {
@@ -53,42 +83,6 @@
   font-size: 14px;
 }
 
-/* Status Badges */
-.status, .status-badge {
-  display: inline-block;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.status.pendente, .status-badge.pendente {
-  background: #f39c12;
-  color: #101010;
-}
-
-.status.em, .status-badge.em-processamento {
-  background: #3498db;
-  color: #fff;
-}
-
-.status.enviado, .status-badge.enviado {
-  background: #9b59b6;
-  color: #fff;
-}
-
-.status.entregue, .status-badge.entregue {
-  background: #2ecc71;
-  color: #101010;
-}
-
-.status.cancelado, .status-badge.cancelado {
-  background: #e74c3c;
-  color: #fff;
-}
-
 /* Select de Status */
 .order-card select, .modal-body select {
   background: #2a2a2a;
@@ -99,6 +93,7 @@
   font-size: 14px;
   outline: none;
   cursor: pointer;
+  transition: border-color 0.2s;
 }
 
 .order-card select:focus, .modal-body select:focus {
@@ -116,11 +111,15 @@
   cursor: pointer;
   font-weight: bold;
   font-size: 14px;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
 }
 
 .order-card button:hover, .btn-details:hover {
   background: #7cb342;
+}
+
+.order-card button:active {
+  transform: scale(0.98);
 }
 
 /* Modal Overlay & Content */
@@ -130,8 +129,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,11 +144,12 @@
   border-radius: 20px;
   padding: 30px;
   width: 100%;
-  max-width: 600px;
+  max-width: 650px;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   color: white;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
 }
 
 .modal-header {
@@ -163,13 +163,8 @@
 
 .modal-header h2 {
   color: #8BC34A;
-  margin: 0 0 5px 0;
+  margin: 0;
   font-size: 20px;
-}
-
-.order-id-sub {
-  color: #888;
-  font-size: 13px;
 }
 
 .close-btn {
@@ -191,15 +186,24 @@
   background: #e74c3c;
 }
 
+.modal-body {
+  overflow-y: auto;
+  padding-right: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .modal-body p {
   color: #ccc;
-  margin: 8px 0;
+  margin: 0;
   font-size: 14px;
 }
 
 .modal-body h4 {
-  color: #fff;
-  margin: 20px 0 10px 0;
+  color: #8BC34A;
+  margin: 15px 0 8px 0;
+  font-size: 16px;
   border-bottom: 1px solid #2a2a2a;
   padding-bottom: 5px;
 }
@@ -208,25 +212,28 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .modal-body li, .item-row {
   background: #242424;
-  padding: 10px 15px;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  padding: 12px 15px;
+  border-radius: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: #ddd;
   font-size: 14px;
+  border: 1px solid #2f2f2f;
 }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 25px;
+  margin-top: 20px;
   border-top: 1px solid #2a2a2a;
   padding-top: 15px;
 }
@@ -236,7 +243,7 @@
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s;
@@ -252,9 +259,3 @@
   padding: 60px 20px;
   color: #888;
 }
-
-.empty-icon {
-  font-size: 48px;
-  margin-bottom: 15px;
-}
-
