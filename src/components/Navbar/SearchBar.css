@@ -1,0 +1,85 @@
+/* ==========================================================================
+   ESTILO ISOLADO DA BARRA DE PESQUISA (SearchBar.css)
+   ========================================================================== */
+.modern-search-bar {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0 12px;
+  height: 40px;
+  width: 100%;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.modern-search-bar:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.modern-search-bar:focus-within {
+  background-color: rgba(18, 18, 22, 0.95);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #f4f4f5;
+  font-size: 0.88rem;
+  padding: 0 8px;
+  height: 100%;
+}
+
+.search-input::placeholder {
+  color: #90909a;
+}
+
+.search-btn {
+  background: transparent;
+  border: none;
+  color: #90909a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.modern-search-bar:focus-within .search-btn,
+.search-btn:hover {
+  color: #3b82f6;
+}
+
+.search-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.search-clear-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #90909a;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.search-clear-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
