@@ -225,7 +225,7 @@ exports.notifyAdminOnNewOrder = onDocumentCreated(
       const emailCliente = cliente.email || "Não informado";
       const telefone = cliente.telefone ||
         cliente.celular || "Não informado";
-      const cpf = cliente.cpf || "Não informado";
+      const cpf = cliente.cpfCnpj || "Não informado";
 
       const logradouro = endereco.logradouro || "";
       const bairro = endereco.bairro || "";
