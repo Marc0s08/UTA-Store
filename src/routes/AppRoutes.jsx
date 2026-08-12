@@ -14,9 +14,10 @@ import Dashboard from "../pages/Admin/Dashboard";
 import Orders from "../pages/Admin/Orders";
 import Settings from "../pages/Admin/Settings";
 import Categories from "../pages/Admin/Categories";
-import Customers from "../pages/Admin/Customers"; // <-- Importação do componente de Clientes
+import Customers from "../pages/Admin/Customers";
 
 import StoreProducts from "../pages/Products/Products";
+import CategoryProducts from "../pages/Categories/CategoryProducts"; // <-- Importação da página de catálogo por categoria
 
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
@@ -63,6 +64,8 @@ export default function AppRoutes() {
 
         <Route path="/produtos" element={<StoreProducts />} />
 
+        <Route path="/categoria/:nomeCategoria" element={<CategoryProducts />} /> {/* <-- Rota configurada para o cliente */}
+
         <Route path="/produto/:id" element={<Product />} />
 
         <Route path="/carrinho" element={<Cart />} />
@@ -88,7 +91,7 @@ export default function AppRoutes() {
           <Route index element={<Dashboard />} />
           <Route path="produtos" element={<AdminProducts />} />
           <Route path="categorias" element={<Categories />} />
-          <Route path="clientes" element={<Customers />} /> {/* <-- Rota de Clientes configurada */}
+          <Route path="clientes" element={<Customers />} />
           <Route path="banners" element={<AdminBanners />} />
           <Route path="pedidos" element={<Orders />} />
           <Route path="configuracoes" element={<Settings />} />
