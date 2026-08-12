@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { createOrder } from "../../services/orderService";
 import { getUserProfile } from "../../services/userService";
 import { calcularMelhorEnvio } from "../../services/freteService";
+import { validateCoupon } from "../../services/couponService"; // <-- Importação do serviço de cupons
 import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
@@ -20,6 +21,13 @@ export default function Cart() {
   const [freteSelecionado, setFreteSelecionado] = useState(null);
   const [calculando, setCalculando] = useState(false);
 
+  // Estados para Cupom de Desconto
+  const [cupomInput, setCupomInput] = useState("");
+  const [cupomAplicado, setCupomAplicado] = useState(null);
+  const [desconto, setDesconto] = useState(0);
+  const [mensagemCupom, setMensagemCupom] = useState({ texto: "", erro: false });
+  const [validandoCupom, setValidandoCupom] = useState(false);
+
   useEffect(() => {
     async function carregarPerfil() {
       if (!user) return;
@@ -33,6 +41,32 @@ export default function Cart() {
     carregarPerfil();
   }, [user]);
 
+  // Recalcula o desconto se o total do carrinho mudar (ex: alteração de quantidade)
+  useEffect(() => {
+    if (cupomAplicado) {
+      if (cupomAplicado.valorMinimo && total < cupomAplicado.valorMinimo) {
+        setCupomAplicado(null);
+        setDesconto(0);
+        setMensagemCupom({
+          texto: `Cupom removido. Valor mínimo de R$ ${cupomAplicado.valorMinimo} não atingido.`,
+          erro: true,
+        });
+        return;
+      }
+
+      let valorDesconto = 0;
+      if (cupomAplicado.tipo === "porcentagem") {
+        valorDesconto = (total * Number(cupomAplicado.valor)) / 100;
+      } else {
+        valorDesconto = Number(cupomAplicado.valor);
+      }
+
+      // Desconto não pode ser maior que o subtotal dos produtos
+      if (valorDesconto > total) valorDesconto = total;
+      setDesconto(valorDesconto);
+    }
+  }, [total, cupomAplicado]);
+
   const pesoTotal = cart.reduce((soma, item) => {
     return soma + Number(item.peso || 0) * Number(item.quantidade || 1);
   }, 0);
@@ -43,7 +77,6 @@ export default function Cart() {
       setFretes([]);
       setFreteSelecionado(null);
 
-      // Define o CEP de destino com base na escolha do usuário
       let cepDestino = usarEnderecoCadastro ? perfil?.endereco?.cep : cep;
       const cepLimpo = cepDestino?.replace(/\D/g, "");
 
@@ -52,7 +85,6 @@ export default function Cart() {
         return;
       }
 
-      // Busca dados do CEP via ViaCEP para preencher visualmente o logradouro/bairro
       const buscaCep = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
       const dadosCep = await buscaCep.json();
 
@@ -83,6 +115,51 @@ export default function Cart() {
     }
   }
 
+  async function handleAplicarCupom() {
+    if (!cupomInput.trim()) {
+      setMensagemCupom({ texto: "Digite o código do cupom.", erro: true });
+      return;
+    }
+
+    try {
+      setValidandoCupom(true);
+      setMensagemCupom({ texto: "", erro: false });
+
+      const cupomValido = await validateCoupon(cupomInput.trim(), total);
+
+      setCupomAplicado(cupomValido);
+
+      let valorDesconto = 0;
+      if (cupomValido.tipo === "porcentagem") {
+        valorDesconto = (total * Number(cupomValido.valor)) / 100;
+      } else {
+        valorDesconto = Number(cupomValido.valor);
+      }
+
+      if (valorDesconto > total) valorDesconto = total;
+      setDesconto(valorDesconto);
+
+      setMensagemCupom({ texto: "Cupom aplicado com sucesso!", erro: false });
+    } catch (error) {
+      console.error("Erro ao aplicar cupom:", error);
+      setCupomAplicado(null);
+      setDesconto(0);
+      setMensagemCupom({
+        texto: error.message || "Cupom inválido ou expirado.",
+        erro: true,
+      });
+    } finally {
+      setValidandoCupom(false);
+    }
+  }
+
+  function handleRemoverCupom() {
+    setCupomAplicado(null);
+    setDesconto(0);
+    setCupomInput("");
+    setMensagemCupom({ texto: "", erro: false });
+  }
+
   async function handleCheckout() {
     if (!user) {
       alert("Faça login para finalizar a compra.");
@@ -103,6 +180,7 @@ export default function Cart() {
     try {
       const profile = await getUserProfile(user.uid);
       const valorFrete = Number(freteSelecionado.valor || 0);
+      const totalFinal = Math.max(0, total - desconto + valorFrete);
 
       const pedido = {
         usuarioId: user.uid,
@@ -110,11 +188,11 @@ export default function Cart() {
           nome: profile?.nome || user.displayName || user.email.split("@")[0],
           email: user.email,
           telefone: profile?.telefone || "",
-          cpfCnpj: profile?.cpfCnpj || ""
+          cpfCnpj: profile?.cpfCnpj || "",
         },
         enderecoEntrega: {
           ...(usarEnderecoCadastro && profile?.endereco ? profile.endereco : endereco),
-          cep: usarEnderecoCadastro ? profile?.endereco?.cep : cep
+          cep: usarEnderecoCadastro ? profile?.endereco?.cep : cep,
         },
         produtos: cart.map((item) => ({
           id: item.id,
@@ -131,10 +209,17 @@ export default function Cart() {
           valor: valorFrete,
           prazo: freteSelecionado.prazo || freteSelecionado.delivery_time || "",
         },
+        cupom: cupomAplicado
+          ? {
+              codigo: cupomAplicado.codigo,
+              descontoAplicado: desconto,
+            }
+          : null,
         valores: {
           produtos: Number(total),
+          desconto: Number(desconto),
           frete: valorFrete,
-          total: Number(total) + valorFrete,
+          total: totalFinal,
         },
         status: "aguardando pagamento",
         criadoEm: new Date(),
@@ -146,6 +231,8 @@ export default function Cart() {
       setFretes([]);
       setFreteSelecionado(null);
       setEndereco(null);
+      setCupomAplicado(null);
+      setDesconto(0);
 
       alert("Pedido realizado com sucesso!");
       navigate("/meus-pedidos");
@@ -266,6 +353,39 @@ export default function Cart() {
             </div>
           )}
 
+          {/* SEÇÃO DO CUPOM DE DESCONTO */}
+          <h2>Cupom de Desconto</h2>
+          <div className="coupon-box">
+            {!cupomAplicado ? (
+              <div className="coupon-input-group">
+                <input
+                  type="text"
+                  placeholder="Código do cupom"
+                  value={cupomInput}
+                  onChange={(e) => setCupomInput(e.target.value.toUpperCase())}
+                />
+                <button onClick={handleAplicarCupom} disabled={validandoCupom}>
+                  {validandoCupom ? "..." : "Aplicar"}
+                </button>
+              </div>
+            ) : (
+              <div className="coupon-applied">
+                <span>
+                  Cupom <strong>{cupomAplicado.codigo}</strong> aplicado!
+                </span>
+                <button onClick={handleRemoverCupom} className="remove-coupon-btn">
+                  Remover
+                </button>
+              </div>
+            )}
+
+            {mensagemCupom.texto && (
+              <p className={`coupon-message ${mensagemCupom.erro ? "error" : "success"}`}>
+                {mensagemCupom.texto}
+              </p>
+            )}
+          </div>
+
           <h2>Resumo</h2>
 
           <p>
@@ -274,10 +394,15 @@ export default function Cart() {
 
           <h3>
             Produtos:
-            <span>
-              R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-            </span>
+            <span>R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </h3>
+
+          {desconto > 0 && (
+            <h3 className="discount-text">
+              Desconto:
+              <span>- R$ {desconto.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+            </h3>
+          )}
 
           <h3>
             Frete:
@@ -289,7 +414,10 @@ export default function Cart() {
           <h3>
             Total:
             <span>
-              R$ {(total + Number(freteSelecionado?.valor || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+              R${" "}
+              {Math.max(0, total - desconto + Number(freteSelecionado?.valor || 0)).toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
+              })}
             </span>
           </h3>
 

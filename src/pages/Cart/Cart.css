@@ -261,7 +261,102 @@
     color: #888;
 }
 
-/* LINHAS DE VALORES */
+/* ==========================================================================
+   ESTILOS DO CUPOM DE DESCONTO
+   ========================================================================== */
+.coupon-box {
+    margin-bottom: 25px;
+}
+
+.coupon-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.coupon-input-group input {
+    margin-bottom: 0 !important;
+    text-transform: uppercase;
+}
+
+.coupon-input-group button {
+    padding: 14px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #333;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    white-space: nowrap;
+}
+
+.coupon-input-group button:hover:not(:disabled) {
+    background: #8BC34A;
+    color: #111;
+}
+
+.coupon-input-group button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.coupon-applied {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #111;
+    border: 1px solid #8BC34A;
+    padding: 12px 16px;
+    border-radius: 10px;
+    color: white;
+    font-size: 14px;
+}
+
+.coupon-applied strong {
+    color: #8BC34A;
+}
+
+.remove-coupon-btn {
+    background: transparent;
+    border: none;
+    color: #ff5252;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    transition: color 0.2s;
+    padding: 0;
+}
+
+.remove-coupon-btn:hover {
+    color: #ff8686;
+    text-decoration: underline;
+}
+
+.coupon-message {
+    font-size: 13px;
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+.coupon-message.error {
+    color: #ff5252;
+}
+
+.coupon-message.success {
+    color: #8BC34A;
+}
+
+.discount-text {
+    color: #8BC34A !important;
+}
+
+.discount-text span {
+    color: #8BC34A !important;
+}
+
+/* ==========================================================================
+   LINHAS DE VALORES E TOTAL
+   ========================================================================== */
 .cart-summary h3 {
     display: flex;
     justify-content: space-between;
