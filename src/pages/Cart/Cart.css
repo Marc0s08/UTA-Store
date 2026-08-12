@@ -132,7 +132,7 @@
     font-size: 22px;
 }
 
-/* INPUTS E RADIOS */
+/* INPUTS E RADIOS GENERALIZADOS */
 .cart-summary label {
     display: flex;
     align-items: center;
@@ -269,11 +269,14 @@
 }
 
 .coupon-input-group {
-    display: flex;
-    gap: 10px;
+    display: flex !important;
+    gap: 10px !important;
+    align-items: center;
 }
 
-.coupon-input-group input {
+.coupon-input-group input[type="text"] {
+    flex: 1 !important;
+    width: auto !important;
     margin-bottom: 0 !important;
     text-transform: uppercase;
 }
@@ -288,6 +291,7 @@
     cursor: pointer;
     transition: background 0.3s, color 0.3s;
     white-space: nowrap;
+    height: 48px;
 }
 
 .coupon-input-group button:hover:not(:disabled) {
