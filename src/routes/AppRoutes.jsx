@@ -15,11 +15,12 @@ import Orders from "../pages/Admin/Orders";
 import Settings from "../pages/Admin/Settings";
 import Categories from "../pages/Admin/Categories";
 import Customers from "../pages/Admin/Customers";
+import Coupons from "../pages/Admin/Coupons"; // <-- Importação da gestão de cupons
 
 import StoreProducts from "../pages/Products/Products";
 import CategoryProducts from "../pages/Categories/CategoryProducts";
 import Promotions from "../pages/Promotions/Promotions";
-import Contact from "../pages/Contact/Contact"; // <-- Importação da página de contato
+import Contact from "../pages/Contact/Contact";
 
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
@@ -102,6 +103,7 @@ export default function AppRoutes() {
           <Route path="produtos" element={<AdminProducts />} />
           <Route path="categorias" element={<Categories />} />
           <Route path="clientes" element={<Customers />} />
+          <Route path="cupons" element={<Coupons />} /> {/* <-- Nova Rota de Cupons */}
           <Route path="banners" element={<AdminBanners />} />
           <Route path="pedidos" element={<Orders />} />
           <Route path="configuracoes" element={<Settings />} />
